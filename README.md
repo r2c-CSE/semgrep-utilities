@@ -10,7 +10,7 @@ python3 api.py
 **_NOTE:_** Take into account the SEMGREP_APP_TOKEN must have API permissions.
 
 ## Kubernetes pod example
-It is Kubernetes pod that can launch semgrep scans.
+It is a Kubernetes pod that can launch semgrep scans.
 As requierement:
 * Install minikube
 * Start minikube:
