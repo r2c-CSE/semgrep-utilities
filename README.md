@@ -23,7 +23,7 @@ kubectl apply -f semgrep-pod.yml
 ```
 
 ## Json-Csv converter
-Utility to convert Semgrep JSON output (--json --time) to CSV. Useful to verity time consumption per file.
+Utility to convert Semgrep JSON output (--json --time --output error.json) to CSV. Useful to verity time consumption per file.
 
 * How to execute:
 ```
