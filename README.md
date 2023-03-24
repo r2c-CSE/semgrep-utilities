@@ -29,7 +29,7 @@ Utility to convert Semgrep JSON output (--json --time) to CSV. Useful to verity 
 ```
 python3 convert.py
 ```
-**_NOTE:_** The input (semgrep output) should be named output.json or you can change it in the python script.
+**_NOTE:_** The input (semgrep output) should be named error.json or you can change it in the python script.
 
 Example input (semgrep output):
 ```
