@@ -7,7 +7,7 @@ def convert():
     writer_paths = csv.writer(output_file)
     writer_paths.writerow(["path", "run_time"])
 
-    output_file_rules = open('output-rules.csv', 'w', newline='')
+    output_file_rules = open('output-rules-list.csv', 'w', newline='')
     writer_rules = csv.writer(output_file_rules)
     writer_rules.writerow(["rule", "rule_time"])
 
