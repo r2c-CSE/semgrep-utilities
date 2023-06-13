@@ -47,7 +47,7 @@ project = "Chess"
 SEMGREP_TASK_GROUP_ID = "6b81d9ba-52f8-431b-9d99-08054e2c4258"
 
 # function to get classic pipeline configuration from organization/project/repo_name
-def get_classic_pipeline_config(org, project):
+def add_semgrep_task_to_classic_pipeline_config(org, project):
 
     headers = get_headers()
 
@@ -152,8 +152,45 @@ def update_classic_pipeline_semgrep_config(org, classic_pipeline_config, definit
     # Send the API request
     response = requests.put(url, headers=headers, data=json.dumps(classic_pipeline_config))
 
-    # find refName for new phase to be used to update dependency of build pipeline
     logging.debug('This is the response from the API call to update the pipeline config')
+    logging.debug(" *********** ")
+    logging.debug(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
+    logging.debug(" *********** ")
+
+def update_dependency_order(org, project):
+   
+    headers = get_headers()
+    ado_pipelines_list_url = f'https://dev.azure.com/{org}/{project}/_apis/build/definitions?api-version=7.0'
+    response = requests.get(ado_pipelines_list_url, headers=headers)
+    data = response.json() 
+
+    for item in data['value']:
+      pipeline_id = item['id']
+      pipeline_name = item['name']
+      project_item = item['project']
+      definition_id = project_item['id']
+      if pipeline_name == "Build":
+        url = f'https://dev.azure.com/{org}/{definition_id}/_apis/build/Definitions/{pipeline_id}'
+        response = requests.get(url, headers=headers)
+        classic_pipeline_config = response.json()
+        refName = classic_pipeline_config['process']['phases'][0]['refName']
+        break
+
+    # Add dependency
+    dependencies_statement = [
+                    {
+                        "event": "Completed",
+                        "scope": refName
+                    }
+        ]
+
+    classic_pipeline_config['process']['phases'][1]["dependencies"] = dependencies_statement
+
+    # Send the API request
+    headers_with_content = get_headers_with_content()
+    url = f'https://dev.azure.com/{org}/{definition_id}/_apis/build/Definitions/{pipeline_id}?api-version=7.0'
+    response = requests.put(url, headers=headers_with_content, data=json.dumps(classic_pipeline_config))
+    logging.debug('This is the response from the API call to update dependency order')
     logging.debug(" *********** ")
     logging.debug(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
     logging.debug(" *********** ")
@@ -167,4 +204,5 @@ except KeyError:
     logging.error("Please set the environment variable ado_token") 
     sys.exit(1)
 
-get_classic_pipeline_config(org, project)
+add_semgrep_task_to_classic_pipeline_config(org, project)
+update_dependency_order(org, project)
