@@ -41,11 +41,11 @@ yaml.preserve_quotes = True
 logging.basicConfig(level=logging.DEBUG)
 
 # Constants
-# Define Org, project, Repo Name
+# Define Org, project, SEMGREP_TASK_GROUP_ID and QUEUE_ID
 org = "sebasrevuelta"
 project = "Chess"
-repo_name = "Chess"
-ado_org_url = f'https://dev.azure.com/{org}'
+SEMGREP_TASK_GROUP_ID = "6b81d9ba-52f8-431b-9d99-08054e2c4258"
+QUEUE_ID = 48
 
 # function to get classic pipeline configuration from organization/project/repo_name
 def get_classic_pipeline_config(org, project):
@@ -117,7 +117,7 @@ def update_classic_pipeline_semgrep_config(org, classic_pipeline_config, definit
             "retryCountOnTaskFailure": 0,
             "condition": "succeededOrFailed()",
             "task": {
-              "id": "6b81d9ba-52f8-431b-9d99-08054e2c4258",
+              "id": SEMGREP_TASK_GROUP_ID,
               "versionSpec": "1.*",
               "definitionType": "metaTask"
             },
@@ -130,11 +130,11 @@ def update_classic_pipeline_semgrep_config(org, classic_pipeline_config, definit
           "queue": {
             "_links": {
               "self": {
-                "href": "https://dev.azure.com/sebasrevuelta/_apis/build/Queues/48"
+                "href": "https://dev.azure.com/" + org + "/_apis/build/Queues/" + str(QUEUE_ID)
               }
             },
-            "id": 48,
-            "url": "https://dev.azure.com/sebasrevuelta/_apis/build/Queues/48",
+            "id": QUEUE_ID,
+            "url": "https://dev.azure.com/" + org +  "/_apis/build/Queues/" + str(QUEUE_ID),
           },
           "agentSpecification": {
             "identifier": "ubuntu-latest"
