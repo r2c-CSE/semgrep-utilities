@@ -41,11 +41,10 @@ yaml.preserve_quotes = True
 logging.basicConfig(level=logging.DEBUG)
 
 # Constants
-# Define Org, project, SEMGREP_TASK_GROUP_ID and QUEUE_ID
+# Define Org, project, SEMGREP_TASK_GROUP_ID
 org = "sebasrevuelta"
 project = "Chess"
 SEMGREP_TASK_GROUP_ID = "6b81d9ba-52f8-431b-9d99-08054e2c4258"
-QUEUE_ID = 48
 
 # function to get classic pipeline configuration from organization/project/repo_name
 def get_classic_pipeline_config(org, project):
@@ -62,11 +61,12 @@ def get_classic_pipeline_config(org, project):
       project_item = item['project']
       definition_id = project_item['id']
       if pipeline_name == "Build": ## TODO: Change name of the pipeline
+        queue_id = item['queue']['id']
         url = f'https://dev.azure.com/{org}/{definition_id}/_apis/build/Definitions/{pipeline_id}'
         response = requests.get(url, headers=headers)
         classic_pipeline_config = response.json()
-        show_task_group_info(org, project)
-        update_classic_pipeline_semgrep_config(org, classic_pipeline_config, definition_id, pipeline_id)
+        #show_task_group_info(org, project)
+        update_classic_pipeline_semgrep_config(org, classic_pipeline_config, definition_id, pipeline_id, queue_id)
 
 # function to get the header for the connection
 def get_headers():
@@ -99,7 +99,7 @@ def show_task_group_info(org, project):
     print("***** Task Group config *****")
 
 # function to update classic pipeline with semgrep task group
-def update_classic_pipeline_semgrep_config(org, classic_pipeline_config, definition_id, pipeline_id):
+def update_classic_pipeline_semgrep_config(org, classic_pipeline_config, definition_id, pipeline_id, queue_id):
 
     url = f'https://dev.azure.com/{org}/{definition_id}/_apis/build/Definitions/{pipeline_id}?api-version=7.0'
 
@@ -130,11 +130,11 @@ def update_classic_pipeline_semgrep_config(org, classic_pipeline_config, definit
           "queue": {
             "_links": {
               "self": {
-                "href": "https://dev.azure.com/" + org + "/_apis/build/Queues/" + str(QUEUE_ID)
+                "href": "https://dev.azure.com/" + org + "/_apis/build/Queues/" + str(queue_id)
               }
             },
-            "id": QUEUE_ID,
-            "url": "https://dev.azure.com/" + org +  "/_apis/build/Queues/" + str(QUEUE_ID),
+            "id": queue_id,
+            "url": "https://dev.azure.com/" + org +  "/_apis/build/Queues/" + str(queue_id),
           },
           "agentSpecification": {
             "identifier": "ubuntu-latest"
