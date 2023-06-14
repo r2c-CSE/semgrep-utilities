@@ -45,6 +45,7 @@ logging.basicConfig(level=logging.DEBUG)
 org = "sebasrevuelta"
 project = "Chess"
 SEMGREP_TASK_GROUP_ID = "6b81d9ba-52f8-431b-9d99-08054e2c4258"
+PIPELINE_NAME = "Build"
 
 # function to get classic pipeline configuration from organization/project/repo_name
 def add_semgrep_task_to_classic_pipeline_config(org, project):
@@ -60,7 +61,7 @@ def add_semgrep_task_to_classic_pipeline_config(org, project):
       pipeline_name = item['name']
       project_item = item['project']
       definition_id = project_item['id']
-      if pipeline_name == "Build": ## TODO: Change name of the pipeline
+      if pipeline_name == PIPELINE_NAME: ## TODO: Change name of the pipeline
         queue_id = item['queue']['id']
         url = f'https://dev.azure.com/{org}/{definition_id}/_apis/build/Definitions/{pipeline_id}'
         response = requests.get(url, headers=headers)
@@ -169,7 +170,7 @@ def update_dependency_order(org, project):
       pipeline_name = item['name']
       project_item = item['project']
       definition_id = project_item['id']
-      if pipeline_name == "Build":
+      if pipeline_name == PIPELINE_NAME:
         url = f'https://dev.azure.com/{org}/{definition_id}/_apis/build/Definitions/{pipeline_id}'
         response = requests.get(url, headers=headers)
         classic_pipeline_config = response.json()
