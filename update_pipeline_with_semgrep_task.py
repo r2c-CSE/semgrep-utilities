@@ -38,14 +38,45 @@ import sys
 
 yaml = ruamel.yaml.YAML()
 yaml.preserve_quotes = True
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 # Constants
 # Define Org, project, SEMGREP_TASK_GROUP_ID
 org = "sebasrevuelta"
 project = "Chess"
 SEMGREP_TASK_GROUP_ID = "6b81d9ba-52f8-431b-9d99-08054e2c4258"
-PIPELINE_NAME = "Build"
+SEMGREP_TASK_GROUP_NAME = "Semgrep-Task-Group"
+SEMGREP_VARIABLE_GROUP_NAME = "Semgrep_Variables"
+
+def get_variables_group(org, project):
+  
+  headers = get_headers()
+  ado_pipelines_list_url = f'https://dev.azure.com/{org}/{project}/_apis/distributedtask/variablegroups?api-version=7.0'
+  response = requests.get(ado_pipelines_list_url, headers=headers)
+  pretty_data_json = json.loads(response.text)
+  print (json.dumps(pretty_data_json, indent=2))
+
+def get_var_group_id(org, project):
+  
+  headers = get_headers()
+  ado_pipelines_list_url = f'https://dev.azure.com/{org}/{project}/_apis/distributedtask/variablegroups?api-version=7.0'
+  response = requests.get(ado_pipelines_list_url, headers=headers)
+  data = response.json() 
+  for vars_group in data['value']:
+     if vars_group['name'] == SEMGREP_VARIABLE_GROUP_NAME:
+        return vars_group['id']
+  return 1
+
+def get_semgrep_token(org, project):
+  
+  headers = get_headers()
+  ado_pipelines_list_url = f'https://dev.azure.com/{org}/{project}/_apis/distributedtask/variablegroups?api-version=7.0'
+  response = requests.get(ado_pipelines_list_url, headers=headers)
+  data = response.json() 
+  for vars_group in data['value']:
+     if vars_group['name'] == SEMGREP_VARIABLE_GROUP_NAME:
+        return vars_group['variables']['SEMGREP_APP_TOKEN']['value']
+  return None
 
 # function to get classic pipeline configuration from organization/project/repo_name
 def add_semgrep_task_to_classic_pipeline_config(org, project):
@@ -56,18 +87,50 @@ def add_semgrep_task_to_classic_pipeline_config(org, project):
     response = requests.get(ado_pipelines_list_url, headers=headers)
     data = response.json() 
 
-    for item in data['value']:
-      pipeline_id = item['id']
-      pipeline_name = item['name']
-      project_item = item['project']
+    semgrep_token = get_semgrep_token(org, project)
+    var_id = get_var_group_id(org, project)
+
+    for pipeline in data['value']:
+      pipeline_id = pipeline['id']
+      pipeline_name = pipeline['name']
+      print("Updating pipeline: " + pipeline_name)
+      project_item = pipeline['project']
       definition_id = project_item['id']
-      if pipeline_name == PIPELINE_NAME: ## TODO: Change name of the pipeline
-        queue_id = item['queue']['id']
-        url = f'https://dev.azure.com/{org}/{definition_id}/_apis/build/Definitions/{pipeline_id}'
-        response = requests.get(url, headers=headers)
-        classic_pipeline_config = response.json()
-        #show_task_group_info(org, project)
-        update_classic_pipeline_semgrep_config(org, classic_pipeline_config, definition_id, pipeline_id, queue_id)
+      queue_id = pipeline['queue']['id']
+      url = f'https://dev.azure.com/{org}/{definition_id}/_apis/build/Definitions/{pipeline_id}'
+      response = requests.get(url, headers=headers)
+      classic_pipeline_config = response.json()
+      #show_task_group_info(org, project)
+      if (check_existance_semgrep_task(classic_pipeline_config) == False):
+        add_semgrep_task(org, classic_pipeline_config, definition_id, pipeline_id, queue_id)
+      else:
+         print("Semgrep task group: " + SEMGREP_TASK_GROUP_NAME + " already exists for pipeline: " + pipeline_name)
+
+      ## TODO: check if variableGroups already exists but no Semgrep_Variables and get SEMGREP_APP_TOKEN AND var_id
+
+      if (check_existance_semgrep_variable(classic_pipeline_config) == False):
+         print("Addding Semgrep variable group: " + SEMGREP_VARIABLE_GROUP_NAME + " for pipeline: " + pipeline_name)
+         add_semgrep_variable(org, classic_pipeline_config, definition_id, pipeline_id, semgrep_token, var_id)
+      else:
+         print("Semgrep variable group: " + SEMGREP_VARIABLE_GROUP_NAME + " already exists for pipeline: " + pipeline_name)   
+
+# check if semgrep variable already exists in the pipeline
+def check_existance_semgrep_task(classic_pipeline_config):
+  for phase in classic_pipeline_config['process']['phases']:
+    phase_name = phase['name']
+    if (phase_name == SEMGREP_TASK_GROUP_NAME):
+      return True
+  return False
+
+# check if semgrep task already exists in the pipeline
+def check_existance_semgrep_variable(classic_pipeline_config):
+  if classic_pipeline_config.get('variableGroups') is not None:
+    for var_groups in classic_pipeline_config['variableGroups']:
+      var_group_name = var_groups['name']
+      if (var_group_name == SEMGREP_VARIABLE_GROUP_NAME):
+        return True
+  return False
+
 
 # function to get the header for the connection
 def get_headers():
@@ -85,7 +148,7 @@ def get_headers_with_content():
 
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Basic '+authorization
+        'Authorization': 'Basic '+ authorization
     }
     return headers
 
@@ -100,7 +163,7 @@ def show_task_group_info(org, project):
     print("***** Task Group config *****")
 
 # function to update classic pipeline with semgrep task group
-def update_classic_pipeline_semgrep_config(org, classic_pipeline_config, definition_id, pipeline_id, queue_id):
+def add_semgrep_task(org, classic_pipeline_config, definition_id, pipeline_id, queue_id):
 
     url = f'https://dev.azure.com/{org}/{definition_id}/_apis/build/Definitions/{pipeline_id}?api-version=7.0'
 
@@ -113,7 +176,7 @@ def update_classic_pipeline_semgrep_config(org, classic_pipeline_config, definit
             "enabled": True,
             "continueOnError": True,
             "alwaysRun": True,
-            "displayName": "Semgrep-Task-Group",
+            "displayName": SEMGREP_TASK_GROUP_NAME,
             "timeoutInMinutes": 0,
             "retryCountOnTaskFailure": 0,
             "condition": "succeededOrFailed()",
@@ -125,7 +188,7 @@ def update_classic_pipeline_semgrep_config(org, classic_pipeline_config, definit
             "inputs": {}
           }
         ],
-        "name": "Semgrep-Task-Group",
+        "name": SEMGREP_TASK_GROUP_NAME,
 
         "target": {
           "queue": {
@@ -158,6 +221,7 @@ def update_classic_pipeline_semgrep_config(org, classic_pipeline_config, definit
     logging.debug(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
     logging.debug(" *********** ")
 
+# function to update dependency order
 def update_dependency_order(org, project):
    
     headers = get_headers()
@@ -168,14 +232,17 @@ def update_dependency_order(org, project):
     for item in data['value']:
       pipeline_id = item['id']
       pipeline_name = item['name']
+      print("Setting semgrep dependency for pipeline: " + pipeline_name)
       project_item = item['project']
       definition_id = project_item['id']
-      if pipeline_name == PIPELINE_NAME:
-        url = f'https://dev.azure.com/{org}/{definition_id}/_apis/build/Definitions/{pipeline_id}'
-        response = requests.get(url, headers=headers)
-        classic_pipeline_config = response.json()
-        refName = classic_pipeline_config['process']['phases'][0]['refName']
-        break
+      url = f'https://dev.azure.com/{org}/{definition_id}/_apis/build/Definitions/{pipeline_id}'
+      response = requests.get(url, headers=headers)
+      classic_pipeline_config = response.json()
+      refName = classic_pipeline_config['process']['phases'][0]['refName']
+      set_order(org, definition_id, pipeline_id, classic_pipeline_config, refName)
+
+
+def set_order(org, definition_id, pipeline_id, classic_pipeline_config, refName):
 
     # Add dependency
     dependencies_statement = [
@@ -196,6 +263,51 @@ def update_dependency_order(org, project):
     logging.debug(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
     logging.debug(" *********** ")
 
+
+def add_semgrep_variable(org, classic_pipeline_config, definition_id, pipeline_id, semgrep_token, var_id):
+
+  # Add variable group
+  var_group = {
+        "variables": {
+          "SEMGREP_APP_TOKEN": {
+            "value": semgrep_token
+          }
+        },
+        "type": "Vsts",
+        "name": SEMGREP_VARIABLE_GROUP_NAME,
+        "description": SEMGREP_VARIABLE_GROUP_NAME,
+        "id": var_id
+      }
+
+  var_group_as_array = [
+     {
+        "variables": {
+          "SEMGREP_APP_TOKEN": {
+            "value": semgrep_token
+          }
+        },
+        "type": "Vsts",
+        "name": SEMGREP_VARIABLE_GROUP_NAME,
+        "description": SEMGREP_VARIABLE_GROUP_NAME,
+        "id": var_id
+      }
+  ]
+
+  # Add a new element
+  if classic_pipeline_config.get('variableGroups') is None:
+    classic_pipeline_config['variableGroups'] = var_group_as_array
+  else:
+    classic_pipeline_config['variableGroups'].append(var_group)
+  
+  # Send the API request
+  headers_with_content = get_headers_with_content()
+  url = f'https://dev.azure.com/{org}/{definition_id}/_apis/build/Definitions/{pipeline_id}?api-version=7.0'
+  response = requests.put(url, headers=headers_with_content, data=json.dumps(classic_pipeline_config))
+  logging.debug('This is the response from the API call to update dependency order')
+  logging.debug(" *********** ")
+  logging.debug(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
+  logging.debug(" *********** ")
+
 ## START PROCESS
 # Read ADO personal access token from Environment Variable
 try:  
@@ -205,5 +317,5 @@ except KeyError:
     logging.error("Please set the environment variable ado_token") 
     sys.exit(1)
 
-add_semgrep_task_to_classic_pipeline_config(org, project)
+classic_pipeline_config = add_semgrep_task_to_classic_pipeline_config(org, project)
 update_dependency_order(org, project)
