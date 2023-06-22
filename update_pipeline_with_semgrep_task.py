@@ -91,29 +91,31 @@ def add_semgrep_task_to_classic_pipeline_config(org, project):
     var_id = get_var_group_id(org, project)
 
     for pipeline in data['value']:
-      pipeline_id = pipeline['id']
-      pipeline_name = pipeline['name']
-      print("Updating pipeline: " + pipeline_name)
-      project_item = pipeline['project']
-      definition_id = project_item['id']
-      queue_id = pipeline['queue']['id']
-      url = f'https://dev.azure.com/{org}/{definition_id}/_apis/build/Definitions/{pipeline_id}'
-      response = requests.get(url, headers=headers)
-      classic_pipeline_config = response.json()
-      #show_task_group_info(org, project)
-      if (check_existance_semgrep_task(classic_pipeline_config) == False):
-        add_semgrep_task(org, classic_pipeline_config, definition_id, pipeline_id, queue_id)
-      else:
-         print("Semgrep task group: " + SEMGREP_TASK_GROUP_NAME + " already exists for pipeline: " + pipeline_name)
+      try:
+        pipeline_id = pipeline['id']
+        pipeline_name = pipeline['name']
+        print("Updating pipeline: " + pipeline_name)
+        project_item = pipeline['project']
+        definition_id = project_item['id']
+        queue_id = pipeline['queue']['id']
+        url = f'https://dev.azure.com/{org}/{definition_id}/_apis/build/Definitions/{pipeline_id}'
+        response = requests.get(url, headers=headers)
+        classic_pipeline_config = response.json()
+        #show_task_group_info(org, project)
+        if (check_existance_semgrep_task(classic_pipeline_config) == False):
+          add_semgrep_task(org, classic_pipeline_config, definition_id, pipeline_id, queue_id)
+        else:
+          print("Semgrep task group: " + SEMGREP_TASK_GROUP_NAME + " already exists for pipeline: " + pipeline_name)
 
-      ## TODO: check if variableGroups already exists but no Semgrep_Variables and get SEMGREP_APP_TOKEN AND var_id
+        ## TODO: check if variableGroups already exists but no Semgrep_Variables and get SEMGREP_APP_TOKEN AND var_id
 
-      if (check_existance_semgrep_variable(classic_pipeline_config) == False):
-         print("Addding Semgrep variable group: " + SEMGREP_VARIABLE_GROUP_NAME + " for pipeline: " + pipeline_name)
-         add_semgrep_variable(org, classic_pipeline_config, definition_id, pipeline_id, semgrep_token, var_id)
-      else:
-         print("Semgrep variable group: " + SEMGREP_VARIABLE_GROUP_NAME + " already exists for pipeline: " + pipeline_name)   
-
+        if (check_existance_semgrep_variable(classic_pipeline_config) == False):
+          print("Addding Semgrep variable group: " + SEMGREP_VARIABLE_GROUP_NAME + " for pipeline: " + pipeline_name)
+          add_semgrep_variable(org, classic_pipeline_config, definition_id, pipeline_id, semgrep_token, var_id)
+        else:
+          print("Semgrep variable group: " + SEMGREP_VARIABLE_GROUP_NAME + " already exists for pipeline: " + pipeline_name)   
+      except:
+        continue
 # check if semgrep variable already exists in the pipeline
 def check_existance_semgrep_task(classic_pipeline_config):
   for phase in classic_pipeline_config['process']['phases']:
@@ -230,17 +232,19 @@ def update_dependency_order(org, project):
     data = response.json() 
 
     for item in data['value']:
-      pipeline_id = item['id']
-      pipeline_name = item['name']
-      print("Setting semgrep dependency for pipeline: " + pipeline_name)
-      project_item = item['project']
-      definition_id = project_item['id']
-      url = f'https://dev.azure.com/{org}/{definition_id}/_apis/build/Definitions/{pipeline_id}'
-      response = requests.get(url, headers=headers)
-      classic_pipeline_config = response.json()
-      refName = classic_pipeline_config['process']['phases'][0]['refName']
-      set_order(org, definition_id, pipeline_id, classic_pipeline_config, refName)
-
+      try:
+        pipeline_id = item['id']
+        pipeline_name = item['name']
+        print("Setting semgrep dependency for pipeline: " + pipeline_name)
+        project_item = item['project']
+        definition_id = project_item['id']
+        url = f'https://dev.azure.com/{org}/{definition_id}/_apis/build/Definitions/{pipeline_id}'
+        response = requests.get(url, headers=headers)
+        classic_pipeline_config = response.json()
+        refName = classic_pipeline_config['process']['phases'][0]['refName']
+        set_order(org, definition_id, pipeline_id, classic_pipeline_config, refName)
+      except:
+        continue
 
 def set_order(org, definition_id, pipeline_id, classic_pipeline_config, refName):
 
