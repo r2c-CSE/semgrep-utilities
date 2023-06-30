@@ -2,7 +2,7 @@ import requests
 import sys
 import os
 
-URL_DEFECT_DOJO = "http://0.0.0.0:8080"   
+URL_DEFECT_DOJO = "http://127.0.0.1:8080"   
 
 def uploadToDefectDojo(filename, is_new_import):
     multipart_form_data = {
