@@ -2,9 +2,9 @@ import requests
 import sys
 import os
 
-URL_DEFECT_DOJO = "http://127.0.0.1:8080"   
+URL_DEFECT_DOJO = "http://localhost:8080"   
 
-def uploadToDefectDojo(filename, is_new_import):
+def uploadToDefectDojo(filename, is_new_import, token):
     multipart_form_data = {
         'file': (filename, open(filename, 'rb')),
         'scan_type': (None, 'Semgrep JSON Report'),
@@ -17,7 +17,7 @@ def uploadToDefectDojo(filename, is_new_import):
         URL_DEFECT_DOJO + uri,
         files=multipart_form_data,
         headers={
-            'Authorization': 'Token ' + DEFECT_DOJO_API_TOKEN,
+            'Authorization': 'Token ' + token,
         }
     )
     if r.status_code != 200:
@@ -28,8 +28,8 @@ def uploadToDefectDojo(filename, is_new_import):
 
 if __name__ == "__main__":
     try:
-        DEFECT_DOJO_API_TOKEN = os.getenv("DEFECT_DOJO_API_TOKEN")
+        token = os.getenv("DEFECT_DOJO_API_TOKEN")
     except KeyError: 
         print("Please set the environment variable DEFECT_DOJO_API_TOKEN") 
         sys.exit(1)
-    uploadToDefectDojo("report.json", False)
+    uploadToDefectDojo("report.json", False, token)
