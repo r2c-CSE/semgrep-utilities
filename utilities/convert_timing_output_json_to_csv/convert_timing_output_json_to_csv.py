@@ -22,7 +22,7 @@ def convert_timing_output_json_to_csv():
     writer_rules = csv.writer(output_file_rules)
     writer_rules.writerow(["rule", "rule_time"])
 
-    input_file = open(current_path + relative_path  + "/input/" + "d-v1.time.json", "r")
+    input_file = open(current_path + relative_path  + "/input/" + "timing.json", "r")
     content = json.loads(input_file.read())
     for file in content['time']['targets']:
         writer_paths.writerow([file['path'],file['run_time']])
