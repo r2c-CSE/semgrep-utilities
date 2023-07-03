@@ -16,17 +16,13 @@ spec:
           mkdir /tmp/repo && cd /tmp/repo &&
           echo "Checking out $SEMGREP_REPO_NAME" && 
           HOME=/secrets git clone --depth=1 $SEMGREP_REPO_URL . && 
-          semgrep ci 
-          --timeout 3 --interfile-timeout 180 
-          --disable-version-check --metrics=off --no-suppress-errors
-          --verbose ||
-          true
+          semgrep ci --oss-only
       env:
         - name: SEMGREP_REPO_NAME
-          value: chsarp-basic-example
+          value: chess-game
         - name: SEMGREP_REPO_URL
-          value: https://gitlab.com/r2c-cse/chsarp-basic-example.git
+          value: https://gitlab.com/r2c-cse/Chess.git
         - name: SEMGREP_BRANCH
           value: main
         - name: SEMGREP_APP_TOKEN
-          value: 'xxxx'                                                                                                                            
+          value: 'XXXXX'                                                                                                                            
