@@ -1,44 +1,45 @@
 version: 2.1
 jobs:
-  semgrep-scan:
-    parameters:
-      default_branch:
-        type: string
-        default: main
-    environment:
-      # Uncomment the following line to scan changed 
-      # files in PRs or MRs (diff-aware scanning): 
-      #- export SEMGREP_BASELINE_REF = "origin/main"
-      #- git fetch origin "+refs/heads/*:refs/remotes/origin/*"
-      SEMGREP_BASELINE_REF: << parameters.default_branch >>
-
-      # Troubleshooting:
-
-      # Uncomment the following lines if Semgrep Cloud Platform > Findings Page does not create links
-      # to the code that generated a finding or if you are not receiving PR or MR comments.
-      # SEMGREP_REPO_NAME: '$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME'
-      # SEMGREP_REPO_URL: << pipeline.project.git_url >>
-      # SEMGREP_BRANCH: << pipeline.git.branch >>
-
+  semgrep-full-scan:
     docker:
       - image: returntocorp/semgrep
     steps:
       - checkout
-
-      # Uncomment the following lines if Semgrep Cloud Platform > Findings Page does not create links
-      # to the code that generated a finding or if you are not receiving PR or MR comments.
-      # - run:
-      #     name: "Manually set environment variables"
-      #     command: |
-      #         echo 'export SEMGREP_COMMIT=$CIRCLE_SHA1' >> $BASH_ENV
-      #         echo 'export SEMGREP_PR_ID=${CIRCLE_PULL_REQUEST##*/}' >> $BASH_ENV
-      #         echo 'export SEMGREP_JOB_URL=$CIRCLE_BUILD_URL' >> $BASH_ENV
-      - run:
-          name: "Semgrep scan"
-          command: semgrep ci
+      - run: 
+          name: "Semgrep full scan"
+          command: |
+            echo "This is a semgrep full scan"
+            semgrep ci
+  semgrep-pr-scan:
+    parameters:
+      default_branch:
+        type: string
+        default: master
+    environment:
+      SEMGREP_BASELINE_REF: << parameters.default_branch >>
+    docker:
+      - image: returntocorp/semgrep
+    steps:
+      - checkout
+      - run: 
+          name: "Semgrep pull request scan"
+          command: |
+            echo "This is a pull request semgrep scan"
+            git fetch origin "+refs/heads/*:refs/remotes/origin/*"
+            semgrep ci
 workflows:
-  main:
+  version: 2
+  scan:
     jobs:
-      - semgrep-scan:
+      - semgrep-full-scan:
+          filters:
+            branches:
+              only: master
+          context:
+            - dev
+      - semgrep-pr-scan:
+          filters:
+            branches:
+              ignore: master          
           context:
             - dev
