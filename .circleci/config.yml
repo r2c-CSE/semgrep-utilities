@@ -14,7 +14,7 @@ jobs:
     parameters:
       default_branch:
         type: string
-        default: master
+        default: main
     environment:
       SEMGREP_BASELINE_REF: << parameters.default_branch >>
     docker:
@@ -34,12 +34,12 @@ workflows:
       - semgrep-full-scan:
           filters:
             branches:
-              only: master
+              only: main
           context:
             - dev
       - semgrep-pr-scan:
           filters:
             branches:
-              ignore: master          
+              ignore: main          
           context:
             - dev
