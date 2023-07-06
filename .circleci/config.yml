@@ -27,13 +27,10 @@ jobs:
             echo "This is a pull request semgrep scan"
             echo "SEMGREP_GHA_MIN_FETCH_DEPTH=${SEMGREP_GHA_MIN_FETCH_DEPTH}"
             git fetch origin "+refs/heads/*:refs/remotes/origin/*"
-            echo "git branch -a"
-            git branch -a
-            echo "git diff"
-            git diff 
-            echo "git diff --cached --name-status --no-ext-diff -z --diff-filter=ACDMRTUXB --ignore-submodules --relative origin/main --merge-base"
-            git diff --cached --name-status --no-ext-diff -z --diff-filter=ACDMRTUXB --ignore-submodules --relative origin/main --merge-base
-            semgrep ci --baseline-commit main
+            echo "Current Branch: $CIRCLE_BRANCH"
+            mergesha=$(git merge-base main $CIRCLE_BRANCH)
+            echo "Merge-Base: $mergesha"
+            semgrep ci --baseline-commit $mergesha
 workflows:
   version: 2
   scan:
