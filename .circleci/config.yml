@@ -27,7 +27,7 @@ jobs:
             echo "This is a pull request semgrep scan"
             echo "SEMGREP_GHA_MIN_FETCH_DEPTH=${SEMGREP_GHA_MIN_FETCH_DEPTH}"
             git fetch origin "+refs/heads/*:refs/remotes/origin/*"
-            semgrep ci
+            semgrep ci --baseline-commit=$(git merge-base main HEAD)
 workflows:
   version: 2
   scan:
