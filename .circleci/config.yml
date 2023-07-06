@@ -29,7 +29,7 @@ jobs:
             echo "Current Branch: $CIRCLE_BRANCH"
             mergesha=$(git merge-base main $CIRCLE_BRANCH)
             echo "Merge-Base: $mergesha"
-            semgrep ci --baseline-commit $mergesha
+            semgrep ci --baseline-commit $mergesha --debug
 workflows:
   version: 2
   scan:
