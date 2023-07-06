@@ -25,9 +25,8 @@ jobs:
           name: "Semgrep pull request scan"
           command: |
             echo "This is a pull request semgrep scan"
-            git fetch origin --force --update-head-ok --depth 1024 main:main
-            git checkout $(git rev-parse HEAD)
-            semgrep ci --baseline-commit=$(git merge-base main HEAD)
+            git fetch origin "+refs/heads/*:refs/remotes/origin/*"
+            semgrep ci
 workflows:
   version: 2
   scan:
