@@ -25,8 +25,12 @@ jobs:
           name: "Semgrep pull request scan"
           command: |
             echo "This is a pull request semgrep scan"
-            git fetch origin "+refs/heads/*:refs/remotes/origin/*" --depth 1000 
-            semgrep ci --baseline-commit=$(git merge-base main HEAD)
+            git fetch origin "+refs/heads/*:refs/remotes/origin/*"
+            echo "Current Branch: $CIRCLE_BRANCH"
+            MERGE_SHA=$(git merge-base main $CIRCLE_BRANCH)
+            echo "Merge-Base: $MERGE_SHA"
+            echo "Running: semgrep ci --baseline-commit $MERGE_SHA"
+            semgrep ci --baseline-commit $MERGE_SHA
 workflows:
   version: 2
   scan:
