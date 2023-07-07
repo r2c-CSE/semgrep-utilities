@@ -21,15 +21,22 @@ The scripts does:
 
 ## Kubernetes pod example
 It is a Kubernetes pod that can launch semgrep scans.
-As requierement:
+As requirements:
 * Install minikube
 * Start minikube:
 ```
 minikube start
 ```
-* Deploy the pod:
+
+* Add a valid Semgrep token in the pod configuration: ./utilities/kubernetes/semgrep-pod.yml
+
+* Deploy the pod (run the semgrep scan):
 ```
-kubectl apply -f semgrep-pod.yml
+kubectl apply -f ./utilities/kubernetes/semgrep-pod.yml
+```
+* To see the execution, write:
+```
+kubectl logs semgrep
 ```
 
 ## Json-Csv converter
