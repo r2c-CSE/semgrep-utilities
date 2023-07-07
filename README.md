@@ -1,7 +1,7 @@
 # Semgrep utilities
 
-It is a non-official but helpful repository with Semgrep utilities such as: API examples, integration, scripts to speed up onboarding process, common configuration.
-If you have something useful to share, feel free to collaborate!
+It is a non-official but helpful repository with Semgrep utilities such as API examples, integration, scripts to speed up the onboarding process, and standard configuration.
+If you have something valuable to share, feel free to collaborate!
 
 ## CI utilities
 It is the category for ci utilities.
@@ -11,15 +11,15 @@ It is the category for ci utilities.
 This utility helps to set up Semgrep Scans in Azure classic pipelines.
 
 Requirements:
-* In your system, create environment variable ADO_TOKEN with a valid Azure DevOps API Token.
+* Create your system's environment variable `ADO_TOKEN` with a valid Azure DevOps API Token.
 ```
 export ADO_TOKEN=xxxxxx
 ```
 * Follow steps from the [Azure Classic pipelines presentation:](https://docs.google.com/presentation/d/1PIjNss8Zy9413v99-5udNxycJFEoCz3JFRMbf1OY344/edit?usp=sharing)
-    * Create Semgrep task group at project level. It must be named as Semgrep-Task-Group
-    * Create Semgrep variables at project level. It must be named as Semgrep_Variables.
-    * Modify script semgrep-ci/azure/update_pipeline_with_semgrep_task.py adding org (organization name) and project (project name). Constants section.
-    * Get Task Group ID and add to the python script too.
+    * Create a Semgrep task group at the project level. It must be named as Semgrep-Task-Group
+    * Create Semgrep variables at the project level. It must be named as Semgrep_Variables.
+    * Modify script `semgrep-ci/azure/update_pipeline_with_semgrep_task.py` by adding org (organisation name) and project (project name)—constants section.
+    * Get Task Group ID and add it to the Python script too.
 * run script:
 ```
 python3 semgrep-ci/azure/update_pipeline_with_semgrep_task.py
@@ -31,7 +31,7 @@ It is the category for integration utilities.
 
 ### Utility to integrate Semgrep results in DefectDojo
 
-[DefectDojo](https://www.defectdojo.com/) is a well know tool to manage security vulnerabilities.
+[DefectDojo](https://www.defectdojo.com/) is a well-known tool for managing security vulnerabilities.
 This utility dumps security findings detected by semgrep to DefectDojo.
 
 Steps:
@@ -40,13 +40,16 @@ Steps:
 export DEFECT_DOJO_API_TOKEN=xxxxxx
 ```
 * In DefectDojo:
-    * create your product (a product is the DefectDojo's concept for project).
-    * For that DefectDojo product create a engagement called "semgrep".
+    * Create your product (a product is DefectDojo's concept for a project).
+    * For that DefectDojo product, create an engagement called "semgrep".
 * Run a semgrep scan with flags --json --output report.json to generate a json report.
 * Run script
 ```
 python3 integrations/defectdojo/import_semgrep_to_defect_dojo.py --host DOJO_URL --product PRODUCT_NAME --engagement ENGAGEMENT_NAME --report REPORT_FILE 
 ```
+Where:
+* `DOJO_URL` is the URL where DefectDojo is installed.
+* `REPORT_FILE` is the Semgrep report path
 
 ## General utilities
 It is the category for general utilities.
@@ -60,7 +63,7 @@ How to run:
 ```
 python3 utilities/api/python_client_semgrep_api.py 
 ```
-The scripts does:
+The script does the following:
 * Get your current deployment
 * Get your projects
 * Dump a Json report for each project filtering by High Severity and High-Medium Confidence.
@@ -91,13 +94,13 @@ kubectl logs semgrep
 Utility to convert Semgrep JSON output (--json --time --output timing.json) to CSV. Useful to verify time consumption per file and rule.
 
 Steps:
-* Generate a json report when running semgrep adding the following flags: --json --time --output timing.json
+* Generate a json report when running semgrep, adding the following flags: --json --time --output timing.json
 * Copy timing.json report to folder utilities/input
 * Run script:
 ```
 python3 utilities/convert_timing_output_json_to_csv/convert_timing_output_json_to_csv.py
 ```
-**_NOTE:_** The input to the script (the semgrep output) should be named timing.json or you can change it in the python script.
+**_NOTE:_** The input to the script (the semgrep output) should be named timing.json, or you can change it in the Python script.
 
 Example input (semgrep output):
 ```
