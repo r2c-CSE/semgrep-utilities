@@ -3,7 +3,7 @@ import sys
 import os
 
 
-def uploadToDefectDojo(is_new_import, token, url, product_name, filename, engagement_name):
+def uploadToDefectDojo(is_new_import, token, url, product_name, engagement_name, filename):
     multipart_form_data = {
         'file': (filename, open(filename, 'rb')),
         'scan_type': (None, 'Semgrep JSON Report'),
@@ -36,7 +36,7 @@ if __name__ == "__main__":
         product_name = sys.argv[4]
         engagement_name = sys.argv[6]
         report = sys.argv[8]
-        uploadToDefectDojo(False, token, url, product_name, report, engagement_name)
+        uploadToDefectDojo(False, token, url, product_name, engagement_name, report)
     else:
         print(
             'Usage: python3 import_semgrep_to_defect_dojo.py --host DOJO_URL --product PRODUCT_NAME --engagement ENGAGEMENT_NAME --report REPORT_FILE')
