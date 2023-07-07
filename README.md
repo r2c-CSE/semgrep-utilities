@@ -3,13 +3,30 @@
 It is a non-official but helpful repository with Semgrep utilities such as: API examples, integration, scripts to speed up onboarding process, common configuration.
 If you have something useful to share, feel free to collaborate!
 
-## Integration utilities
-It is the category for integration utilities.
+## CI utilities
+It is the category for ci utilities.
 
 ### Utility to speed up onboarding for Azure classic pipelines 
 
-## CI utilities
-It is the category for ci utilities.
+This utility helps to set up Semgrep Scans in Azure classic pipelines.
+
+Requirements:
+* In your system, create environment variable ADO_TOKEN with a valid Azure DevOps API Token.
+```
+export ADO_TOKEN=xxxxxx
+```
+* Follow steps from the [Azure Classic pipelines presentation:](https://docs.google.com/presentation/d/1PIjNss8Zy9413v99-5udNxycJFEoCz3JFRMbf1OY344/edit?usp=sharing)
+    * Create Semgrep task group at project level. It must be named as Semgrep-Task-Group
+    * Create Semgrep variables at project level. It must be named as Semgrep_Variables.
+    * Modify script semgrep-ci/azure/update_pipeline_with_semgrep_task.py adding org (organization name) and project (project name). Constants section.
+    * Get Task Group ID and add to the python script too.
+* run script:
+```
+python3 semgrep-ci/azure/update_pipeline_with_semgrep_task.py
+```
+
+## Integration utilities
+It is the category for integration utilities.
 
 ### Utility to integrate Semgrep results in DefectDojo
 
