@@ -24,11 +24,17 @@ export ADO_TOKEN=xxxxxx
 ```
 python3 semgrep-ci/azure/update_pipeline_with_semgrep_task.py
 ```
+### Utility to speed up onboarding for Bitbucket pipelines (coming soon)
 
 ## Integration utilities
 It is the category for integration utilities.
 
 ### Utility to integrate Semgrep results in DefectDojo
+
+[DefectDojo](https://www.defectdojo.com/) is a well know tool to manage security vulnerabilities.
+This utility dumps security findings detected by semgrep to DefectDojo.
+
+
 
 ## General utilities
 It is the category for general utilities.
