@@ -1,12 +1,22 @@
-# semgrep utilities
+# Semgrep utilities
+
+It is a non-official but helpful repository with Semgrep utilities such as: API examples, integration, scripts to speed up onboarding process, common configuration.
+If you have something useful to share, feel free to collaborate!
 
 ## Semgrep API with Python
-It will be improved with more examples. 
-How to execute:
-```
-python3 api.py
-```
+ 
+How to run:
+* Edit file: utilities/api/python_client_semgrep_api.py adding a valid Semgrep token.
+* Execute:
 
+```
+python3 utilities/api/python_client_semgrep_api.py 
+```
+The scripts does:
+* Get your current deployment
+* Get your projects
+* Dump a Json report for each project filtering by High Severity and High-Medium Confidence.
+  
 **_NOTE:_** Take into account the SEMGREP_APP_TOKEN must have API permissions.
 
 ## Kubernetes pod example
