@@ -35,14 +35,14 @@ It is the category for integration utilities.
 This utility dumps security findings detected by semgrep to DefectDojo.
 
 Steps:
-* In your system, declare environment variable DEFECT_DOJO_API_TOKEN
+* In your system, declare environment variable `DEFECT_DOJO_API_TOKEN`
 ```
 export DEFECT_DOJO_API_TOKEN=xxxxxx
 ```
 * In DefectDojo:
     * Create your product (a product is DefectDojo's concept for a project).
-    * For that DefectDojo product, create an engagement called "semgrep".
-* Run a semgrep scan with flags --json --output report.json to generate a json report.
+    * For that DefectDojo product, create an engagement called `semgrep`.
+* Run a semgrep scan with flags `--json --output report.json` to generate a json report.
 * Run script
 ```
 python3 integrations/defectdojo/import_semgrep_to_defect_dojo.py --host DOJO_URL --product PRODUCT_NAME --engagement ENGAGEMENT_NAME --report REPORT_FILE 
@@ -68,7 +68,7 @@ The script does the following:
 * Get your projects
 * Dump a Json report for each project filtering by High Severity and High-Medium Confidence.
   
-**_NOTE:_** Take into account the SEMGREP_APP_TOKEN must have API permissions.
+**_NOTE:_** Take into account the `SEMGREP_APP_TOKEN` must have API permissions.
 
 ### Kubernetes pod example
 It is a Kubernetes pod that can launch semgrep scans.
@@ -79,7 +79,7 @@ As requirements:
 minikube start
 ```
 
-* Add a valid Semgrep token in the pod configuration: ./utilities/kubernetes/semgrep-pod.yml
+* Add a valid Semgrep token in the pod configuration: `./utilities/kubernetes/semgrep-pod.yml`
 
 * Deploy the pod (run the semgrep scan):
 ```
@@ -91,10 +91,10 @@ kubectl logs semgrep
 ```
 
 ### json-csv timing converter
-Utility to convert Semgrep JSON output (--json --time --output timing.json) to CSV. Useful to verify time consumption per file and rule.
+Utility to convert Semgrep JSON output (`--json --time --output timing.json`) to CSV. Useful to verify time consumption per file and rule.
 
 Steps:
-* Generate a json report when running semgrep, adding the following flags: --json --time --output timing.json
+* Generate a json report when running semgrep, adding the following flags: `--json --time --output timing.json`
 * Copy timing.json report to folder utilities/input
 * Run script:
 ```
