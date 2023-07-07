@@ -34,7 +34,19 @@ It is the category for integration utilities.
 [DefectDojo](https://www.defectdojo.com/) is a well know tool to manage security vulnerabilities.
 This utility dumps security findings detected by semgrep to DefectDojo.
 
-
+Steps:
+* In your system, declare environment variable DEFECT_DOJO_API_TOKEN
+```
+export DEFECT_DOJO_API_TOKEN=xxxxxx
+```
+* In DefectDojo:
+    * create your product (a product is the DefectDojo's concept for project).
+    * For that DefectDojo product create a engagement called "semgrep".
+* Run a semgrep scan with flags --json --output report.json to generate a json report.
+* Run script
+```
+python3 integrations/defectdojo/import_semgrep_to_defect_dojo.py --host DOJO_URL --product PRODUCT_NAME --engagement ENGAGEMENT_NAME --report REPORT_FILE 
+```
 
 ## General utilities
 It is the category for general utilities.
