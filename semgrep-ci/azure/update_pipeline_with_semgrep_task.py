@@ -1,32 +1,4 @@
-# automation of adding Semgrep scan step to existing ADO classic pipelines
-# find the name of the classic build pipeline per repo? 
-#   Is this standard or different? 
-#   do they have single pipeline per repo?
-# once we have the name of the pipeline, we can get the definitionID of the pipeline
-#    GET https://dev.azure.com/{organization}/{project}/_apis/build/definitions/{definitionId}?api-version=7.0
-#   https://learn.microsoft.com/en-us/rest/api/azure/devops/build/definitions/get?view=azure-devops-rest-7.0
-# then we update the pipeline with the new step (add agent and taskgroup)
-#   PUT https://dev.azure.com/{organization}/{project}/_apis/build/definitions/{definitionId}?api-version=7.0
-#   https://learn.microsoft.com/en-us/rest/api/azure/devops/build/definitions/update?view=azure-devops-rest-7.0
-
-# Psuedo Code
-# (1) get the list of all pipelines in the org
-# (2) get the "build" pipeline from list of all pipelines
-# (3) get the definitionID of the "build" pipeline
-# (4) once we get the definitionID, we can get the "build" pipeline config
-# (5) now, update the "build" pipeline config by adding a new "phase" with semgrep config ['process'][]'phases']. config for phase is in classic_config_with_semgrep.json
-# (6) once we update, we reread the the "build" pipeline config to get the refName for // can we get this from response object?
-
-
-# What is the plan for the call 
-#  (1) lets create a manual pipeline with semgrep as a task group (lets do this in nitin's org)
-#  (2) use the get_classic_pipeline_config(org, project, repo_name) function to get the pipeline config & see how the task is defined
-#  (3) then create a new function to update the pipeline config with the new task group (Semgrep) update_classic_pipeline_semgrep_config(org, project, repo_name)
-
-
-# The following steps are done once per workspace 
-# (1) Add SEMGREP_APP_TOKEN as a workspace variable:  
-# (2) Generate & Add PAT as a workspace variable: https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows 
+# Automation of adding Semgrep scan step to existing ADO classic pipelines
 
 import logging
 import requests
