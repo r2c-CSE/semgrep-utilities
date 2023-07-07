@@ -3,7 +3,20 @@
 It is a non-official but helpful repository with Semgrep utilities such as: API examples, integration, scripts to speed up onboarding process, common configuration.
 If you have something useful to share, feel free to collaborate!
 
-## Semgrep API with Python
+## Integration utilities
+It is the category for integration utilities.
+
+### Utility to speed up onboarding for Azure classic pipelines 
+
+## CI utilities
+It is the category for ci utilities.
+
+### Utility to integrate Semgrep results in DefectDojo
+
+## General utilities
+It is the category for general utilities.
+
+### Semgrep API with Python
  
 How to run:
 * Edit file: utilities/api/python_client_semgrep_api.py adding a valid Semgrep token.
@@ -19,7 +32,7 @@ The scripts does:
   
 **_NOTE:_** Take into account the SEMGREP_APP_TOKEN must have API permissions.
 
-## Kubernetes pod example
+### Kubernetes pod example
 It is a Kubernetes pod that can launch semgrep scans.
 As requirements:
 * Install minikube
@@ -39,7 +52,7 @@ kubectl apply -f ./utilities/kubernetes/semgrep-pod.yml
 kubectl logs semgrep
 ```
 
-## Json-Csv timing converter
+### json-csv timing converter
 Utility to convert Semgrep JSON output (--json --time --output timing.json) to CSV. Useful to verify time consumption per file and rule.
 
 Steps:
@@ -69,4 +82,6 @@ bash.curl.security.curl-eval.curl-eval,0.045
 bash.curl.security.curl-pipe-bash.curl-pipe-bash,0.033
 bash.lang.security.ifs-tampering.ifs-tampering,0.044
 ````
+
+
 
