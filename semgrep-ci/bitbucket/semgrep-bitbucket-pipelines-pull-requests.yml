@@ -1,0 +1,15 @@
+image: atlassian/default-image:latest
+
+pipelines:
+  pull-requests:
+    '**':
+      - step:
+          name: 'Run Semgrep scan with current branch'
+          image: returntocorp/semgrep
+          script:
+            - export SEMGREP_APP_TOKEN=$SEMGREP_APP_TOKEN
+            - export SEMGREP_APP_URL="https://semgrep.dev"
+            - export SEMGREP_BASELINE_REF="origin/master"
+            - git fetch origin "+refs/heads/*:refs/remotes/origin/*"
+            - export BITBUCKET_TOKEN=$PAT
+            - semgrep ci

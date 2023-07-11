@@ -1,0 +1,9 @@
+pipelines:
+    branches:
+      master:
+      - step:
+          name: 'Run Semgrep scan with current branch'
+          image: returntocorp/semgrep
+          script:
+            - export SEMGREP_APP_TOKEN=$SEMGREP_APP_TOKEN
+            - semgrep ci
