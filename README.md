@@ -24,7 +24,24 @@ export ADO_TOKEN=xxxxxx
 ```
 python3 semgrep-ci/azure/update_pipeline_with_semgrep_task.py
 ```
-### Utility to speed up onboarding for Bitbucket pipelines (coming soon)
+### Utility to speed up onboarding for Bitbucket pipelines
+
+This utility helps to set up Semgrep Scans in Bitbucket pipelines.
+
+Requirements:
+* Create your system's environment variable `BITBUCKET_TOKEN` with a valid Bitbucket Token.
+```
+export BITBUCKET_TOKEN=xxxxxx
+```
+* Edit python script `semgrep-ci/bitbucket/update_pipeline_with_semgrep_scan.py`
+    * Indicating workspace name
+    * Indicating repository name
+    * Indicating the file (usually bitbucket-pipelines.yml) to update.
+      
+* run script:
+```
+python3 semgrep-ci/bitbucket/update_pipeline_with_semgrep_scan.py
+```
 
 ## Integration utilities
 It is the category for integration utilities.
