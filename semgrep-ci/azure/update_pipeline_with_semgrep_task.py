@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO)
 # Define Org, project, SEMGREP_TASK_GROUP_ID
 org = "sebasrevuelta"
 project = "Chess"
-SEMGREP_TASK_GROUP_ID = "6b81d9ba-52f8-431b-9d99-08054e2c4258"
+SEMGREP_TASK_GROUP_ID = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
 SEMGREP_TASK_GROUP_NAME = "Semgrep-Task-Group"
 SEMGREP_VARIABLE_GROUP_NAME = "Semgrep_Variables"
 
