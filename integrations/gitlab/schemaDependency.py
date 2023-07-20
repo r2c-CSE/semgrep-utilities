@@ -88,7 +88,7 @@ def modify_schema(string_to_add, new_type_value, description):
     add_value_to_required_key(schema, string_to_add, new_type_value, description)
 
     # Save the modified schema to a file
-    with open('gitlab.json', 'w') as f:
+    with open('gl-sast-report.json', 'w') as f:
         json.dump(schema, f, indent=4)  # pretty print JSON
 
 import argparse
