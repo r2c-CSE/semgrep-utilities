@@ -1,10 +1,10 @@
 import json
+import sys
 
 
-
-def conversion_semgrep_to_gitlab(data):
+def conversion_semgrep_to_gitlab(report_semgrep, data):
     print("Populating data from Semgrep JSON report")
-    with open('integrations/gitlab/report-ssc.json', 'r') as file_semgrep:
+    with open(report_semgrep, 'r') as file_semgrep:
         data_semgrep = json.load(file_semgrep)
         for vuln in data_semgrep['results']:
             new_vuln = {"id": vuln.get('extra')['fingerprint'],
@@ -58,12 +58,15 @@ def get_new_scan_info(data):
     }
     return new_scan_info
 
+if __name__ == "__main__":
 
-print("Starting conversion process from Semgrep JSON to GitLab JSON")
-data = {
-    "version": "15.0.0",
-    "vulnerabilities": [],
-    "dependency_files": [],
-    "scan": {}
-}
-conversion_semgrep_to_gitlab(data)
+    if len(sys.argv) == 2:
+        report_semgrep = sys.argv[1]
+    print("Starting conversion process from Semgrep JSON to GitLab JSON")
+    data = {
+        "version": "15.0.0",
+        "vulnerabilities": [],
+        "dependency_files": [],
+        "scan": {}
+    }
+    conversion_semgrep_to_gitlab(report_semgrep, data)
