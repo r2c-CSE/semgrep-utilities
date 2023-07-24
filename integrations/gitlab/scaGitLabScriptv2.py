@@ -11,8 +11,8 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                         "name": vuln['check_id'],
                         "description": vuln.get('extra')['message'],
                         "cve": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
-                        "severity": vuln.get('extra').get('metadata')['sca-severity'],
-                        "solution": vuln.get('extra').get('metadata')['sca-fix-versions'][0], ## TODO: get all solutions 
+                        "severity": to_hungarian_case(vuln.get('extra').get('metadata')['sca-severity']),
+                        "solution": "Upgrade to version 2.8.2 or above", ## TODO: get all solutions 
                         "location": {
                             "file": "pom.xml",
                             "dependency": {
@@ -107,6 +107,12 @@ def get_new_scan_info(data):
         "status": "success"
     }
     return new_scan_info
+
+def to_hungarian_case(input_string):
+    hungarian_case_words = input_string[0].upper() + input_string[1:].lower()
+    return hungarian_case_words
+
+
 
 if __name__ == "__main__":
 
