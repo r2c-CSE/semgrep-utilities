@@ -33,7 +33,7 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                         ],
                         "links": [
                             {
-                            "url": vuln.get('extra').get('metadata')['references']
+                            "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name="+vuln.get('extra').get('metadata')['sca-vuln-database-identifier']
                             }
                         ],
                         "details": {
