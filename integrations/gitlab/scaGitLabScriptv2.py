@@ -25,34 +25,23 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                         },
                         "identifiers": [
                             {
-                            "type": "gemnasium",
-                            "name": "Gemnasium-ef60b3d6-926c-472f-b24a-f585deccf8b6",
-                            "value": "ef60b3d6-926c-472f-b24a-f585deccf8b6",
-                            "url": "https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/blob/master/maven/org.apache.logging.log4j/log4j-core/CVE-2017-5645.yml"
-                            },
-                            {
                             "type": "cve",
-                            "name": "CVE-2017-5645",
-                            "value": "CVE-2017-5645",
-                            "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-5645"
-                            },
-                            {
-                            "type": "ghsa",
-                            "name": "GHSA-fxph-q3j8-mv87",
-                            "value": "GHSA-fxph-q3j8-mv87",
-                            "url": "https://github.com/advisories/GHSA-fxph-q3j8-mv87"
+                            "name": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
+                            "value": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
+                            "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name="+vuln.get('extra').get('metadata')['sca-vuln-database-identifier']
                             }
                         ],
                         "links": [
                             {
-                            "url": "http://www.openwall.com/lists/oss-security/2019/12/19/2"
+                            "url": vuln.get('extra').get('metadata')['references']
                             }
                         ],
                         "details": {
                             "vulnerable_package": {
                             "type": "text",
                             "name": "Vulnerable Package",
-                            "value": "org.apache.logging.log4j/log4j-core:2.6.1"
+                            "value": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package'] 
+                            + ":" + vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version'] 
                         }
                     }
                         
@@ -65,9 +54,9 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                         "dependencies": [
                             {
                             "package": {
-                                "name": "com.auth0/java-jwt"
+                                "name": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package'] 
                             },
-                            "version": "3.18.0"
+                            "version": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version'] 
                             }
                         ]
             }
