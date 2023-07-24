@@ -9,20 +9,18 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
         for vuln in data_semgrep['results']:
             new_vuln = {
                         "id": vuln.get('extra')['fingerprint'][0:63],
-                        ## "id": "0e8294b7f5226e2e75d8369e100cd610face57ef67bc1af625ddb250785726a7",
-                        "name": "Semgrep:" + vuln['check_id'],
+                        "name": "Semgrep: " + vuln['check_id'],
                         "description": vuln.get('extra')['message'],
                         "cve": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
                         "severity": to_hungarian_case(vuln.get('extra').get('metadata')['sca-severity']),
-                        ##"severity": "Low",
                         "solution": "Upgrade to version 2.8.2 or above", ## TODO: get all solutions 
                         "location": {
-                            "file": "pom.xml",
+                            "file": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
                             "dependency": {
                             "package": {
-                                "name": "org.apache.logging.log4j/log4j-core"
+                                "name": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package']
                             },
-                            "version": "2.6.1"
+                            "version": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version']
                             }
                         },
                         "identifiers": [
