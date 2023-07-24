@@ -12,13 +12,63 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                         "description": vuln.get('extra')['message'],
                         "cve": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
                         "severity": vuln.get('extra').get('metadata')['sca-severity'],
-                        "solution": vuln.get('extra').get('metadata')['sca-fix-versions'][0] ## TODO: get all solutions 
+                        "solution": vuln.get('extra').get('metadata')['sca-fix-versions'][0], ## TODO: get all solutions 
+                        "location": {
+                            "file": "pom.xml",
+                            "dependency": {
+                            "package": {
+                                "name": "org.apache.logging.log4j/log4j-core"
+                            },
+                            "version": "2.6.1"
+                            }
+                        },
+                        "identifiers": [
+                            {
+                            "type": "gemnasium",
+                            "name": "Gemnasium-ef60b3d6-926c-472f-b24a-f585deccf8b6",
+                            "value": "ef60b3d6-926c-472f-b24a-f585deccf8b6",
+                            "url": "https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/blob/master/maven/org.apache.logging.log4j/log4j-core/CVE-2017-5645.yml"
+                            },
+                            {
+                            "type": "cve",
+                            "name": "CVE-2017-5645",
+                            "value": "CVE-2017-5645",
+                            "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-5645"
+                            },
+                            {
+                            "type": "ghsa",
+                            "name": "GHSA-fxph-q3j8-mv87",
+                            "value": "GHSA-fxph-q3j8-mv87",
+                            "url": "https://github.com/advisories/GHSA-fxph-q3j8-mv87"
+                            }
+                        ],
+                        "links": [
+                            {
+                            "url": "http://www.openwall.com/lists/oss-security/2019/12/19/2"
+                            }
+                        ],
+                        "details": {
+                            "vulnerable_package": {
+                            "type": "text",
+                            "name": "Vulnerable Package",
+                            "value": "org.apache.logging.log4j/log4j-core:2.6.1"
                         }
+                    }
+                        
+            }
             data['vulnerabilities'].append(new_vuln)
 
         for vuln in data_semgrep['results']:
             new_file = { "path": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
-                        "package_manager": vuln.get('extra').get('sca_info').get('dependency_match').get('dependency_pattern')['ecosystem']
+                        "package_manager": vuln.get('extra').get('sca_info').get('dependency_match').get('dependency_pattern')['ecosystem'],
+                        "dependencies": [
+                            {
+                            "package": {
+                                "name": "com.auth0/java-jwt"
+                            },
+                            "version": "3.18.0"
+                            }
+                        ]
             }
             data['dependency_files'].append(new_file)
 
