@@ -1,0 +1,207 @@
+variables:
+- group: Semgrep_Variables
+
+steps:
+- checkout: self
+  clean: true
+  fetchDepth: 100000
+  persistCredentials: true
+- script: |
+    echo "Pull Request Scan from branch: $(Build.SourceBranchName)"
+    echo "Pull Request Id: $(System.PullRequest.PullRequestId)"
+    git fetch origin master:origin/master
+    python -m pip install --upgrade pip
+    pip install semgrep
+    semgrep ci --json --output /home/vsts/work/1/a/findings.json
+  env:
+    SEMGREP_PR_ID: $(System.PullRequest.PullRequestId)
+    SEMGREP_BASELINE_REF: 'origin/master'
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      # this is inline code
+      env | sort
+
+- task: PythonScript@0
+  inputs:
+    scriptSource: 'inline'
+    script: |
+      import requests
+      import os
+      import pprint
+      import json
+      import logging
+      import base64
+
+      # qq: import logging level from environment variable, default to INFO
+      loglevel = os.getenv('LOG_LEVEL', 'INFO')
+      logging.basicConfig(level=loglevel)
+      logging.debug (loglevel)
+
+
+      class Message():
+          '''Creating an Instance of a PR Comment message'''
+
+
+          def __init__(self):
+              # Get the environment variables from the pipeline
+              self.SYSTEM_COLLECTIONURI = os.getenv('SYSTEM_COLLECTIONURI')
+              self.BUILD_SOURCEVERSION = os.getenv('BUILD_SOURCEVERSION')              
+              self.SYSTEM_PULLREQUEST_SOURCEBRANCH = os.getenv('SYSTEM_PULLREQUEST_SOURCEBRANCH')
+              self.PULLREQUESTID = 0
+              self.SYSTEM_TEAMPROJECT = os.getenv('SYSTEM_TEAMPROJECT')
+              self.BUILD_REPOSITORY_ID = os.getenv('BUILD_REPOSITORY_ID')
+              self.SYSTEM_TEAMPROJECTID = os.getenv('SYSTEM_TEAMPROJECTID')
+
+              # check if the build is from a PR or not
+              if (self.SYSTEM_PULLREQUEST_SOURCEBRANCH):
+                logging.debug (f"this is a PR as SYSTEM_PULLREQUEST_SOURCEBRANCH is {self.SYSTEM_PULLREQUEST_SOURCEBRANCH}")
+                temp = self.SYSTEM_PULLREQUEST_SOURCEBRANCH
+                self.BUILD_SOURCEBRANCHNAME = temp[temp.rindex('/')+1:]
+                logging.debug (f"BUILD_SOURCEBRANCHNAME is {self.BUILD_SOURCEBRANCHNAME}")
+                self.BUILD_SOURCEBRANCH = os.getenv('SYSTEM_PULLREQUEST_SOURCEBRANCH')
+                logging.debug (f"BUILD_SOURCEBRANCH is {self.BUILD_SOURCEBRANCH}")
+              else:
+                self.BUILD_SOURCEBRANCH = os.getenv('BUILD_SOURCEBRANCH')
+                self.BUILD_SOURCEBRANCHNAME = os.getenv('BUILD_SOURCEBRANCHNAME')
+                
+              # create the URL for the PR
+              self.url_pr_id= f"{self.SYSTEM_COLLECTIONURI}{self.SYSTEM_TEAMPROJECTID}/_apis/git/repositories/" \
+                        f"{self.BUILD_REPOSITORY_ID}/pullRequests"
+              
+              self.url = f"{self.SYSTEM_COLLECTIONURI}{self.SYSTEM_TEAMPROJECTID}/_apis/git/repositories/" \
+                        f"{self.BUILD_REPOSITORY_ID}"
+              
+              self.url_link_to_repo = f"{self.SYSTEM_COLLECTIONURI}_git/{self.SYSTEM_TEAMPROJECT}"
+              self.headers = {
+                  "Content-Type": "application/json"
+              }
+          
+          
+          def find_pr_id(self): 
+              # find the Pull Request ID
+              self.PULLREQUESTID = $(System.PullRequest.PullRequestId)
+              logging.debug (f"Pull Request ID is {self.PULLREQUESTID}")
+
+              
+          def create_comment_url(self):
+              self.url = f"{self.url}/pullRequests/{self.PULLREQUESTID}" \
+                        "/threads"
+              logging.debug (f"PR Comment URL is {self.url} ")
+
+          def add(self, comment: str) -> bool:
+              ''' Add a message to Azure DevOps Pull Request'''
+              logging.debug (f"Added comment for comment : {comment}")
+              data = '{ "comments": [ { "parentCommentId": 0,"content":'+ "\"" + comment + "\"" + ', "commentType": 1}],"status": 1}'
+              params = {
+                  'api-version': '7.0',
+              }
+              pat=os.getenv('SYSTEM_ACCESSTOKEN')
+              r = requests.post(url=self.url,
+                                headers=self.headers, 
+                                params=params,
+                                data=data, 
+                                auth=('', pat),
+                              )
+
+
+              if r.status_code == 200:
+                  logging.debug (f"Added comment for comment : {comment}")
+                  return True
+                  
+              else:
+                  logging.error (f"Error in adding comment, status_code : {r.status_code}")
+                  return False
+                  
+
+
+      msg = Message()
+      msg.find_pr_id()
+      msg.create_comment_url()
+
+      # Opening findings.json
+      try:
+          f = open('/home/vsts/work/1/a/findings.json')
+          findings = json.load(f)
+      except FileNotFoundError:
+          logging.error("File findings.json not found at /home/vsts/work/1/a/findings.json")
+      except Exception as e:
+          logging.error(f"Unknown error: {e}")
+      finally:
+          f.close()
+        
+      logging.debug (f"findings['results'] is {findings['results']}")
+
+      # Iterating through the findings in findings.json file
+      for i in findings['results']:
+          logging.debug (f"finding is {i}")
+
+          # check if the rule is not ignored and rule is from the rule-board-pr-comments
+          if ((i['extra']['is_ignored'] == False) & (i['extra']['metadata']['semgrep.policy']['slug'] == "rule-board-pr-comments")):
+              msg_src_branch = msg.BUILD_SOURCEBRANCH
+              logging.debug (f"msg_src_branch is {msg_src_branch}")
+
+              msg_src_branchname = msg.BUILD_SOURCEBRANCHNAME
+              logging.debug (f"msg_src_branchname is {msg_src_branchname}")
+
+              msg_commit_id = msg.BUILD_SOURCEVERSION
+              logging.debug (f"msg_commit_id is {msg_commit_id}")
+
+              msg_summary = i['extra']['message']
+              logging.debug (f"msg_summary is {msg_summary}")
+
+              msg_file_path = i['path']
+              logging.debug (f"msg_file_path is {msg_file_path}")
+
+              msg_file_start_line =  i['start']['line']
+              logging.debug (f"msg_file_start_line is {msg_file_start_line}") 
+
+              msg_file_end_line = i['end']['line']
+              logging.debug (f"msg_file_end_line is {msg_file_end_line}") 
+
+              msg_file_start_col =  i['start']['col']
+              logging.debug (f"msg_file_start_col is {msg_file_start_col}")
+
+              msg_file_end_col = i['end']['col']
+              logging.debug (f"msg_file_end_col is {msg_file_end_col}")   
+
+              msg_shortlink = i['extra']['metadata']['shortlink']
+              logging.debug (f"msg_shortlink is {msg_shortlink}") 
+
+              msg_vuln_code = i['extra']['lines']
+              logging.debug (f"msg_vuln_code is {msg_vuln_code}") 
+
+              msg_semgrep_fingerprint = i['extra']['fingerprint']
+              logging.debug (f"msg_semgrep_fingerprint is {msg_semgrep_fingerprint}") 
+
+              msg_vuln_code_text = f"/{msg_file_path}:{msg_file_start_line}"
+              logging.debug (f"msg_vuln_code_text is {msg_vuln_code_text}")   
+
+              msg_vuln_code_url = f"{msg.url_link_to_repo }" \
+                                  f"?path=/{msg_file_path}&" \
+                                  f"version=GB{msg_src_branchname}&" \
+                                  f"line={msg_file_start_line}&" \
+                                  f"lineEnd={msg_file_end_line}&" \
+                                  f"lineStartColumn={msg_file_start_col}&" \
+                                  f"lineEndColumn={msg_file_end_col}&" \
+                                  f"lineStyle=plain&_a=contents"
+              logging.debug (f"msg_vuln_code_url is {msg_vuln_code_url}")
+
+              comment = f"Link to code- [{msg_vuln_code_text}]({msg_vuln_code_url}) \n\n" \
+                        f"Link to commit- [{msg_commit_id}]({msg.url_link_to_repo }/commit/{msg_commit_id}?ref={msg_src_branch})  \n\n" \
+                        f"Summary- {msg_summary} \n\n" \
+                        f"More details on rule- {msg_shortlink} \n\n" \
+                        f"Semgrep Finding Reference- {msg_semgrep_fingerprint} \n" 
+              result = msg.add(comment=comment)
+              if result is False:
+                  logging.error(f"Sending message failed with comment: {result}")
+        
+      # Closing file
+      f.close()                    
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    LOG_LEVEL: DEBUG
+
+  displayName: 'Python script to add pull request comment'
