@@ -80,10 +80,15 @@ def get_severity(vuln):
     return severity
 
 def get_solution(vuln):
-    solution = ""
-    for sol in vuln.get('extra').get('metadata')['sca-fix-versions']:
-        solution += str(sol)
+    sca_fix_versions = vuln.get('extra').get('metadata').get('sca-fix-versions', [])
+    
+    if not sca_fix_versions:
+        return "No known fixed versions"
+
+    solution_string = ""
+    for sol in sca_fix_versions:
         solution_string = str(sol)[1:-1].replace("'", "")
+    
     return solution_string
 
 def get_new_scan_info(data):
@@ -125,6 +130,9 @@ if __name__ == "__main__":
 
     if len(sys.argv) == 2:
         report_semgrep = sys.argv[1]
+    else:
+        report_semgrep = "report-ssc.json" # adding a default value in case it's not supplied at runtime
+
     print("Starting conversion process from Semgrep JSON to GitLab JSON")
     data = {
         "version": "15.0.0",
