@@ -21,8 +21,11 @@ def generate_html_sast(df_high: pd.DataFrame, df_med: pd.DataFrame, df_low: pd.D
     # overview_table_html = df_overview.to_html(table_id="table")
     # get the Findings table HTML from the dataframe
     high_findings_table_html = df_high.to_html(index=False, table_id="tableHigh", render_links=True)
+    num_rows_high = df_high.shape[0]
     med_findings_table_html = df_med.to_html(index=False, table_id="tableMedium", render_links=True)
+    num_rows_med = df_med.shape[0]
     low_findings_table_html = df_low.to_html(index=False, table_id="tableLow", render_links=True)
+    num_rows_low = df_low.shape[0]
     # construct the complete HTML with jQuery Data tables
     # You can disable paging or enable y scrolling on lines 20 and 21 respectively
     html = f"""
@@ -36,11 +39,11 @@ def generate_html_sast(df_high: pd.DataFrame, df_med: pd.DataFrame, df_low: pd.D
     </div>
 
     <div class="topnav">
-    <a class="active" href="#sast-high"> SAST Findings- High Severity  </a> 
+    <a class="active" href="#sast-high"> SAST Findings- High Severity ({num_rows_high})</a> 
     <a> &nbsp &nbsp &nbsp &nbsp &nbsp </a>
-    <a href="#sast-med"> Findings- SAST Medium Severity  </a>
+    <a href="#sast-med"> Findings- SAST Medium Severity ({num_rows_med}) </a>
     <a> &nbsp &nbsp &nbsp &nbsp &nbsp </a>
-    <a href="#sast-low"> Findings- SAST Low Severity  </a> 
+    <a href="#sast-low"> Findings- SAST Low Severity ({num_rows_low}) </a> 
     </div>
 
     <div class="heading">
@@ -104,34 +107,57 @@ def generate_html_sast(df_high: pd.DataFrame, df_med: pd.DataFrame, df_low: pd.D
     # return the html
     return html
 
-def process_sast_findings(df: pd.DataFrame):
+def process_sast_findings(df: pd.DataFrame, projectname, flag_report_from_api):
+    
     # Create new DF with SAST findings only
-    df_sast = df.loc[(df['check_id'].str.contains('ssc')==False)]
+    if flag_report_from_api == False:
+        df = df.loc[(df['check_id'].str.contains('ssc')==False)]
 
     # Get the list of all column names from headers
     column_headers = list(df.columns.values)
     logging.debug("The Column Header :", column_headers)
 
     # list of columns of interest to include in the report
-    interesting_columns_sast = [
-        'check_id',
-        'extra.message',
-        'path',
-        # 'finding_hyperlink',
-        'extra.severity',
-        'extra.metadata.confidence', 
-        'extra.metadata.semgrep.url',
-        # 'extra.metadata.likelihood',
-        # 'extra.metadata.impact',
-        # 'extra.metadata.owasp',
-        # 'extra.metadata.cwe', 
-        # 'extra.metadata.cwe2021-top25', 
-        # 'extra.metadata.cwe2022-top25', 
-    ]
-
-    START_ROW = 0
+    if flag_report_from_api:
+        interesting_columns_sast = [
+            'id',
+            'rule_message',
+            'location.file_path',
+            'severity',
+            'confidence'
+        ]
+    else: 
+        interesting_columns_sast = [
+            'check_id',
+            'extra.message',
+            'path',
+            # 'finding_hyperlink',
+            'extra.severity',
+            'extra.metadata.confidence', 
+            #'extra.metadata.semgrep.url',
+            # 'extra.metadata.likelihood',
+            # 'extra.metadata.impact',
+            # 'extra.metadata.owasp',
+            # 'extra.metadata.cwe', 
+            # 'extra.metadata.cwe2021-top25', 
+            # 'extra.metadata.cwe2022-top25', 
+        ]
     df_red = df[interesting_columns_sast]
-
+    
+   
+    # Create a copy of the DataFrame
+    df_red = df_red.copy()
+    # Rename columns
+    new_column_names = {'extra.severity': 'severity', 'extra.metadata.confidence': 'confidence'}
+    df_red.rename(columns=new_column_names, inplace=True)
+    # Convert content of a specific column to uppercase
+    df_red.loc[:, 'severity'] = df_red['severity'].str.upper()
+    df_red.loc[:, 'confidence'] = df_red['confidence'].str.upper()
+   
+    if flag_report_from_api:
+        df_red.loc[:, 'projectname'] = projectname
+    
+    START_ROW = 0    
     # replace severity values ERROR = HIGH, WARNING = MEDIUM, INFO = LOW 
     df_red = df_red.replace('ERROR', 'HIGH', regex=True)
     df_red = df_red.replace('WARNING', 'MEDIUM', regex=True)
@@ -142,7 +168,10 @@ def process_sast_findings(df: pd.DataFrame):
     logging.debug(dir_name)
     current_time = datetime.now().strftime("%Y%m%d-%H%M")
     reportname = f"semgrep_sast_findings_{dir_name}_{current_time}"
-    xlsx_filename = f"{reportname}.xlsx"
+    if flag_report_from_api:
+        xlsx_filename = f"{projectname}.xlsx"
+    else: 
+        xlsx_filename = f"{reportname}.xlsx"
 
     # Create a Pandas Excel writer using XlsxWriter as the engine.
     writer = pd.ExcelWriter(xlsx_filename, engine="xlsxwriter")
@@ -178,17 +207,17 @@ def process_sast_findings(df: pd.DataFrame):
     worksheet.set_column(4, 7, 12)
 
     #  create new df_high by filtering df_red for HIGH severity
-    df_high = df_red.loc[(df_red['extra.severity'] == 'HIGH')]
+    df_high = df_red.loc[(df_red['severity'] == 'HIGH')]
     # Create a list of column headers, to use in add_table().
     column_settings = [{"header": column.split(".")[-1]} for column in df_high.columns]
 
     #  create new df_med by filtering df_red for MED severity
-    df_med = df_red.loc[(df_red['extra.severity'] == 'MEDIUM')]
+    df_med = df_red.loc[(df_red['severity'] == 'MEDIUM')]
     # Create a list of column headers, to use in add_table().
     column_settings = [{"header": column.split(".")[-1]} for column in df_med.columns]
 
     #  create new df_low by filtering df_red for LOW severity
-    df_low = df_red.loc[(df_red['extra.severity'] == 'LOW')]
+    df_low = df_red.loc[(df_red['severity'] == 'LOW')]
     # Create a list of column headers, to use in add_table().
     column_settings = [{"header": column.split(".")[-1]} for column in df_low.columns]
 
@@ -199,13 +228,16 @@ def process_sast_findings(df: pd.DataFrame):
     html = generate_html_sast(df_high, df_med, df_low)
     
     # create filename for HTML report
-    html_filename = f"{reportname}.html"
+    if flag_report_from_api:
+        html_filename = f"{projectname}.html"
+    else:
+        html_filename = f"{reportname}.html"
 
     # write the HTML content to an HTML file
     open(html_filename, "w").write(html)
 
 if __name__=="__main__":
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
 
     user_inputs = sys.argv[1:]
     logging.debug(user_inputs)
@@ -231,12 +263,22 @@ if __name__=="__main__":
             
             with open(findings_json_filename) as json_file:
                 data = json.load(json_file)
-                logging.debug(data['results'])
 
-            # df = pd.DataFrame(data['results'])
-            df = json_normalize(data['results'])
+            if "results" in data:
+                ## JSON report comes from command such as: semgrep scan --json --output report.json
+                df = json_normalize(data['results'])
+                flag_report_from_api = False
+            else:
+                ## JSON report comes from API: 'https://semgrep.dev/api/v1/deployments/{slug_name}/findings?repos={repo}
+                df = json_normalize(data)
+                flag_report_from_api = True
 
-            process_sast_findings(df)
+            if df.empty:
+                logging.info(f"No findings for project: {findings_json_filename}")
+            else:
+                reportname = os.path.splitext(findings_json_filename)[0]
+                process_sast_findings(df, reportname, flag_report_from_api)
+
         else:
             logging.info('pass the arguments like -f <findings JSON file> -h <help> or --findings <findings JSON file> and --help <help>')
             sys.exit()
