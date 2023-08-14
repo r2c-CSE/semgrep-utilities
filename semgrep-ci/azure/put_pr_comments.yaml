@@ -7,15 +7,20 @@ steps:
   fetchDepth: 100000
   persistCredentials: true
 - script: |
-    echo "Pull Request Scan from branch: $(Build.SourceBranchName)"
-    echo "Pull Request Id: $(System.PullRequest.PullRequestId)"
-    git fetch origin master:origin/master
     python -m pip install --upgrade pip
     pip install semgrep
-    semgrep ci --json --output /home/vsts/work/1/a/findings.json
-  env:
-    SEMGREP_PR_ID: $(System.PullRequest.PullRequestId)
-    SEMGREP_BASELINE_REF: 'origin/master'
+    if [ $(Build.SourceBranchName) = "master" ]; then
+        echo "Semgrep full scan"
+        semgrep ci --oss-only
+    elif [ $(System.PullRequest.PullRequestId) -ge 0 ]; then
+        echo "Semgrep diff scan"
+        export SEMGREP_PR_ID=$(System.PullRequest.PullRequestId)
+        export SEMGREP_BASELINE_REF='origin/master'
+        echo "Pull Request Scan from branch: $(Build.SourceBranchName)"
+        echo "Pull Request Id: $(System.PullRequest.PullRequestId)"
+        git fetch origin master:origin/master
+        semgrep ci --json --output /home/vsts/work/1/a/findings.json
+    fi
 
 - task: Bash@3
   inputs:
@@ -37,6 +42,7 @@ steps:
 
       # qq: import logging level from environment variable, default to INFO
       loglevel = os.getenv('LOG_LEVEL', 'INFO')
+      semgrep_org = os.getenv('SEMGREP_ORG', 'xxxxx')
       logging.basicConfig(level=loglevel)
       logging.debug (loglevel)
 
@@ -47,13 +53,14 @@ steps:
 
           def __init__(self):
               # Get the environment variables from the pipeline
-              self.SYSTEM_COLLECTIONURI = os.getenv('SYSTEM_COLLECTIONURI')
-              self.BUILD_SOURCEVERSION = os.getenv('BUILD_SOURCEVERSION')              
+              self.SYSTEM_COLLECTIONURI = os.getenv('SYSTEM_COLLECTIONURI')     
+              self.BUILD_SOURCEVERSION = os.getenv('BUILD_SOURCEVERSION')      
               self.SYSTEM_PULLREQUEST_SOURCEBRANCH = os.getenv('SYSTEM_PULLREQUEST_SOURCEBRANCH')
               self.PULLREQUESTID = 0
               self.SYSTEM_TEAMPROJECT = os.getenv('SYSTEM_TEAMPROJECT')
               self.BUILD_REPOSITORY_ID = os.getenv('BUILD_REPOSITORY_ID')
               self.SYSTEM_TEAMPROJECTID = os.getenv('SYSTEM_TEAMPROJECTID')
+              self.PROJECT_NAME = os.getenv('BUILD_REPOSITORY_NAME')
 
               # check if the build is from a PR or not
               if (self.SYSTEM_PULLREQUEST_SOURCEBRANCH):
@@ -114,8 +121,6 @@ steps:
               else:
                   logging.error (f"Error in adding comment, status_code : {r.status_code}")
                   return False
-                  
-
 
       msg = Message()
       msg.find_pr_id()
@@ -140,6 +145,12 @@ steps:
 
           # check if the rule is not ignored and rule is from the rule-board-pr-comments
           if ((i['extra']['is_ignored'] == False) & (i['extra']['metadata']['semgrep.policy']['slug'] == "rule-board-pr-comments")):
+              
+              logging.debug (f"semgrep_org is {semgrep_org}")
+
+              msg_project_name = msg.PROJECT_NAME
+              logging.debug (f"msg_project_name is {msg_project_name}")
+
               msg_src_branch = msg.BUILD_SOURCEBRANCH
               logging.debug (f"msg_src_branch is {msg_src_branch}")
 
@@ -189,11 +200,14 @@ steps:
                                   f"lineStyle=plain&_a=contents"
               logging.debug (f"msg_vuln_code_url is {msg_vuln_code_url}")
 
-              comment = f"Link to code- [{msg_vuln_code_text}]({msg_vuln_code_url}) \n\n" \
-                        f"Link to commit- [{msg_commit_id}]({msg.url_link_to_repo }/commit/{msg_commit_id}?ref={msg_src_branch})  \n\n" \
-                        f"Summary- {msg_summary} \n\n" \
-                        f"More details on rule- {msg_shortlink} \n\n" \
-                        f"Semgrep Finding Reference- {msg_semgrep_fingerprint} \n" 
+              url_to_findings = f"https://semgrep.dev/orgs/{semgrep_org}/findings?repo={msg_project_name}&ref={msg_src_branch}"
+
+              comment = f"**Link to code**- [{msg_vuln_code_text}]({msg_vuln_code_url}) \n\n" \
+                        f"**Link to commit**- [{msg_commit_id}]({msg.url_link_to_repo }/commit/{msg_commit_id}?ref={msg_src_branch})  \n\n" \
+                        f"**Summary**- {msg_summary} \n\n" \
+                        f"**More details on rule** - {msg_shortlink} \n\n" \
+                        f"**Link to project findings in** [Semgrep]({url_to_findings}) \n\n"
+                        #f"Semgrep Finding Reference- {msg_semgrep_fingerprint} \n" 
               result = msg.add(comment=comment)
               if result is False:
                   logging.error(f"Sending message failed with comment: {result}")
@@ -203,5 +217,7 @@ steps:
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     LOG_LEVEL: DEBUG
-
+    SEMGREP_ORG: xxxxx
+  condition: ne(variables['Build.SourceBranchName'], 'master')
+    
   displayName: 'Python script to add pull request comment'
