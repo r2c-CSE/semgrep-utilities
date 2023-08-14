@@ -2,6 +2,7 @@ import requests
 import sys
 import json
 import re
+import os
 
 SEMGREP_APP_TOKEN = "XXXX"
 FILTER_IMPORTANT_FINDINGS = True
@@ -45,7 +46,24 @@ def get_findings_per_repo(slug_name, repo):
     with open(file_path, "w") as file:
          json.dump(data, file)
 
+def get_ruleboards(org_id):
+      
+    headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
+
+    r = requests.get('https://semgrep.dev/api/agent/deployments/' + org_id + '/ruleboards/global-policy',headers=headers)
+    if r.status_code != 200:
+        sys.exit(f'Get failed: {r.text}')
+    data = json.loads(r.text)
+    print(data)
+
 
 if __name__ == "__main__":
+    try:  
+        SEMGREP_APP_TOKEN = os.getenv("SEMGREP_APP_TOKEN") # Azure DevOps Personal Access Token
+
+    except KeyError: 
+        print("Please set the environment variable SEMGREP_APP_TOKEN") 
+        sys.exit(1)
     slug_name = get_deployments()
     get_projects(slug_name)
+    ## add whatever method you want to try
