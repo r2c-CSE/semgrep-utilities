@@ -21,6 +21,9 @@ The script takes the following arguements:
 - The number of days to look over (we recommend 90 as a safe default)
 - An output filename to store the details from the execution
 
+After you have the PAT in your environment, run this script like this:
+`python3 github_recent_contributors.py r2c-cse 90 output.json`
+
 ## Output
 Example console output:
 ```
