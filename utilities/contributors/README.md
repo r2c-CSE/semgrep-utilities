@@ -6,8 +6,9 @@ The script does not use exactly the same logic as Semgrep in determining active 
 ## Usage
 You'll need to first export a [Github PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) into your environment for the script to use.
 
-Export your PAT as the variable `GITHUB_PERSONAL_ACCESS_TOKEN`.  Example:
-```export GITHUB_PERSONAL_ACCESS_TOKEN=ghp_BunchOfSecretStuffGoesHere```
+Export your PAT as the variable `GITHUB_PERSONAL_ACCESS_TOKEN`.  
+
+Example: `export GITHUB_PERSONAL_ACCESS_TOKEN=ghp_BunchOfSecretStuffGoesHere`
 
 The Token will need the following scopes:
 - repo
