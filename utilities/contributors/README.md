@@ -8,7 +8,10 @@ You'll need to first export a [Github PAT](https://docs.github.com/en/authentica
 
 Export your PAT as the variable `GITHUB_PERSONAL_ACCESS_TOKEN`.  
 
-Example: `export GITHUB_PERSONAL_ACCESS_TOKEN=ghp_BunchOfSecretStuffGoesHere`
+Example: 
+```
+export GITHUB_PERSONAL_ACCESS_TOKEN=ghp_BunchOfSecretStuffGoesHere
+```
 
 The Token will need the following scopes:
 - repo
