@@ -1,0 +1,205 @@
+variables:
+- group: Semgrep_Variables
+
+steps:
+- checkout: self
+  clean: true
+  fetchDepth: 100000
+  persistCredentials: true
+- script: |
+    dotnet restore -p:RestorePackagesWithLockFile=True
+    python -m pip install --upgrade pip
+    pip install semgrep
+    if [ $(Build.SourceBranchName) = "master" ]; then
+        echo "Semgrep full scan"
+        semgrep ci --oss-only --json --output /home/vsts/work/1/a/findings.json
+    elif [ $(System.PullRequest.PullRequestId) -ge 0 ]; then
+        echo "Semgrep diff scan"
+        export SEMGREP_PR_ID=$(System.PullRequest.PullRequestId)
+        export SEMGREP_BASELINE_REF='origin/master'
+        echo "Pull Request Scan from branch: $(Build.SourceBranchName)"
+        echo "Pull Request Id: $(System.PullRequest.PullRequestId)"
+        git fetch origin master:origin/master
+        semgrep ci --json --output /home/vsts/work/1/a/findings.json
+    fi
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      # this is inline code
+      env | sort
+
+##################################################################################################################
+######## WORK ITEM CREATION ######################################################################################
+##################################################################################################################
+- task: PythonScript@0
+  inputs:
+    scriptSource: 'inline'
+    script: |
+      import requests
+      import os
+      import pprint
+      import json
+      import logging
+      import base64
+      import urllib.parse
+      from datetime import datetime
+
+      # qq: import logging level from environment variable, default to INFO
+      loglevel = os.getenv('LOG_LEVEL', 'INFO')
+      semgrep_org = os.getenv('SEMGREP_ORG', 'xxxxx')
+      logging.basicConfig(level=loglevel)
+      logging.debug (loglevel)
+
+
+      class WorkItem():
+          '''Creating an Instance of Work Item'''
+
+          def __init__(self):
+              # Get the environment variables from the pipeline
+              self.PROJECT_NAME = os.getenv('BUILD_REPOSITORY_NAME')
+              self.SYSTEM_COLLECTIONURI = os.getenv('SYSTEM_COLLECTIONURI')
+              self.SYSTEM_TEAMPROJECT = os.getenv('SYSTEM_TEAMPROJECT')
+              self.SYSTEM_TEAMPROJECTID = os.getenv('SYSTEM_TEAMPROJECTID')
+              self.BUILD_REPOSITORY_ID = os.getenv('BUILD_REPOSITORY_ID')
+              self.BUILD_REQUESTEDFOREMAIL=os.getenv('BUILD_REQUESTEDFOREMAIL') 
+              self.PIPELINESTARTTIME = os.getenv('SYSTEM_PIPELINESTARTTIME')
+              self.PULLREQUESTID = 0
+              temp = os.getenv('SYSTEM_PULLREQUEST_SOURCEBRANCH')
+              self.BUILD_SOURCEBRANCHNAME = temp[temp.rindex('/')+1:]
+              
+              # create the URL for Work Items
+              self.url_to_work_items = f"{self.SYSTEM_COLLECTIONURI}{self.SYSTEM_TEAMPROJECTID}/_apis/wit/workitems/%24task"
+              self.url_link_to_repo = f"{self.SYSTEM_COLLECTIONURI}_git/{self.SYSTEM_TEAMPROJECT}"
+              self.headers_work_items = {
+                  "Content-Type": "application/json-patch+json"
+              }
+
+
+          def get_deployment(self) -> str:
+              token_api = os.getenv('SEMGREP_APP_TOKEN')  
+              headers = {"Accept": "application/json", "Authorization": "Bearer " + token_api}
+
+              r = requests.get('https://semgrep.dev/api/v1/deployments',headers=headers)
+              if r.status_code != 200:
+                  logging.error(f"Sending message failed with comment: {r.text}")
+              data = json.loads(r.text)
+              slug_name = data['deployments'][0].get('slug')
+              logging.debug(f"Accessing org: {slug_name}")
+              return slug_name
+          
+          def get_findings_per_repo(self, slug_name: str, repo: str, file_path: str):      
+              logging.debug (f"Getting findings!")
+              token_api = os.getenv('SEMGREP_APP_TOKEN')  
+              headers = {"Accept": "application/json", "Authorization": "Bearer " + token_api}
+              r = requests.get('https://semgrep.dev/api/v1/deployments/' + slug_name + '/findings?dedup=true&repos='+repo,headers=headers)
+              if r.status_code != 200:
+                logging.error(f"Sending message failed with comment: {r.text}")
+              data = json.loads(r.text)
+              logging.debug (f"Dumping findings to: {file_path}")
+              with open(file_path, "w") as file:
+                json.dump(data, file)
+
+
+          def add_work_items(self, title: str, summary: str, file_info: str, vuln_code_url: str, severity:str, tags: str) -> bool:
+              ''' Add work items to Azure DevOps Pull Request'''
+              logging.debug (f"Added workitem")
+              html_description = "<!DOCTYPE html> <html> <body> <p> <strong>Summary: </strong>" + summary + "</p> <p></p> <p><strong>Code: </strong><a href=" + vuln_code_url + ">" + file_info + "</a></p><p></p> <p><strong>Severity: </strong>" + severity + "</p></body></html> "
+              data = '[ { "op": "add", "path": "/fields/System.Title", "from": null, "value": "' + title + '" }, { "op": "add", "path": "/fields/System.AssignedTo", "value": "'+ self.BUILD_REQUESTEDFOREMAIL + '" }, { "op": "add", "path": "/fields/System.Tags", "value":  "'+ tags + '" }, { "op": "add", "path": "/fields/System.Description", "value": "' + html_description + '" }]'
+              logging.debug(f"{data}")
+              params = {
+                  'api-version': '7.0',
+              }
+              pat=os.getenv('SYSTEM_ACCESSTOKEN')
+              r = requests.post(url=self.url_to_work_items,
+                                headers=self.headers_work_items, 
+                                params=params,
+                                data=data, 
+                                auth=('', pat),
+                              )
+
+              if r.status_code == 200:
+                  logging.debug (f"Added workitem successfully")
+                  return True
+                  
+              else:
+                  logging.error (f"Error in adding workitem, status_code : {r.status_code}")
+                  logging.error (f"Error in adding workitem, headers : {r.headers}")
+                  logging.error (f"Error in adding workitem, text : {r.text}")
+                  return False
+
+      workitem = WorkItem()
+
+      # Getting findings
+      try:
+          path = '/home/vsts/work/1/a/findings_api.json'
+          project_name = workitem.PROJECT_NAME
+          org_name = workitem.get_deployment()
+          workitem.get_findings_per_repo(org_name, project_name, path)
+          f = open(path)
+          findings = json.load(f)
+      except FileNotFoundError:
+          logging.error("File findings.json not found at /home/vsts/work/1/a/findings_api.json")
+      except Exception as e:
+          logging.error(f"Unknown error: {e}")
+      finally:
+          f.close()
+    
+
+      # Iterating through the findings in findings.json file
+      for i in findings['findings']:
+          logging.debug (f"finding is {i}")
+
+          work_item_finding_id = i['id']
+          logging.debug (f"work_item_finding_id is {work_item_finding_id}")
+
+          work_item_summary = i['rule_name']
+          logging.debug (f"work_item_summary is {work_item_summary}")
+
+          work_item_message = i['rule_message']
+          logging.debug (f"work_item_message is {work_item_message}") 
+
+          work_item_severity = i['severity']
+          logging.debug (f"work_item_severity is {work_item_severity}") 
+          
+          work_item_relevant_since = i['relevant_since']
+          logging.debug (f"work_item_relevant_since is {work_item_relevant_since}") 
+
+          work_item_policy = i['sourcing_policy']['slug']
+          logging.debug (f"work_item_policy is {work_item_policy}") 
+
+          work_item_file_info = i['location']['file_path'] + ":" + str(i['location']['line'])
+          logging.debug (f"work_item_file_info is {work_item_file_info}") 
+
+          work_item_vuln_code_url = f"{workitem.url_link_to_repo }" \
+                              f"?path=/{i['location']['file_path']}&" \
+                              f"version=GB{workitem.BUILD_SOURCEBRANCHNAME}&" \
+                              f"line={i['location']['line']}&" \
+                              f"lineEnd={i['location']['end_line']}&" \
+                              f"lineStartColumn={i['location']['column']}&" \
+                              f"lineEndColumn={i['location']['end_column']}&" \
+                              f"lineStyle=plain&_a=contents"
+
+          ## format: 2023-09-18 07:49:42+00:00
+          time_pipeline = workitem.PIPELINESTARTTIME[0:19]
+          time_pipeline = datetime.strptime(time_pipeline, '%Y-%m-%d %H:%M:%S')
+          logging.debug(time_pipeline)
+          
+          ## 2023-09-15T15:34:38.059101Z
+          work_item_relevant_since = work_item_relevant_since[0:19]
+          time_relevante_since = datetime.strptime(work_item_relevant_since, '%Y-%m-%dT%H:%M:%S')
+          logging.debug(time_relevante_since)
+
+          if (time_relevante_since > time_pipeline and work_item_policy != 'rule-board-audit'):
+              logging.debug(f"New finding: {work_item_finding_id}")
+              workitem.add_work_items(work_item_summary, work_item_message, work_item_file_info, work_item_vuln_code_url, work_item_severity, "semgrep")
+        
+      # Closing file
+      f.close()                    
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    LOG_LEVEL: DEBUG
+  condition: ne(variables['Build.SourceBranchName'], 'master')
+    
+  displayName: 'Python script to add work items'
