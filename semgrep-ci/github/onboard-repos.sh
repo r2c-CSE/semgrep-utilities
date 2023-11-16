@@ -1,4 +1,4 @@
-#!/opt/homebrew/bin/bash
+#!/bin/bash
 
 # TODO: Work out a way to change the cron per-repo (probably not critical but wd be better)
 # Where does the secret come from? Maybe we should do the reusable workflows?
@@ -19,7 +19,8 @@ fi
 GH_ORG_NAME=$1
 PR_TITLE="Add semgrep.yml to .github/workflows to run Semgrep scans"
 PR_BODY="Adding Semgrep GitHub action to scan code for security issues"
-REPO_LIMIT=5
+# Change this limit to match the number of repos you want to onboard
+REPO_LIMIT=200
 BRANCH_NAME="add-semgrep"
 SEMGREP_YML_BASE64=$(cat semgrep.yml | base64)
 
@@ -66,6 +67,7 @@ for i in ${!GITHUB_REPOS[@]}; do
     -F content=$SEMGREP_YML_BASE64 \
     -F branch=$BRANCH_NAME`
   FC_STATUS=$?
+  # If the file exists, GitHub expects a sha to update it from, so "sha wasn't supplied" means the file exists (weird but true)
   if [[ $FILE_CREATION_RESULT =~ "\\\"sha\\\" wasn't supplied" ]]
   then
     echo "A semgrep.yml file already exists on $BRANCH_NAME in $GH_REPO, no need to create one."
