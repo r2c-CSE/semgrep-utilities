@@ -2,7 +2,7 @@
 
 If you use branch protection on your GitHub repos, onboarding Semgrep to many repos at the same time is not currently possible through the Semgrep Cloud Platform UI. The scripts in this directory provide an alternative. The script `onboard-repos.sh` creates PRs for all targeted repos in an organization, and the script `approve-semgrep-prs.sh` approves and merges those PRs.
 
-The approval script is optional. PRs can also be merged manually. If you run the approval script, you can also choose whether or not to merge the approved PR.
+The approval script is optional. PRs can also be reviewed manually. If you run the approval script, you can also choose whether or not to merge the approved PR.
 
 To easily provide a secure `SEMGREP_APP_TOKEN` value to all repos, set the value as an [organization secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-an-organization). If you do not have access to organization secrets, consider setting up a [reusable workflow](https://semgrep.dev/docs/kb/semgrep-ci/github-reusable-workflows-semgrep/) and referencing that workflow in the `semgrep.yml` you will use to onboard other repositories.
 
@@ -15,7 +15,7 @@ After installing the client, determine which GitHub account to log in with.
 * To create PRs, you need a GitHub user account that has permission to create PRs on any repos in the target organization that you want to onboard.
 * To approve and merge PRs, you need a **different** user account that has permission to review and merge PRs on those same repos. The same user cannot both create and review a PR.
 
-Use `gh auth login` to log in. To change users, use `gh auth logout` and then log in with the new user. Use `gh auth login --help` to see more options (e.g. for GitHub enterprise, or to use a token).
+Use `gh auth login` to log in. To change users, use `gh auth logout` and then log in with the new user. Use `gh auth login --help` to see more options (e.g. for GitHub Enterprise Server, or to use a token).
 
 ## How the scripts work
 
@@ -27,7 +27,7 @@ Use `gh auth login` to log in. To change users, use `gh auth logout` and then lo
   * Approves PRs for all repos in an organization up to a configurable limit.
   * Merges PRs if `-m` flag is set.
 
-The onboarding script will catch errors in branch and commit creation, and print messages as to whether the error is concerning. Some errors are expected - for example, if you already have a branch of a particular name, and the script tries to create a branch with the same name, it records that the branch exists and proceeds. (Using a relatively unique branch name is recommended. The default is `add-semgrep`.)
+The onboarding script will catch errors during the branch and commit creation process, and print messages as to whether the error is concerning. Some errors are expected: for example, if you already have a branch of a particular name, and the script tries to create a branch with the same name, it records that the branch exists and proceeds. (Using a relatively unique branch name is recommended. The default is `add-semgrep`.)
 
 If unexpected errors occur when creating the branch and adding the file, onboarding for that repo will be skipped and the script will proceed to the next repo.
 
