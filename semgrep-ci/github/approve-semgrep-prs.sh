@@ -13,7 +13,7 @@ done
 
 if [[ -z $GH_ORG_NAME ]]
 then
-  echo "Usage: $0 -o github_org_name [-b branch_name] [-l repo_limit]"
+  echo "Usage: $0 -o github_org_name [-b branch_name] [-l repo_limit] [-m]"
   exit 1
 fi
 

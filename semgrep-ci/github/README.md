@@ -25,6 +25,7 @@ Use `gh auth login` to log in. To change users, use `gh auth logout` and then lo
   * PR title and content can be modified through the script body.
 * `approve-semgrep-prs.sh`: Approves and merges PRs from the provided branch name. This branch name should match the one used in `onboard-repos.sh`.
   * Approves PRs for all repos in an organization up to a configurable limit.
+  * Merges PRs if `-m` flag is set.
 
 The onboarding script will catch errors in branch and commit creation, and print messages as to whether the error is concerning. Some errors are expected - for example, if you already have a branch of a particular name, and the script tries to create a branch with the same name, it records that the branch exists and proceeds. (Using a relatively unique branch name is recommended. The default is `add-semgrep`.)
 
