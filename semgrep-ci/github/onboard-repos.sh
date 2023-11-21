@@ -3,20 +3,27 @@
 # TODO: Work out a way to change the cron per-repo (probably not critical but wd be better)
 # Where does the secret come from? Maybe we should do the reusable workflows?
 
-if [[ -z $1 ]]
-then
-  echo "You must set an org name"
-  exit 1
-fi
-
 if ! [[ -f semgrep.yml ]]
 then
   echo "Please create a semgrep.yml in the current directory to add to every repo."
   exit 1
 fi
 
+while getopts ao: flag
+do
+  case $flag in
+    o) GH_ORG_NAME=${OPTARG};;
+    a) APPROVE=true;;
+  esac
+done
+
+if [[ -z $GH_ORG_NAME ]]
+then
+  echo "You must set an org name"
+  exit 1
+fi
+
 # Set up variables
-GH_ORG_NAME=$1
 PR_TITLE="Add semgrep.yml to .github/workflows to run Semgrep scans"
 PR_BODY="Adding Semgrep GitHub action to scan code for security issues"
 # Change this limit to match the number of repos you want to onboard
@@ -26,6 +33,13 @@ SEMGREP_YML_BASE64=$(cat semgrep.yml | base64)
 
 echo "This script uses the Github CLI (gh) client to add semgrep to repos in $GH_ORG_NAME 
 by creating PRs on branch $BRANCH_NAME."
+
+if [[ -z $APPROVE ]]
+then
+  echo "PRs will only be created, not approved."
+else
+  echo "PRs will be approved as well as created"
+fi
 
 # Grab only the repo name and default branch of unarchived repos with limit $REPO_LIMIT
 gh repo list $GH_ORG_NAME --no-archived -L $REPO_LIMIT --json nameWithOwner,defaultBranchRef > repos.json
