@@ -42,6 +42,7 @@ gh repo list $GH_ORG_NAME --no-archived -L $REPO_LIMIT --json name > repos.json
 echo "Collecting repo names..."
 GITHUB_REPOS=($(jq -r '.[].name' repos.json))
 
+# Iterate over repo PRs, approving (and potentially merging) each one
 for i in ${!GITHUB_REPOS[@]}; do
   GH_REPO_NAME=${GITHUB_REPOS[$i]}
   gh pr review -R "$GH_ORG_NAME/$GH_REPO_NAME" $BRANCH_NAME --approve

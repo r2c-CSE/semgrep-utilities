@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # TODO: Work out a way to change the cron per-repo (not critical but would be better)
-# Set secret at org level
 
 # A local semgrep.yml is required
 if ! [[ -f semgrep.yml ]]
@@ -45,13 +44,6 @@ SEMGREP_YML_BASE64=$(cat semgrep.yml | base64)
 
 echo "This script uses the Github CLI (gh) client to add semgrep to repos in $GH_ORG_NAME
 by creating PRs on branch $BRANCH_NAME."
-
-if [[ -z $APPROVE ]]
-then
-  echo "PRs will only be created, not approved."
-else
-  echo "PRs will be approved as well as created"
-fi
 
 # Grab only the repo name and default branch of unarchived repos with limit $REPO_LIMIT
 gh repo list $GH_ORG_NAME --no-archived -L $REPO_LIMIT --json name,defaultBranchRef > repos.json
