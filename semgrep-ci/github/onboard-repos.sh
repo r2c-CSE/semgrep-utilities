@@ -74,7 +74,7 @@ for i in ${!GITHUB_REPOS[@]}; do
     continue
   fi
 
-  # Generate a new random cron expression to run schedule scans
+  # Generate a new random cron expression to run scheduled scans
   random_value_minutes=$((RANDOM % 59))
   random_value_hours=$((RANDOM % 24))
   minutes=$(printf "%02d" "$random_value_minutes")
@@ -108,6 +108,9 @@ for i in ${!GITHUB_REPOS[@]}; do
   # Create a PR with the branch and added file
   echo "Creating PR for $BRANCH_NAME in $GH_REPO_NAME to $GH_DEFAULT_BRANCH"
   gh pr create -b "$PR_BODY" -R "$GH_ORG_NAME/$GH_REPO_NAME" -t "$PR_TITLE" --base $GH_DEFAULT_BRANCH -H $BRANCH_NAME
+
+  # YML cleanup
+  rm semgrep_$GH_REPO_NAME.yml
 done
 
 # Cleanup
