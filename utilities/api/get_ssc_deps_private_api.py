@@ -14,13 +14,17 @@ def get_deployment_id():
     print("Accessing org: " + org_id)
     return org_id
 
-def get_sca_dependencies(org_id):
+
+def get_dependencies(org_id):
+
+    payload = {
+        "dependencyFilter":{},"pageSize": 10000
+    }
 
     file_path = "dependencies.json"
-
     headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
 
-    r = requests.get('https://semgrep.dev/api/sca/deployments/'+ org_id +'/dependencies',headers=headers)
+    r = requests.post('https://semgrep.dev/api/v1/deployments/'+ org_id +'/dependencies',headers=headers,json=payload)
     if r.status_code != 200:
         sys.exit(f'Get failed: {r.text}')
     data = json.loads(r.text)
@@ -35,4 +39,4 @@ if __name__ == "__main__":
         print("Please set the environment variable SEMGREP_APP_TOKEN") 
         sys.exit(1)
     org_id = get_deployment_id()
-    get_sca_dependencies(org_id)
+    get_dependencies(org_id)
