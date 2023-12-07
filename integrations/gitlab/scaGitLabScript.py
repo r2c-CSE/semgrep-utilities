@@ -96,20 +96,20 @@ def get_new_scan_info(data):
     formatted_datetime = current_datetime.strftime("%Y-%m-%dT%H:%M:%S")
     new_scan_info = {
         "analyzer": {
-        "id": "gemnasium-maven",
-        "name": "semgrep",
-        "url": "https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium",
+        "id": "semgrep",
+        "name": "Semgrep",
+        "url": "https://semgrep.dev",
         "vendor": {
-            "name": "GitLab"
+            "name": "Semgrep"
         },
         "version": data['version']
         },
         "scanner": {
-        "id": "gemnasium-maven",
-        "name": "semgrep",
-        "url": "https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium",
+        "id": "semgrep",
+        "name": "Semgrep",
+        "url": "https://semgrep.dev",
         "vendor": {
-            "name": "GitLab"
+            "name": "Semgrep"
         },
         "version": data['version']
         },
