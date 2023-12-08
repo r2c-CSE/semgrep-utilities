@@ -7,11 +7,8 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
     with open(report_semgrep, 'r') as file_semgrep:
         data_semgrep = json.load(file_semgrep)
         for vuln in data_semgrep['results']:
-            
-            links = []
-            for ref in vuln.get('extra').get('metadata')['references']:
-                link = {"url": ref}
-                links.append(link)
+
+            links = [{"url": ref} for ref in vuln.get('extra').get('metadata')['references']]
 
             new_vuln = {
                         "id": vuln.get('extra')['fingerprint'][0:63],
