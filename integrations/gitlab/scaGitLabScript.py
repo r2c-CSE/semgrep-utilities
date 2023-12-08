@@ -7,6 +7,9 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
     with open(report_semgrep, 'r') as file_semgrep:
         data_semgrep = json.load(file_semgrep)
         for vuln in data_semgrep['results']:
+
+            links = [{"url": ref} for ref in vuln.get('extra').get('metadata')['references']]
+
             new_vuln = {
                         "id": vuln.get('extra')['fingerprint'][0:63],
                         "name": "Semgrep: " + vuln['check_id'],
@@ -28,14 +31,10 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                                 "type": "cve",
                                 "name": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
                                 "value": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
-                                "url": vuln.get('extra').get('metadata')['references'][0]
+                                "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name="+vuln.get('extra').get('metadata')['sca-vuln-database-identifier']
                             }
                         ],
-                        "links": [
-                            {
-                            "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name="+vuln.get('extra').get('metadata')['sca-vuln-database-identifier']
-                            }
-                        ],
+                        "links": links,
                         "details": {
                             "vulnerable_package": {
                             "type": "text",
