@@ -95,7 +95,7 @@ def get_new_scan_info(data):
     formatted_datetime = current_datetime.strftime("%Y-%m-%dT%H:%M:%S")
     new_scan_info = {
         "analyzer": {
-        "id": "semgrep",
+        "id": "semgrep_dep_scan",
         "name": "Semgrep",
         "url": "https://semgrep.dev",
         "vendor": {
@@ -104,7 +104,7 @@ def get_new_scan_info(data):
         "version": data['version']
         },
         "scanner": {
-        "id": "semgrep",
+        "id": "semgrep_dep_scan",
         "name": "Semgrep",
         "url": "https://semgrep.dev",
         "vendor": {
