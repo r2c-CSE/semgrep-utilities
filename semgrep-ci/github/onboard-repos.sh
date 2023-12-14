@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# TODO: Work out a way to change the cron per-repo (not critical but would be better)
-
 # A local semgrep.yml is required
 if ! [[ -f semgrep.yml ]]
 then
@@ -40,7 +38,6 @@ fi
 # These values can be safely modified, but are not configurable by default
 PR_TITLE="Add semgrep.yml to .github/workflows to run Semgrep scans"
 PR_BODY="Adding Semgrep GitHub action to scan code for security issues"
-SEMGREP_YML_BASE64=$(cat semgrep.yml | base64)
 
 echo "This script uses the Github CLI (gh) client to add semgrep to repos in $GH_ORG_NAME
 by creating PRs on branch $BRANCH_NAME."
@@ -76,6 +73,20 @@ for i in ${!GITHUB_REPOS[@]}; do
     echo "Something else went wrong for $GH_REPO_NAME: $BRANCH_CREATION_RESULT"
     continue
   fi
+
+  # Generate a new random cron expression to run scheduled scans
+  random_value_minutes=$((RANDOM % 59))
+  random_value_hours=$((RANDOM % 24))
+  minutes=$(printf "%02d" "$random_value_minutes")
+  hours=$(printf "%02d" "$random_value_hours")
+  new_content="    - cron: '$minutes $hours * * *'"
+
+  # Use sed to replace the specified line in the file
+  line_number=$(grep -n "cron:" "semgrep.yml" | cut -d ':' -f 1)
+  sed "${line_number}s/.*/${new_content}/" semgrep.yml > semgrep_$GH_REPO_NAME.yml
+
+  SEMGREP_YML_BASE64=$(cat semgrep_$GH_REPO_NAME.yml | base64)
+
   # Add the file to the branch (creates a commit also)
   echo "Creating semgrep.yml on $BRANCH_NAME in $GH_REPO_NAME"
   FILE_CREATION_RESULT=`gh api repos/$GH_ORG_NAME/$GH_REPO_NAME/contents/.github/workflows/semgrep.yml \
@@ -97,6 +108,9 @@ for i in ${!GITHUB_REPOS[@]}; do
   # Create a PR with the branch and added file
   echo "Creating PR for $BRANCH_NAME in $GH_REPO_NAME to $GH_DEFAULT_BRANCH"
   gh pr create -b "$PR_BODY" -R "$GH_ORG_NAME/$GH_REPO_NAME" -t "$PR_TITLE" --base $GH_DEFAULT_BRANCH -H $BRANCH_NAME
+
+  # YML cleanup
+  rm semgrep_$GH_REPO_NAME.yml
 done
 
 # Cleanup
