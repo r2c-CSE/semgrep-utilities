@@ -58,7 +58,7 @@ def main():
             one_year_ago = datetime.now() - timedelta(days=365)
             commits_in_pr_repo_last_year = sum(1 for commit in commits if datetime.strptime(commit['commit']['author']['date'], '%Y-%m-%dT%H:%M:%SZ') > one_year_ago)
 
-            print(f'total number of commits in repo: {repo_name}, pr-#{pr["number"]}, pr-title: {pr["title"][:32]}, head: {pr["head"]["ref"][:16]} into base: {pr["base"]["ref"][:16]}  - {commits_in_pr_repo_last_year} / {len(commits)}')
+            print(f'total number of commits in repo: {repo_name}, pr-#{pr["number"]}, pr-title: {pr["title"][:32]}, head: {pr["head"]["ref"][:16]} into base: {pr["base"]["ref"][:16]}  - {commits_in_pr_repo_last_year}')
             total_prs += 1
             total_commits += commits_in_pr_repo_last_year
 
