@@ -1,0 +1,22 @@
+{
+  "name": "compare-findings",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/r2c-david/compare-findings.git"
+  },
+  "author": "davidwhitlow@semgrep.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/r2c-david/compare-findings/issues"
+  },
+  "homepage": "https://github.com/r2c-david/compare-findings#readme",
+  "dependencies": {
+    "html-creator": "^0.8.0"
+  }
+}

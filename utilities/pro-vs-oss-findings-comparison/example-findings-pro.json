@@ -1,0 +1,2503 @@
+{
+    "errors": [
+        {
+            "code": 3,
+            "level": "warn",
+            "message": "Syntax error at line gradlew:177:\n `for i do` was unexpected",
+            "path": "gradlew",
+            "spans": [
+                {
+                    "end": {
+                        "col": 13,
+                        "line": 177,
+                        "offset": 8
+                    },
+                    "file": "gradlew",
+                    "start": {
+                        "col": 5,
+                        "line": 177,
+                        "offset": 0
+                    }
+                }
+            ],
+            "type": [
+                "PartialParsing",
+                [
+                    {
+                        "end": {
+                            "col": 13,
+                            "line": 177,
+                            "offset": 8
+                        },
+                        "path": "gradlew",
+                        "start": {
+                            "col": 5,
+                            "line": 177,
+                            "offset": 0
+                        }
+                    }
+                ]
+            ]
+        },
+        {
+            "code": 3,
+            "level": "warn",
+            "message": "Syntax error at line .github/workflows/hawkscan.yml:12:\n When parsing a snippet as Bash for metavariable-pattern in rule 'yaml.github-actions.security.curl-eval.curl-eval', `${{` was unexpected",
+            "path": ".github/workflows/hawkscan.yml",
+            "spans": [
+                {
+                    "end": {
+                        "col": 77,
+                        "line": 12,
+                        "offset": 284
+                    },
+                    "file": ".github/workflows/hawkscan.yml",
+                    "start": {
+                        "col": 74,
+                        "line": 12,
+                        "offset": 281
+                    }
+                }
+            ],
+            "type": [
+                "PartialParsing",
+                [
+                    {
+                        "end": {
+                            "col": 77,
+                            "line": 12,
+                            "offset": 284
+                        },
+                        "path": ".github/workflows/hawkscan.yml",
+                        "start": {
+                            "col": 74,
+                            "line": 12,
+                            "offset": 281
+                        }
+                    }
+                ]
+            ]
+        },
+        {
+            "code": 3,
+            "level": "warn",
+            "message": "Syntax error at line .github/workflows/hawkscan.yml:14:\n When parsing a snippet as Bash for metavariable-pattern in rule 'yaml.github-actions.security.curl-eval.curl-eval', `${{` was unexpected",
+            "path": ".github/workflows/hawkscan.yml",
+            "spans": [
+                {
+                    "end": {
+                        "col": 71,
+                        "line": 14,
+                        "offset": 485
+                    },
+                    "file": ".github/workflows/hawkscan.yml",
+                    "start": {
+                        "col": 68,
+                        "line": 14,
+                        "offset": 482
+                    }
+                }
+            ],
+            "type": [
+                "PartialParsing",
+                [
+                    {
+                        "end": {
+                            "col": 71,
+                            "line": 14,
+                            "offset": 485
+                        },
+                        "path": ".github/workflows/hawkscan.yml",
+                        "start": {
+                            "col": 68,
+                            "line": 14,
+                            "offset": 482
+                        }
+                    }
+                ]
+            ]
+        },
+        {
+            "code": 3,
+            "level": "warn",
+            "message": "Syntax error at line .github/workflows/hawkscan.yml:16:\n When parsing a snippet as Bash for metavariable-pattern in rule 'yaml.github-actions.security.curl-eval.curl-eval', `${{` was unexpected",
+            "path": ".github/workflows/hawkscan.yml",
+            "spans": [
+                {
+                    "end": {
+                        "col": 46,
+                        "line": 16,
+                        "offset": 630
+                    },
+                    "file": ".github/workflows/hawkscan.yml",
+                    "start": {
+                        "col": 43,
+                        "line": 16,
+                        "offset": 627
+                    }
+                },
+                {
+                    "end": {
+                        "col": 89,
+                        "line": 16,
+                        "offset": 630
+                    },
+                    "file": ".github/workflows/hawkscan.yml",
+                    "start": {
+                        "col": 86,
+                        "line": 16,
+                        "offset": 627
+                    }
+                }
+            ],
+            "type": [
+                "PartialParsing",
+                [
+                    {
+                        "end": {
+                            "col": 46,
+                            "line": 16,
+                            "offset": 630
+                        },
+                        "path": ".github/workflows/hawkscan.yml",
+                        "start": {
+                            "col": 43,
+                            "line": 16,
+                            "offset": 627
+                        }
+                    },
+                    {
+                        "end": {
+                            "col": 89,
+                            "line": 16,
+                            "offset": 630
+                        },
+                        "path": ".github/workflows/hawkscan.yml",
+                        "start": {
+                            "col": 86,
+                            "line": 16,
+                            "offset": 627
+                        }
+                    }
+                ]
+            ]
+        },
+        {
+            "code": 3,
+            "level": "warn",
+            "message": "Syntax error at line .github/workflows/hawkscan.yml:20:\n When parsing a snippet as Bash for metavariable-pattern in rule 'yaml.github-actions.security.curl-eval.curl-eval', `${{` was unexpected",
+            "path": ".github/workflows/hawkscan.yml",
+            "spans": [
+                {
+                    "end": {
+                        "col": 38,
+                        "line": 20,
+                        "offset": 905
+                    },
+                    "file": ".github/workflows/hawkscan.yml",
+                    "start": {
+                        "col": 35,
+                        "line": 20,
+                        "offset": 902
+                    }
+                },
+                {
+                    "end": {
+                        "col": 82,
+                        "line": 20,
+                        "offset": 905
+                    },
+                    "file": ".github/workflows/hawkscan.yml",
+                    "start": {
+                        "col": 79,
+                        "line": 20,
+                        "offset": 902
+                    }
+                }
+            ],
+            "type": [
+                "PartialParsing",
+                [
+                    {
+                        "end": {
+                            "col": 38,
+                            "line": 20,
+                            "offset": 905
+                        },
+                        "path": ".github/workflows/hawkscan.yml",
+                        "start": {
+                            "col": 35,
+                            "line": 20,
+                            "offset": 902
+                        }
+                    },
+                    {
+                        "end": {
+                            "col": 82,
+                            "line": 20,
+                            "offset": 905
+                        },
+                        "path": ".github/workflows/hawkscan.yml",
+                        "start": {
+                            "col": 79,
+                            "line": 20,
+                            "offset": 902
+                        }
+                    }
+                ]
+            ]
+        }
+    ],
+    "paths": {
+        "scanned": [
+            ".github/workflows/hawkscan.yml",
+            ".github/workflows/semgrep.yml",
+            ".gitignore",
+            "Dockerfile",
+            "README.md",
+            "build.gradle",
+            "docker-compose.yml",
+            "findings-oss.json",
+            "findings-pro.json",
+            "gradle/wrapper/gradle-wrapper.jar",
+            "gradle/wrapper/gradle-wrapper.properties",
+            "gradlew",
+            "gradlew.bat",
+            "hawkscripts/authentication/form-auth-multi.js",
+            "hawkscripts/httpsender/custom-sender.kts",
+            "integration_tests/conf_files/stackhawk-jsv-json-token.yml",
+            "javaspringvulny_postman_collection.json",
+            "local-hawk.sh",
+            "openapi.json",
+            "openapi.yaml",
+            "scan-rules.conf",
+            "scripts/basic-auth.sh",
+            "scripts/json-auth.sh",
+            "settings.gradle",
+            "src/main/java/hawk/Application.java",
+            "src/main/java/hawk/Config.java",
+            "src/main/java/hawk/MultiHttpSecurityConfig.java",
+            "src/main/java/hawk/api/AuthenticationRequest.java",
+            "src/main/java/hawk/api/ExtraAuthenticationRequest.java",
+            "src/main/java/hawk/api/SearchResult.java",
+            "src/main/java/hawk/api/basic/BasicAuthItemController.java",
+            "src/main/java/hawk/api/jwt/JwtAuthController.java",
+            "src/main/java/hawk/api/jwt/JwtConfigurer.java",
+            "src/main/java/hawk/api/jwt/JwtFilter.java",
+            "src/main/java/hawk/api/jwt/JwtItemController.java",
+            "src/main/java/hawk/api/jwt/JwtLog4jController.java",
+            "src/main/java/hawk/api/jwt/JwtTokenProvider.java",
+            "src/main/java/hawk/api/jwt/JwtUserController.java",
+            "src/main/java/hawk/api/token/TokenFilter.java",
+            "src/main/java/hawk/api/token/TokenItemController.java",
+            "src/main/java/hawk/aspect/UserServiceAspect.java",
+            "src/main/java/hawk/context/TenantContext.java",
+            "src/main/java/hawk/controller/AdminController.java",
+            "src/main/java/hawk/controller/HiddenController.java",
+            "src/main/java/hawk/controller/IndexController.java",
+            "src/main/java/hawk/controller/LoginController.java",
+            "src/main/java/hawk/controller/PayloadController.java",
+            "src/main/java/hawk/controller/SearchController.java",
+            "src/main/java/hawk/entity/Item.java",
+            "src/main/java/hawk/entity/TenantSupport.java",
+            "src/main/java/hawk/entity/User.java",
+            "src/main/java/hawk/form/Search.java",
+            "src/main/java/hawk/interceptor/DBInterceptor.java",
+            "src/main/java/hawk/repos/ItemRepo.java",
+            "src/main/java/hawk/repos/ItemsRepo.java",
+            "src/main/java/hawk/repos/UserRepo.java",
+            "src/main/java/hawk/service/SearchService.java",
+            "src/main/java/hawk/service/UserSearchService.java",
+            "src/main/java/hawk/service/UserService.java",
+            "src/main/resources/application-postgresql.properties",
+            "src/main/resources/application.properties",
+            "src/main/resources/javavulny.crt",
+            "src/main/resources/javavulny.p12",
+            "src/main/resources/keyStore.pem",
+            "src/main/resources/keystore.p12",
+            "src/main/resources/log4j.properties",
+            "src/main/resources/templates/admin.html",
+            "src/main/resources/templates/basic-auth.html",
+            "src/main/resources/templates/companies.html",
+            "src/main/resources/templates/general.html",
+            "src/main/resources/templates/hidden.html",
+            "src/main/resources/templates/hidden2.html",
+            "src/main/resources/templates/index.html",
+            "src/main/resources/templates/jwt-auth.html",
+            "src/main/resources/templates/login-form-multi.html",
+            "src/main/resources/templates/login.html",
+            "src/main/resources/templates/payload-view.html",
+            "src/main/resources/templates/payloads.html",
+            "src/main/resources/templates/search.html",
+            "src/main/resources/templates/token-auth.html",
+            "src/main/resources/templates/user-search.html",
+            "src/main/resources/templates/users.html",
+            "stackhawk-actions.yml",
+            "stackhawk.d/stackhawk-ajax.yml",
+            "stackhawk.d/stackhawk-auth-basic.yml",
+            "stackhawk.d/stackhawk-auth-external-jwt.yml",
+            "stackhawk.d/stackhawk-auth-external-token.yml",
+            "stackhawk.d/stackhawk-auth-form-cookie.yml",
+            "stackhawk.d/stackhawk-auth-json-token.yml",
+            "stackhawk.d/stackhawk-auth-script-form-multi.yml",
+            "stackhawk.d/stackhawk-custom-spider-curl.yml",
+            "stackhawk.d/stackhawk-custom-spider-newman.yml",
+            "stackhawk.d/stackhawk-jsv-form-cookie.yml",
+            "stackhawk.d/stackhawk-jsv-json-token.yml",
+            "stackhawk.d/stackhawk-openapi.yml",
+            "stackhawk.d/stackhawk.yml",
+            "stackhawk.yml"
+        ]
+    },
+    "results": [
+        {
+            "check_id": "yaml.docker-compose.security.no-new-privileges.no-new-privileges",
+            "end": {
+                "col": 5,
+                "line": 3,
+                "offset": 29
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "0b3b792daab2dc62fd32d3312b5f93adeaaf3cc56f473f8ee518dbf61d96ade648a3e2d21315c12e5e60c401facd36ad19f9c2d5785bd72732b6b486aa7254be_0",
+                "is_ignored": false,
+                "lines": "  db:",
+                "message": "Service 'db' allows for privilege escalation via setuid or setgid binaries. Add 'no-new-privileges:true' in 'security_opt' to prevent this.",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "LOW",
+                    "cwe": [
+                        "CWE-732: Incorrect Permission Assignment for Critical Resource"
+                    ],
+                    "cwe2021-top25": true,
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "HIGH",
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "LOW",
+                    "owasp": [
+                        "A05:2021 - Security Misconfiguration",
+                        "A06:2017 - Security Misconfiguration"
+                    ],
+                    "references": [
+                        "https://raesene.github.io/blog/2019/06/01/docker-capabilities-and-no-new-privs/",
+                        "https://www.kernel.org/doc/Documentation/prctl/no_new_privs.txt",
+                        "https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html#rule-4-add-no-new-privileges-flag"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "qNUoWr",
+                            "url": "https://semgrep.dev/playground/r/qkT2BLp/yaml.docker-compose.security.no-new-privileges.no-new-privileges",
+                            "version_id": "qkT2BLp"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/yaml.docker-compose.security.no-new-privileges.no-new-privileges",
+                    "shortlink": "https://sg.run/0n8q",
+                    "source": "https://semgrep.dev/r/yaml.docker-compose.security.no-new-privileges.no-new-privileges",
+                    "subcategory": [
+                        "audit"
+                    ],
+                    "technology": [
+                        "docker-compose"
+                    ],
+                    "vulnerability_class": [
+                        "Improper Authorization"
+                    ]
+                },
+                "metavars": {
+                    "$SERVICE": {
+                        "abstract_content": "db",
+                        "end": {
+                            "col": 5,
+                            "line": 3,
+                            "offset": 29
+                        },
+                        "start": {
+                            "col": 3,
+                            "line": 3,
+                            "offset": 27
+                        }
+                    }
+                },
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "docker-compose.yml",
+            "start": {
+                "col": 3,
+                "line": 3,
+                "offset": 27
+            }
+        },
+        {
+            "check_id": "yaml.docker-compose.security.writable-filesystem-service.writable-filesystem-service",
+            "end": {
+                "col": 5,
+                "line": 3,
+                "offset": 29
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "a4c9a5b5da893201bcf0908973bfd478af5ce99508d5c1313c871a7cd96bf620cc2c844d70e6da41d1f6e470eed9006460a3c74048353a89477dec781d9b1505_0",
+                "is_ignored": false,
+                "lines": "  db:",
+                "message": "Service 'db' is running with a writable root filesystem. This may allow malicious applications to download and run additional payloads, or modify container files. If an application inside a container has to save something temporarily consider using a tmpfs. Add 'read_only: true' to this service to prevent this.",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "LOW",
+                    "cwe": [
+                        "CWE-732: Incorrect Permission Assignment for Critical Resource"
+                    ],
+                    "cwe2021-top25": true,
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "HIGH",
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "LOW",
+                    "owasp": [
+                        "A05:2021 - Security Misconfiguration",
+                        "A06:2017 - Security Misconfiguration"
+                    ],
+                    "references": [
+                        "https://docs.docker.com/compose/compose-file/compose-file-v3/#domainname-hostname-ipc-mac_address-privileged-read_only-shm_size-stdin_open-tty-user-working_dir",
+                        "https://blog.atomist.com/security-of-docker-kubernetes/",
+                        "https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html#rule-8-set-filesystem-and-volumes-to-read-only"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "v8U5vN",
+                            "url": "https://semgrep.dev/playground/r/o5Tg9ob/yaml.docker-compose.security.writable-filesystem-service.writable-filesystem-service",
+                            "version_id": "o5Tg9ob"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/yaml.docker-compose.security.writable-filesystem-service.writable-filesystem-service",
+                    "shortlink": "https://sg.run/e4JE",
+                    "source": "https://semgrep.dev/r/yaml.docker-compose.security.writable-filesystem-service.writable-filesystem-service",
+                    "subcategory": [
+                        "audit"
+                    ],
+                    "technology": [
+                        "docker-compose"
+                    ],
+                    "vulnerability_class": [
+                        "Improper Authorization"
+                    ]
+                },
+                "metavars": {
+                    "$SERVICE": {
+                        "abstract_content": "db",
+                        "end": {
+                            "col": 5,
+                            "line": 3,
+                            "offset": 29
+                        },
+                        "start": {
+                            "col": 3,
+                            "line": 3,
+                            "offset": 27
+                        }
+                    }
+                },
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "docker-compose.yml",
+            "start": {
+                "col": 3,
+                "line": 3,
+                "offset": 27
+            }
+        },
+        {
+            "check_id": "yaml.docker-compose.security.no-new-privileges.no-new-privileges",
+            "end": {
+                "col": 12,
+                "line": 12,
+                "offset": 212
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "c205669c90cadcc099a5f1ade89d9b8cf413df130c0440284807554436ceeba85c1d7bc8d87a55a113ca4e5539715281ed92ef3709c871a65b91a216e2cbfd32_0",
+                "is_ignored": false,
+                "lines": "  javavulny:",
+                "message": "Service 'javavulny' allows for privilege escalation via setuid or setgid binaries. Add 'no-new-privileges:true' in 'security_opt' to prevent this.",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "LOW",
+                    "cwe": [
+                        "CWE-732: Incorrect Permission Assignment for Critical Resource"
+                    ],
+                    "cwe2021-top25": true,
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "HIGH",
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "LOW",
+                    "owasp": [
+                        "A05:2021 - Security Misconfiguration",
+                        "A06:2017 - Security Misconfiguration"
+                    ],
+                    "references": [
+                        "https://raesene.github.io/blog/2019/06/01/docker-capabilities-and-no-new-privs/",
+                        "https://www.kernel.org/doc/Documentation/prctl/no_new_privs.txt",
+                        "https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html#rule-4-add-no-new-privileges-flag"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "qNUoWr",
+                            "url": "https://semgrep.dev/playground/r/qkT2BLp/yaml.docker-compose.security.no-new-privileges.no-new-privileges",
+                            "version_id": "qkT2BLp"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/yaml.docker-compose.security.no-new-privileges.no-new-privileges",
+                    "shortlink": "https://sg.run/0n8q",
+                    "source": "https://semgrep.dev/r/yaml.docker-compose.security.no-new-privileges.no-new-privileges",
+                    "subcategory": [
+                        "audit"
+                    ],
+                    "technology": [
+                        "docker-compose"
+                    ],
+                    "vulnerability_class": [
+                        "Improper Authorization"
+                    ]
+                },
+                "metavars": {
+                    "$SERVICE": {
+                        "abstract_content": "javavulny",
+                        "end": {
+                            "col": 12,
+                            "line": 12,
+                            "offset": 212
+                        },
+                        "start": {
+                            "col": 3,
+                            "line": 12,
+                            "offset": 203
+                        }
+                    }
+                },
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "docker-compose.yml",
+            "start": {
+                "col": 3,
+                "line": 12,
+                "offset": 203
+            }
+        },
+        {
+            "check_id": "yaml.docker-compose.security.writable-filesystem-service.writable-filesystem-service",
+            "end": {
+                "col": 12,
+                "line": 12,
+                "offset": 212
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "554c45717e6622ca8eaec1d789701653d658cbbe2057e19cb1882e2674e858ea79636ea02affc1616848322aebb07a4c2fe98a2d0f324afcaa934f56360f015e_0",
+                "is_ignored": false,
+                "lines": "  javavulny:",
+                "message": "Service 'javavulny' is running with a writable root filesystem. This may allow malicious applications to download and run additional payloads, or modify container files. If an application inside a container has to save something temporarily consider using a tmpfs. Add 'read_only: true' to this service to prevent this.",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "LOW",
+                    "cwe": [
+                        "CWE-732: Incorrect Permission Assignment for Critical Resource"
+                    ],
+                    "cwe2021-top25": true,
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "HIGH",
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "LOW",
+                    "owasp": [
+                        "A05:2021 - Security Misconfiguration",
+                        "A06:2017 - Security Misconfiguration"
+                    ],
+                    "references": [
+                        "https://docs.docker.com/compose/compose-file/compose-file-v3/#domainname-hostname-ipc-mac_address-privileged-read_only-shm_size-stdin_open-tty-user-working_dir",
+                        "https://blog.atomist.com/security-of-docker-kubernetes/",
+                        "https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html#rule-8-set-filesystem-and-volumes-to-read-only"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "v8U5vN",
+                            "url": "https://semgrep.dev/playground/r/o5Tg9ob/yaml.docker-compose.security.writable-filesystem-service.writable-filesystem-service",
+                            "version_id": "o5Tg9ob"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/yaml.docker-compose.security.writable-filesystem-service.writable-filesystem-service",
+                    "shortlink": "https://sg.run/e4JE",
+                    "source": "https://semgrep.dev/r/yaml.docker-compose.security.writable-filesystem-service.writable-filesystem-service",
+                    "subcategory": [
+                        "audit"
+                    ],
+                    "technology": [
+                        "docker-compose"
+                    ],
+                    "vulnerability_class": [
+                        "Improper Authorization"
+                    ]
+                },
+                "metavars": {
+                    "$SERVICE": {
+                        "abstract_content": "javavulny",
+                        "end": {
+                            "col": 12,
+                            "line": 12,
+                            "offset": 212
+                        },
+                        "start": {
+                            "col": 3,
+                            "line": 12,
+                            "offset": 203
+                        }
+                    }
+                },
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "docker-compose.yml",
+            "start": {
+                "col": 3,
+                "line": 12,
+                "offset": 203
+            }
+        },
+        {
+            "check_id": "java.spring.security.audit.spring-csrf-disabled.spring-csrf-disabled",
+            "end": {
+                "col": 42,
+                "line": 50,
+                "offset": 2284
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "e514a05b734bec29a96dc7f2063214cc0af9b5cb4bafc65332eac0e5c668b62c227aeecad82b8a81c36addb97a3f574fb085ec6c3db1eecaacfbbd779518743c_0",
+                "is_ignored": false,
+                "lines": "            http\n                    .antMatcher(\"/api/jwt/**\")\n                        .httpBasic().disable()\n                        .csrf().disable()",
+                "message": "CSRF protection is disabled for this configuration. This is a security risk.",
+                "metadata": {
+                    "asvs": {
+                        "control_id": "4.2.2 CSRF",
+                        "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x12-V4-Access-Control.md#v42-operation-level-access-control",
+                        "section": "V4 Access Control",
+                        "version": "4"
+                    },
+                    "category": "security",
+                    "confidence": "LOW",
+                    "cwe": [
+                        "CWE-352: Cross-Site Request Forgery (CSRF)"
+                    ],
+                    "cwe2021-top25": true,
+                    "cwe2022-top25": true,
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "MEDIUM",
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "LOW",
+                    "owasp": [
+                        "A01:2021 - Broken Access Control"
+                    ],
+                    "references": [
+                        "https://owasp.org/Top10/A01_2021-Broken_Access_Control"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "OrU3gK",
+                            "url": "https://semgrep.dev/playground/r/5PTdAWX/java.spring.security.audit.spring-csrf-disabled.spring-csrf-disabled",
+                            "version_id": "5PTdAWX"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/java.spring.security.audit.spring-csrf-disabled.spring-csrf-disabled",
+                    "shortlink": "https://sg.run/jRnl",
+                    "source": "https://semgrep.dev/r/java.spring.security.audit.spring-csrf-disabled.spring-csrf-disabled",
+                    "source-rule-url": "https://find-sec-bugs.github.io/bugs.htm#SPRING_CSRF_PROTECTION_DISABLED",
+                    "subcategory": [
+                        "audit"
+                    ],
+                    "technology": [
+                        "spring"
+                    ],
+                    "vulnerability_class": [
+                        "Cross-Site Request Forgery (CSRF)"
+                    ]
+                },
+                "metavars": {
+                    "$OBJ": {
+                        "abstract_content": "http.antMatcher(\"/api/jwt/**\").httpBasic().disable()",
+                        "end": {
+                            "col": 47,
+                            "line": 49,
+                            "offset": 2242
+                        },
+                        "start": {
+                            "col": 13,
+                            "line": 47,
+                            "offset": 2144
+                        }
+                    }
+                },
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/java/hawk/MultiHttpSecurityConfig.java",
+            "start": {
+                "col": 13,
+                "line": 47,
+                "offset": 2144
+            }
+        },
+        {
+            "check_id": "java.spring.security.audit.spring-csrf-disabled.spring-csrf-disabled",
+            "end": {
+                "col": 38,
+                "line": 91,
+                "offset": 3902
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "403b601c1cf2f664993a51a6025dd7c5f88ab55eb825b37550ee1e9000702f56887e2a18dc954403537c8badca9f45c5eb5606e0737b558f9608232fa0899ee0_0",
+                "is_ignored": false,
+                "lines": "            http\n                    .antMatcher(\"/api/token/**\")\n                    .httpBasic().disable()\n                    .csrf().disable()",
+                "message": "CSRF protection is disabled for this configuration. This is a security risk.",
+                "metadata": {
+                    "asvs": {
+                        "control_id": "4.2.2 CSRF",
+                        "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x12-V4-Access-Control.md#v42-operation-level-access-control",
+                        "section": "V4 Access Control",
+                        "version": "4"
+                    },
+                    "category": "security",
+                    "confidence": "LOW",
+                    "cwe": [
+                        "CWE-352: Cross-Site Request Forgery (CSRF)"
+                    ],
+                    "cwe2021-top25": true,
+                    "cwe2022-top25": true,
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "MEDIUM",
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "LOW",
+                    "owasp": [
+                        "A01:2021 - Broken Access Control"
+                    ],
+                    "references": [
+                        "https://owasp.org/Top10/A01_2021-Broken_Access_Control"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "OrU3gK",
+                            "url": "https://semgrep.dev/playground/r/5PTdAWX/java.spring.security.audit.spring-csrf-disabled.spring-csrf-disabled",
+                            "version_id": "5PTdAWX"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/java.spring.security.audit.spring-csrf-disabled.spring-csrf-disabled",
+                    "shortlink": "https://sg.run/jRnl",
+                    "source": "https://semgrep.dev/r/java.spring.security.audit.spring-csrf-disabled.spring-csrf-disabled",
+                    "source-rule-url": "https://find-sec-bugs.github.io/bugs.htm#SPRING_CSRF_PROTECTION_DISABLED",
+                    "subcategory": [
+                        "audit"
+                    ],
+                    "technology": [
+                        "spring"
+                    ],
+                    "vulnerability_class": [
+                        "Cross-Site Request Forgery (CSRF)"
+                    ]
+                },
+                "metavars": {
+                    "$OBJ": {
+                        "abstract_content": "http.antMatcher(\"/api/token/**\").httpBasic().disable()",
+                        "end": {
+                            "col": 43,
+                            "line": 90,
+                            "offset": 3864
+                        },
+                        "start": {
+                            "col": 13,
+                            "line": 88,
+                            "offset": 3768
+                        }
+                    }
+                },
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/java/hawk/MultiHttpSecurityConfig.java",
+            "start": {
+                "col": 13,
+                "line": 88,
+                "offset": 3768
+            }
+        },
+        {
+            "check_id": "java.spring.security.audit.spring-csrf-disabled.spring-csrf-disabled",
+            "end": {
+                "col": 38,
+                "line": 112,
+                "offset": 4749
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "8c490f4cf13edd9944ce978193aafc331aeec2b9545b1f1c32fa30ce494593df2a0ce8cd99d111beea77931c7332e0527aa254e850d0fabcec5498192e9b95fe_0",
+                "is_ignored": false,
+                "lines": "            http\n                    .antMatcher(\"/api/basic/**\")\n                    .csrf().disable()",
+                "message": "CSRF protection is disabled for this configuration. This is a security risk.",
+                "metadata": {
+                    "asvs": {
+                        "control_id": "4.2.2 CSRF",
+                        "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x12-V4-Access-Control.md#v42-operation-level-access-control",
+                        "section": "V4 Access Control",
+                        "version": "4"
+                    },
+                    "category": "security",
+                    "confidence": "LOW",
+                    "cwe": [
+                        "CWE-352: Cross-Site Request Forgery (CSRF)"
+                    ],
+                    "cwe2021-top25": true,
+                    "cwe2022-top25": true,
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "MEDIUM",
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "LOW",
+                    "owasp": [
+                        "A01:2021 - Broken Access Control"
+                    ],
+                    "references": [
+                        "https://owasp.org/Top10/A01_2021-Broken_Access_Control"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "OrU3gK",
+                            "url": "https://semgrep.dev/playground/r/5PTdAWX/java.spring.security.audit.spring-csrf-disabled.spring-csrf-disabled",
+                            "version_id": "5PTdAWX"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/java.spring.security.audit.spring-csrf-disabled.spring-csrf-disabled",
+                    "shortlink": "https://sg.run/jRnl",
+                    "source": "https://semgrep.dev/r/java.spring.security.audit.spring-csrf-disabled.spring-csrf-disabled",
+                    "source-rule-url": "https://find-sec-bugs.github.io/bugs.htm#SPRING_CSRF_PROTECTION_DISABLED",
+                    "subcategory": [
+                        "audit"
+                    ],
+                    "technology": [
+                        "spring"
+                    ],
+                    "vulnerability_class": [
+                        "Cross-Site Request Forgery (CSRF)"
+                    ]
+                },
+                "metavars": {
+                    "$OBJ": {
+                        "abstract_content": "http.antMatcher(\"/api/basic/**\")",
+                        "end": {
+                            "col": 49,
+                            "line": 111,
+                            "offset": 4711
+                        },
+                        "start": {
+                            "col": 13,
+                            "line": 110,
+                            "offset": 4658
+                        }
+                    }
+                },
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/java/hawk/MultiHttpSecurityConfig.java",
+            "start": {
+                "col": 13,
+                "line": 110,
+                "offset": 4658
+            }
+        },
+        {
+            "check_id": "java.servlets.security.crlf-injection-logs-deepsemgrep.crlf-injection-logs-deepsemgrep",
+            "end": {
+                "col": 63,
+                "line": 24,
+                "offset": 938
+            },
+            "extra": {
+                "dataflow_trace": {
+                    "intermediate_vars": [
+                        {
+                            "content": "headers",
+                            "location": {
+                                "end": {
+                                    "col": 36,
+                                    "line": 21,
+                                    "offset": 756
+                                },
+                                "path": "src/main/java/hawk/api/jwt/JwtLog4jController.java",
+                                "start": {
+                                    "col": 29,
+                                    "line": 21,
+                                    "offset": 749
+                                }
+                            }
+                        },
+                        {
+                            "content": "it",
+                            "location": {
+                                "end": {
+                                    "col": 22,
+                                    "line": 23,
+                                    "offset": 850
+                                },
+                                "path": "src/main/java/hawk/api/jwt/JwtLog4jController.java",
+                                "start": {
+                                    "col": 20,
+                                    "line": 23,
+                                    "offset": 848
+                                }
+                            }
+                        }
+                    ],
+                    "taint_sink": [
+                        "CliLoc",
+                        [
+                            {
+                                "end": {
+                                    "col": 63,
+                                    "line": 24,
+                                    "offset": 938
+                                },
+                                "path": "src/main/java/hawk/api/jwt/JwtLog4jController.java",
+                                "start": {
+                                    "col": 13,
+                                    "line": 24,
+                                    "offset": 888
+                                }
+                            },
+                            "logger.info(\"{} = {}\", it, request.getHeader(it));"
+                        ]
+                    ],
+                    "taint_source": [
+                        "CliLoc",
+                        [
+                            {
+                                "end": {
+                                    "col": 63,
+                                    "line": 21,
+                                    "offset": 783
+                                },
+                                "path": "src/main/java/hawk/api/jwt/JwtLog4jController.java",
+                                "start": {
+                                    "col": 39,
+                                    "line": 21,
+                                    "offset": 759
+                                }
+                            },
+                            "request.getHeaderNames()"
+                        ]
+                    ]
+                },
+                "engine_kind": "PRO",
+                "fingerprint": "0d0de662f61bbf8a23cc2bbe1580077b74f2e30614ce15693020dcae4efdeef034bb03e256f99651372f9dc1a92869b93f82e43d04131db5542a55a4ce11407a_0",
+                "is_ignored": false,
+                "lines": "            logger.info(\"{} = {}\", it, request.getHeader(it));",
+                "message": "When data from an untrusted source is put into a logger and not neutralized correctly, an attacker could forge log entries or include malicious content.",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "MEDIUM",
+                    "cwe": [
+                        "CWE-93: Improper Neutralization of CRLF Sequences ('CRLF Injection')"
+                    ],
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "functional-categories": [
+                        "web::source::cookie::Servlet",
+                        "web::source::http-params::Servlet",
+                        "web::source::http-body::Servlet",
+                        "web::source::header::Servlet",
+                        "log::sink::log::log4j",
+                        "log::sink::log::java.util"
+                    ],
+                    "impact": "MEDIUM",
+                    "interfile": true,
+                    "license": "Copyright 2023 Semgrep, Inc.",
+                    "likelihood": "MEDIUM",
+                    "owasp": [
+                        "A03:2021 - Injection"
+                    ],
+                    "references": [
+                        "https://cwe.mitre.org/data/definitions/117.html",
+                        "https://cwe.mitre.org/data/definitions/93.html",
+                        "https://owasp.org/www-community/attacks/Log_Injection"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "pro_rules",
+                            "rule_id": "d8UbJq",
+                            "url": "https://semgrep.dev/playground/r/QkTWw5z/java.servlets.security.crlf-injection-logs-deepsemgrep.crlf-injection-logs-deepsemgrep",
+                            "version_id": "QkTWw5z"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/java.servlets.security.crlf-injection-logs-deepsemgrep.crlf-injection-logs-deepsemgrep",
+                    "shortlink": "https://sg.run/xGwy",
+                    "source": "https://semgrep.dev/r/java.servlets.security.crlf-injection-logs-deepsemgrep.crlf-injection-logs-deepsemgrep",
+                    "source-rule-url": "https://find-sec-bugs.github.io/bugs.htm#CRLF_INJECTION_LOGS",
+                    "subcategory": [
+                        "vuln"
+                    ],
+                    "technology": [
+                        "java",
+                        "servlets"
+                    ],
+                    "vulnerability_class": [
+                        "Improper Validation"
+                    ]
+                },
+                "metavars": {
+                    "$1": {
+                        "abstract_content": "info",
+                        "end": {
+                            "col": 5,
+                            "line": 1,
+                            "offset": 4
+                        },
+                        "start": {
+                            "col": 1,
+                            "line": 1,
+                            "offset": 0
+                        }
+                    },
+                    "$LEVEL": {
+                        "abstract_content": "info",
+                        "end": {
+                            "col": 24,
+                            "line": 24,
+                            "offset": 899
+                        },
+                        "start": {
+                            "col": 20,
+                            "line": 24,
+                            "offset": 895
+                        }
+                    },
+                    "$LOG": {
+                        "abstract_content": "logger",
+                        "end": {
+                            "col": 19,
+                            "line": 24,
+                            "offset": 894
+                        },
+                        "start": {
+                            "col": 13,
+                            "line": 24,
+                            "offset": 888
+                        }
+                    },
+                    "$REQ": {
+                        "abstract_content": "request",
+                        "end": {
+                            "col": 46,
+                            "line": 21,
+                            "offset": 766
+                        },
+                        "start": {
+                            "col": 39,
+                            "line": 21,
+                            "offset": 759
+                        }
+                    },
+                    "$REQFUNC": {
+                        "abstract_content": "getHeaderNames",
+                        "end": {
+                            "col": 61,
+                            "line": 21,
+                            "offset": 781
+                        },
+                        "start": {
+                            "col": 47,
+                            "line": 21,
+                            "offset": 767
+                        }
+                    }
+                },
+                "severity": "ERROR",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/java/hawk/api/jwt/JwtLog4jController.java",
+            "start": {
+                "col": 13,
+                "line": 24,
+                "offset": 888
+            }
+        },
+        {
+            "check_id": "java.lang.security.audit.cookie-missing-httponly.cookie-missing-httponly",
+            "end": {
+                "col": 60,
+                "line": 57,
+                "offset": 2536
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "b497d9941bb9f64e2fd1b190d2d4e683908dc713bcdb1d4a24856f26ef3712d4e1f9146570c56e7280410251e10415666f317a394a3556e2730b807bcd1327fd_0",
+                "is_ignored": false,
+                "lines": "        resp.addCookie(new Cookie(\"XLOGINID\", cookieCode));",
+                "message": "A cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie. Set the 'HttpOnly' flag by calling 'cookie.setHttpOnly(true);'",
+                "metadata": {
+                    "asvs": {
+                        "control_id": "3.4.2 Missing Cookie Attribute",
+                        "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x12-V3-Session-management.md#v34-cookie-based-session-management",
+                        "section": "V3: Session Management Verification Requirements",
+                        "version": "4"
+                    },
+                    "category": "security",
+                    "confidence": "LOW",
+                    "cwe": [
+                        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+                    ],
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "LOW",
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "LOW",
+                    "owasp": [
+                        "A05:2021 - Security Misconfiguration"
+                    ],
+                    "references": [
+                        "https://owasp.org/Top10/A05_2021-Security_Misconfiguration"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "EwU2z6",
+                            "url": "https://semgrep.dev/playground/r/JdTNpEW/java.lang.security.audit.cookie-missing-httponly.cookie-missing-httponly",
+                            "version_id": "JdTNpEW"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/java.lang.security.audit.cookie-missing-httponly.cookie-missing-httponly",
+                    "shortlink": "https://sg.run/b7Be",
+                    "source": "https://semgrep.dev/r/java.lang.security.audit.cookie-missing-httponly.cookie-missing-httponly",
+                    "source-rule-url": "https://find-sec-bugs.github.io/bugs.htm#HTTPONLY_COOKIE",
+                    "subcategory": [
+                        "audit"
+                    ],
+                    "technology": [
+                        "java"
+                    ],
+                    "vulnerability_class": [
+                        "Cookie Security"
+                    ]
+                },
+                "metavars": {
+                    "$COOKIE": {
+                        "abstract_content": "new Cookie(\"XLOGINID\"cookieCode)",
+                        "end": {
+                            "col": 58,
+                            "line": 57,
+                            "offset": 2534
+                        },
+                        "start": {
+                            "col": 24,
+                            "line": 57,
+                            "offset": 2500
+                        }
+                    },
+                    "$RESPONSE": {
+                        "abstract_content": "resp",
+                        "end": {
+                            "col": 13,
+                            "line": 57,
+                            "offset": 2489
+                        },
+                        "start": {
+                            "col": 9,
+                            "line": 57,
+                            "offset": 2485
+                        }
+                    }
+                },
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/java/hawk/controller/LoginController.java",
+            "start": {
+                "col": 9,
+                "line": 57,
+                "offset": 2485
+            }
+        },
+        {
+            "check_id": "java.lang.security.audit.cookie-missing-secure-flag.cookie-missing-secure-flag",
+            "end": {
+                "col": 60,
+                "line": 57,
+                "offset": 2536
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "ba9e5d1fc18e6f18044e08b4b5d8f4aec117648638b21bbeac6475f943e287bae81b7246bd2aa5bf023667d742e18d5c24517539fe8e1d3f52a81cfc4e7f0abf_0",
+                "is_ignored": false,
+                "lines": "        resp.addCookie(new Cookie(\"XLOGINID\", cookieCode));",
+                "message": "A cookie was detected without setting the 'secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'secure' flag by calling 'new Cookie(\"XLOGINID\", cookieCode).setSecure(true);'",
+                "metadata": {
+                    "asvs": {
+                        "control_id": "3.4.1 Missing Cookie Attribute",
+                        "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x12-V3-Session-management.md#v34-cookie-based-session-management",
+                        "section": "V3: Session Management Verification Requirements",
+                        "version": "4"
+                    },
+                    "category": "security",
+                    "confidence": "LOW",
+                    "cwe": [
+                        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+                    ],
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "LOW",
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "LOW",
+                    "owasp": [
+                        "A05:2021 - Security Misconfiguration"
+                    ],
+                    "references": [
+                        "https://owasp.org/Top10/A05_2021-Security_Misconfiguration"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "L1Uyvp",
+                            "url": "https://semgrep.dev/playground/r/GxTv63G/java.lang.security.audit.cookie-missing-secure-flag.cookie-missing-secure-flag",
+                            "version_id": "GxTv63G"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/java.lang.security.audit.cookie-missing-secure-flag.cookie-missing-secure-flag",
+                    "shortlink": "https://sg.run/kXoK",
+                    "source": "https://semgrep.dev/r/java.lang.security.audit.cookie-missing-secure-flag.cookie-missing-secure-flag",
+                    "source-rule-url": "https://find-sec-bugs.github.io/bugs.htm#INSECURE_COOKIE",
+                    "subcategory": [
+                        "audit"
+                    ],
+                    "technology": [
+                        "java"
+                    ],
+                    "vulnerability_class": [
+                        "Cookie Security"
+                    ]
+                },
+                "metavars": {
+                    "$COOKIE": {
+                        "abstract_content": "new Cookie(\"XLOGINID\"cookieCode)",
+                        "end": {
+                            "col": 58,
+                            "line": 57,
+                            "offset": 2534
+                        },
+                        "start": {
+                            "col": 24,
+                            "line": 57,
+                            "offset": 2500
+                        }
+                    },
+                    "$RESPONSE": {
+                        "abstract_content": "resp",
+                        "end": {
+                            "col": 13,
+                            "line": 57,
+                            "offset": 2489
+                        },
+                        "start": {
+                            "col": 9,
+                            "line": 57,
+                            "offset": 2485
+                        }
+                    }
+                },
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/java/hawk/controller/LoginController.java",
+            "start": {
+                "col": 9,
+                "line": 57,
+                "offset": 2485
+            }
+        },
+        {
+            "check_id": "java.servlets.security.audit.cookie-missing-httponly.cookie-missing-httponly",
+            "end": {
+                "col": 60,
+                "line": 57,
+                "offset": 2536
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "32a9c639a672deed13f2b238db8a2f4a34c4331e505713d1242f7c056468266db7aa41a7cf93cc0479dcc7d8aa0c3279aeb166818fe94425cea841f3c7e4e7db_0",
+                "is_ignored": false,
+                "lines": "        resp.addCookie(new Cookie(\"XLOGINID\", cookieCode));",
+                "message": "A cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie. Set the 'HttpOnly' flag by calling 'cookie.setHttpOnly(true);'",
+                "metadata": {
+                    "asvs": {
+                        "control_id": "3.4.2 Missing Cookie Attribute",
+                        "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x12-V3-Session-management.md#v34-cookie-based-session-management",
+                        "section": "V3: Session Management Verification Requirements",
+                        "version": "4"
+                    },
+                    "category": "security",
+                    "confidence": "HIGH",
+                    "cwe": [
+                        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+                    ],
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "functional-categories": [
+                        "web::search::cookie-config::Servlet"
+                    ],
+                    "impact": "LOW",
+                    "license": "Copyright 2023 Semgrep, Inc.",
+                    "likelihood": "LOW",
+                    "owasp": [
+                        "A05:2021 - Security Misconfiguration"
+                    ],
+                    "references": [
+                        "https://owasp.org/www-community/HttpOnly"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "pro_rules",
+                            "rule_id": "DbUR6k",
+                            "url": "https://semgrep.dev/playground/r/e1T03on/java.servlets.security.audit.cookie-missing-httponly.cookie-missing-httponly",
+                            "version_id": "e1T03on"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/java.servlets.security.audit.cookie-missing-httponly.cookie-missing-httponly",
+                    "shortlink": "https://sg.run/2WZD",
+                    "source": "https://semgrep.dev/r/java.servlets.security.audit.cookie-missing-httponly.cookie-missing-httponly",
+                    "source-rule-url": "https://find-sec-bugs.github.io/bugs.htm#HTTPONLY_COOKIE",
+                    "subcategory": [
+                        "audit"
+                    ],
+                    "technology": [
+                        "java",
+                        "servlets"
+                    ],
+                    "vulnerability_class": [
+                        "Cookie Security"
+                    ]
+                },
+                "metavars": {
+                    "$COOKIE": {
+                        "abstract_content": "new Cookie(\"XLOGINID\"cookieCode)",
+                        "end": {
+                            "col": 58,
+                            "line": 57,
+                            "offset": 2534
+                        },
+                        "start": {
+                            "col": 24,
+                            "line": 57,
+                            "offset": 2500
+                        }
+                    },
+                    "$RESPONSE": {
+                        "abstract_content": "resp",
+                        "end": {
+                            "col": 13,
+                            "line": 57,
+                            "offset": 2489
+                        },
+                        "start": {
+                            "col": 9,
+                            "line": 57,
+                            "offset": 2485
+                        }
+                    }
+                },
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/java/hawk/controller/LoginController.java",
+            "start": {
+                "col": 9,
+                "line": 57,
+                "offset": 2485
+            }
+        },
+        {
+            "check_id": "java.servlets.security.audit.cookie-missing-samesite.cookie-missing-samesite",
+            "end": {
+                "col": 60,
+                "line": 57,
+                "offset": 2536
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "0093520971753776bc6805f81368c825fd2f195fb1f6b6e8845432e450b8a9ee53cb099fbd6c1024c3dc4ca0aadd3c0968a2a5f7856eddc2e9b3592e8509ba26_0",
+                "is_ignored": false,
+                "lines": "        resp.addCookie(new Cookie(\"XLOGINID\", cookieCode));",
+                "message": "The application does not appear to verify inbound requests which can lead to a Cross-site request forgery (CSRF) vulnerability. If the application uses cookie-based authentication, an attacker can trick users into sending authenticated HTTP requests without their knowledge from any arbitrary domain they visit. To prevent this vulnerability start by identifying if the framework or library leveraged has built-in features or offers plugins for CSRF protection. CSRF tokens should be unique and securely random. The `Synchronizer Token` or `Double Submit Cookie` patterns with defense-in-depth mechanisms such as the `sameSite` cookie flag can help prevent CSRF. For more information, see: [Cross-site request forgery prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html)",
+                "metadata": {
+                    "asvs": {
+                        "control_id": "3.4.3 Missing Cookie Attribute",
+                        "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x12-V3-Session-management.md#v34-cookie-based-session-management",
+                        "section": "V3: Session Management Verification Requirements",
+                        "version": "4"
+                    },
+                    "category": "security",
+                    "confidence": "HIGH",
+                    "cwe": [
+                        "CWE-352: Cross-Site Request Forgery (CSRF)"
+                    ],
+                    "cwe2021-top25": true,
+                    "cwe2022-top25": true,
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "functional-categories": [
+                        "web::search::cookie-config::Servlet"
+                    ],
+                    "impact": "LOW",
+                    "license": "Copyright 2023 Semgrep, Inc.",
+                    "likelihood": "LOW",
+                    "owasp": [
+                        "A01:2021 - Broken Access Control"
+                    ],
+                    "references": [
+                        "https://stackoverflow.com/questions/42717210/samesite-cookie-in-java-application"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "pro_rules",
+                            "rule_id": "WAUqW7",
+                            "url": "https://semgrep.dev/playground/r/vdTY8wq/java.servlets.security.audit.cookie-missing-samesite.cookie-missing-samesite",
+                            "version_id": "vdTY8wq"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/java.servlets.security.audit.cookie-missing-samesite.cookie-missing-samesite",
+                    "shortlink": "https://sg.run/XR5b",
+                    "source": "https://semgrep.dev/r/java.servlets.security.audit.cookie-missing-samesite.cookie-missing-samesite",
+                    "subcategory": [
+                        "audit"
+                    ],
+                    "technology": [
+                        "java",
+                        "servlets"
+                    ],
+                    "vulnerability_class": [
+                        "Cross-Site Request Forgery (CSRF)"
+                    ]
+                },
+                "metavars": {
+                    "$RESP": {
+                        "abstract_content": "resp",
+                        "end": {
+                            "col": 13,
+                            "line": 57,
+                            "offset": 2489
+                        },
+                        "start": {
+                            "col": 9,
+                            "line": 57,
+                            "offset": 2485
+                        }
+                    }
+                },
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/java/hawk/controller/LoginController.java",
+            "start": {
+                "col": 9,
+                "line": 57,
+                "offset": 2485
+            }
+        },
+        {
+            "check_id": "java.servlets.security.audit.cookie-missing-secure-flag.cookie-missing-secure-flag",
+            "end": {
+                "col": 60,
+                "line": 57,
+                "offset": 2536
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "3d6f518ca26a22e090325fbef02cb2a1c4ab3195a567c3dd8a62ea5a5adcfabe692b6fd9db06480743846f37411ae57fd122b68876449d2cff6420f280b0e778_0",
+                "is_ignored": false,
+                "lines": "        resp.addCookie(new Cookie(\"XLOGINID\", cookieCode));",
+                "message": "A cookie was detected without setting the 'secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'secure' flag by calling 'new Cookie(\"XLOGINID\", cookieCode).setSecure(true);'",
+                "metadata": {
+                    "asvs": {
+                        "control_id": "3.4.1 Missing Cookie Attribute",
+                        "control_url": "https://github.com/OWASP/ASVS/blob/master/4.0/en/0x12-V3-Session-management.md#v34-cookie-based-session-management",
+                        "section": "V3: Session Management Verification Requirements",
+                        "version": "4"
+                    },
+                    "category": "security",
+                    "confidence": "HIGH",
+                    "cwe": [
+                        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+                    ],
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "functional-categories": [
+                        "web::search::cookie-config::Servlet"
+                    ],
+                    "impact": "LOW",
+                    "license": "Copyright 2023 Semgrep, Inc.",
+                    "likelihood": "LOW",
+                    "owasp": [
+                        "A05:2021 - Security Misconfiguration"
+                    ],
+                    "references": [
+                        "https://owasp.org/www-community/controls/SecureCookieAttribute"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "pro_rules",
+                            "rule_id": "0oUKLg",
+                            "url": "https://semgrep.dev/playground/r/d6Trv0B/java.servlets.security.audit.cookie-missing-secure-flag.cookie-missing-secure-flag",
+                            "version_id": "d6Trv0B"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/java.servlets.security.audit.cookie-missing-secure-flag.cookie-missing-secure-flag",
+                    "shortlink": "https://sg.run/jW2J",
+                    "source": "https://semgrep.dev/r/java.servlets.security.audit.cookie-missing-secure-flag.cookie-missing-secure-flag",
+                    "source-rule-url": "https://find-sec-bugs.github.io/bugs.htm#INSECURE_COOKIE",
+                    "subcategory": [
+                        "audit"
+                    ],
+                    "technology": [
+                        "java",
+                        "servlets"
+                    ],
+                    "vulnerability_class": [
+                        "Cookie Security"
+                    ]
+                },
+                "metavars": {
+                    "$COOKIE": {
+                        "abstract_content": "new Cookie(\"XLOGINID\"cookieCode)",
+                        "end": {
+                            "col": 58,
+                            "line": 57,
+                            "offset": 2534
+                        },
+                        "start": {
+                            "col": 24,
+                            "line": 57,
+                            "offset": 2500
+                        }
+                    },
+                    "$RESPONSE": {
+                        "abstract_content": "resp",
+                        "end": {
+                            "col": 13,
+                            "line": 57,
+                            "offset": 2489
+                        },
+                        "start": {
+                            "col": 9,
+                            "line": 57,
+                            "offset": 2485
+                        }
+                    }
+                },
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/java/hawk/controller/LoginController.java",
+            "start": {
+                "col": 9,
+                "line": 57,
+                "offset": 2485
+            }
+        },
+        {
+            "check_id": "java.spring.security.injection.tainted-sql-string.tainted-sql-string",
+            "end": {
+                "col": 50,
+                "line": 31,
+                "offset": 975
+            },
+            "extra": {
+                "dataflow_trace": {
+                    "intermediate_vars": [
+                        {
+                            "content": "text",
+                            "location": {
+                                "end": {
+                                    "col": 73,
+                                    "line": 43,
+                                    "offset": 1487
+                                },
+                                "path": "src/main/java/hawk/api/jwt/JwtUserController.java",
+                                "start": {
+                                    "col": 69,
+                                    "line": 43,
+                                    "offset": 1483
+                                }
+                            }
+                        },
+                        {
+                            "content": "search",
+                            "location": {
+                                "end": {
+                                    "col": 22,
+                                    "line": 44,
+                                    "offset": 1512
+                                },
+                                "path": "src/main/java/hawk/api/jwt/JwtUserController.java",
+                                "start": {
+                                    "col": 16,
+                                    "line": 44,
+                                    "offset": 1506
+                                }
+                            }
+                        },
+                        {
+                            "content": "searchText",
+                            "location": {
+                                "end": {
+                                    "col": 24,
+                                    "line": 12,
+                                    "offset": 167
+                                },
+                                "path": "src/main/java/hawk/form/Search.java",
+                                "start": {
+                                    "col": 14,
+                                    "line": 12,
+                                    "offset": 157
+                                }
+                            }
+                        },
+                        {
+                            "content": "searchText",
+                            "location": {
+                                "end": {
+                                    "col": 36,
+                                    "line": 11,
+                                    "offset": 140
+                                },
+                                "path": "src/main/java/hawk/form/Search.java",
+                                "start": {
+                                    "col": 26,
+                                    "line": 11,
+                                    "offset": 130
+                                }
+                            }
+                        }
+                    ],
+                    "taint_sink": [
+                        "CliCall",
+                        [
+                            [
+                                {
+                                    "end": {
+                                        "col": 63,
+                                        "line": 45,
+                                        "offset": 1595
+                                    },
+                                    "path": "src/main/java/hawk/api/jwt/JwtUserController.java",
+                                    "start": {
+                                        "col": 34,
+                                        "line": 45,
+                                        "offset": 1566
+                                    }
+                                },
+                                "this.userSearchService.search"
+                            ],
+                            [
+                                {
+                                    "content": "search",
+                                    "location": {
+                                        "end": {
+                                            "col": 43,
+                                            "line": 25,
+                                            "offset": 611
+                                        },
+                                        "path": "src/main/java/hawk/service/UserSearchService.java",
+                                        "start": {
+                                            "col": 37,
+                                            "line": 25,
+                                            "offset": 605
+                                        }
+                                    }
+                                },
+                                {
+                                    "content": "getSearchText",
+                                    "location": {
+                                        "end": {
+                                            "col": 41,
+                                            "line": 31,
+                                            "offset": 966
+                                        },
+                                        "path": "src/main/java/hawk/service/UserSearchService.java",
+                                        "start": {
+                                            "col": 28,
+                                            "line": 31,
+                                            "offset": 953
+                                        }
+                                    }
+                                },
+                                {
+                                    "content": "searchText",
+                                    "location": {
+                                        "end": {
+                                            "col": 26,
+                                            "line": 16,
+                                            "offset": 250
+                                        },
+                                        "path": "src/main/java/hawk/form/Search.java",
+                                        "start": {
+                                            "col": 16,
+                                            "line": 16,
+                                            "offset": 240
+                                        }
+                                    }
+                                }
+                            ],
+                            [
+                                "CliLoc",
+                                [
+                                    {
+                                        "end": {
+                                            "col": 50,
+                                            "line": 31,
+                                            "offset": 975
+                                        },
+                                        "path": "src/main/java/hawk/service/UserSearchService.java",
+                                        "start": {
+                                            "col": 28,
+                                            "line": 30,
+                                            "offset": 846
+                                        }
+                                    },
+                                    "\"select id, name, description, tenant_id from public.user where name like '%\" +\n                    search.getSearchText() + \"%'\""
+                                ]
+                            ]
+                        ]
+                    ],
+                    "taint_source": [
+                        "CliLoc",
+                        [
+                            {
+                                "end": {
+                                    "col": 73,
+                                    "line": 43,
+                                    "offset": 1487
+                                },
+                                "path": "src/main/java/hawk/api/jwt/JwtUserController.java",
+                                "start": {
+                                    "col": 69,
+                                    "line": 43,
+                                    "offset": 1483
+                                }
+                            },
+                            "text"
+                        ]
+                    ]
+                },
+                "engine_kind": "PRO",
+                "fingerprint": "6ae0f0fdb8927ea7007f85c65b41c2fc893d2888628e8fec55b9f70c2cce5feefce51c6fecfee6b86ac97433049e1ae7ef7f66542b3f95ad5fb8a57b47875ae3_0",
+                "is_ignored": false,
+                "lines": "            String query = \"select id, name, description, tenant_id from public.user where name like '%\" +\n                    search.getSearchText() + \"%'\";",
+                "message": "User data flows into this manually-constructed SQL string. User data can be safely inserted into SQL strings using prepared statements or an object-relational mapper (ORM). Manually-constructed SQL strings is a possible indicator of SQL injection, which could let an attacker steal or manipulate data from the database. Instead, use prepared statements (`connection.PreparedStatement`) or a safe library.",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "MEDIUM",
+                    "cwe": [
+                        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+                    ],
+                    "cwe2021-top25": true,
+                    "cwe2022-top25": true,
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "MEDIUM",
+                    "interfile": true,
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "HIGH",
+                    "owasp": [
+                        "A01:2017 - Injection",
+                        "A03:2021 - Injection"
+                    ],
+                    "references": [
+                        "https://docs.oracle.com/javase/7/docs/api/java/sql/PreparedStatement.html"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "10UdRR",
+                            "url": "https://semgrep.dev/playground/r/0bTLlny/java.spring.security.injection.tainted-sql-string.tainted-sql-string",
+                            "version_id": "0bTLlny"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/java.spring.security.injection.tainted-sql-string.tainted-sql-string",
+                    "shortlink": "https://sg.run/9rzz",
+                    "source": "https://semgrep.dev/r/java.spring.security.injection.tainted-sql-string.tainted-sql-string",
+                    "subcategory": [
+                        "vuln"
+                    ],
+                    "technology": [
+                        "spring"
+                    ],
+                    "vulnerability_class": [
+                        "SQL Injection"
+                    ]
+                },
+                "metavars": {
+                    "$1": {
+                        "abstract_content": "select",
+                        "end": {
+                            "col": 7,
+                            "line": 1,
+                            "offset": 6
+                        },
+                        "start": {
+                            "col": 1,
+                            "line": 1,
+                            "offset": 0
+                        }
+                    },
+                    "$METHODNAME": {
+                        "abstract_content": "searchCrappy searchCrappy searchCrappy searchCrappy searchCrappy",
+                        "end": {
+                            "col": 39,
+                            "line": 43,
+                            "offset": 1453
+                        },
+                        "start": {
+                            "col": 27,
+                            "line": 43,
+                            "offset": 1441
+                        }
+                    },
+                    "$REQ": {
+                        "abstract_content": "PathVariable PathVariable PathVariable PathVariable PathVariable PathVariable",
+                        "end": {
+                            "col": 53,
+                            "line": 43,
+                            "offset": 1467
+                        },
+                        "start": {
+                            "col": 41,
+                            "line": 43,
+                            "offset": 1455
+                        }
+                    },
+                    "$SOURCE": {
+                        "abstract_content": "text",
+                        "end": {
+                            "col": 73,
+                            "line": 43,
+                            "offset": 1487
+                        },
+                        "start": {
+                            "col": 69,
+                            "line": 43,
+                            "offset": 1483
+                        }
+                    },
+                    "$SQLSTR": {
+                        "abstract_content": "select id, name, description, tenant_id from public.user where name like '%",
+                        "end": {
+                            "col": 104,
+                            "line": 30,
+                            "offset": 922
+                        },
+                        "start": {
+                            "col": 29,
+                            "line": 30,
+                            "offset": 847
+                        }
+                    },
+                    "$TYPE": {
+                        "abstract_content": "String String String",
+                        "end": {
+                            "col": 68,
+                            "line": 43,
+                            "offset": 1482
+                        },
+                        "start": {
+                            "col": 62,
+                            "line": 43,
+                            "offset": 1476
+                        }
+                    }
+                },
+                "severity": "ERROR",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/java/hawk/service/UserSearchService.java",
+            "start": {
+                "col": 28,
+                "line": 30,
+                "offset": 846
+            }
+        },
+        {
+            "check_id": "java.spring.security.audit.spring-actuator-fully-enabled.spring-actuator-fully-enabled",
+            "end": {
+                "col": 44,
+                "line": 36,
+                "offset": 1230
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "8f8c76b208e9f10528d97311ff1432055c7dbe8ba2b8a6f2f8183c5ab8d3b68e904c60d926c72cbc5118a6d33bf96e8f0259120e241be58ab23d0f711b23af0f_0",
+                "is_ignored": false,
+                "lines": "management.endpoints.web.exposure.include=*",
+                "message": "Spring Boot Actuator is fully enabled. This exposes sensitive endpoints such as /actuator/env, /actuator/logfile, /actuator/heapdump and others. Unless you have Spring Security enabled or another means to protect these endpoints, this functionality is available without authentication, causing a significant security risk.",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "MEDIUM",
+                    "cwe": [
+                        "CWE-200: Exposure of Sensitive Information to an Unauthorized Actor"
+                    ],
+                    "cwe2021-top25": true,
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "HIGH",
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "MEDIUM",
+                    "owasp": [
+                        "A01:2021 - Broken Access Control"
+                    ],
+                    "references": [
+                        "https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html#production-ready-endpoints-exposing-endpoints",
+                        "https://medium.com/walmartglobaltech/perils-of-spring-boot-actuators-misconfiguration-185c43a0f785",
+                        "https://blog.maass.xyz/spring-actuator-security-part-1-stealing-secrets-using-spring-actuators"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "EwU4vg",
+                            "url": "https://semgrep.dev/playground/r/44TRl4j/java.spring.security.audit.spring-actuator-fully-enabled.spring-actuator-fully-enabled",
+                            "version_id": "44TRl4j"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/java.spring.security.audit.spring-actuator-fully-enabled.spring-actuator-fully-enabled",
+                    "shortlink": "https://sg.run/L0vY",
+                    "source": "https://semgrep.dev/r/java.spring.security.audit.spring-actuator-fully-enabled.spring-actuator-fully-enabled",
+                    "subcategory": [
+                        "vuln"
+                    ],
+                    "technology": [
+                        "spring"
+                    ],
+                    "vulnerability_class": [
+                        "Mishandled Sensitive Information"
+                    ]
+                },
+                "metavars": {},
+                "severity": "ERROR",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/resources/application-postgresql.properties",
+            "start": {
+                "col": 1,
+                "line": 36,
+                "offset": 1187
+            }
+        },
+        {
+            "check_id": "generic.secrets.security.detected-private-key.detected-private-key",
+            "end": {
+                "col": 59,
+                "line": 6,
+                "offset": 232
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "748e940d5272b9f00493f8665c3b578b8499d149be1da2920b384817a13ecdc9ccd88d6f20485d89ab859af781dc4f68ee7c982207867f389b4242b58f05a0d6_0",
+                "is_ignored": false,
+                "lines": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCzhWraqN+mJQuJ",
+                "message": "Private Key detected. This is a sensitive credential and should not be hardcoded here. Instead, store this in a separate, private file.",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "LOW",
+                    "cwe": [
+                        "CWE-798: Use of Hard-coded Credentials"
+                    ],
+                    "cwe2021-top25": true,
+                    "cwe2022-top25": true,
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "MEDIUM",
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "LOW",
+                    "owasp": [
+                        "A07:2021 - Identification and Authentication Failures"
+                    ],
+                    "references": [
+                        "https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "7KUQ0p",
+                            "url": "https://semgrep.dev/playground/r/rxTyLRv/generic.secrets.security.detected-private-key.detected-private-key",
+                            "version_id": "rxTyLRv"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/generic.secrets.security.detected-private-key.detected-private-key",
+                    "shortlink": "https://sg.run/b7dr",
+                    "source": "https://semgrep.dev/r/generic.secrets.security.detected-private-key.detected-private-key",
+                    "source-rule-url": "https://github.com/grab/secret-scanner/blob/master/scanner/signatures/pattern.go",
+                    "subcategory": [
+                        "audit"
+                    ],
+                    "technology": [
+                        "secrets"
+                    ],
+                    "vulnerability_class": [
+                        "Hard-coded Secrets"
+                    ]
+                },
+                "metavars": {
+                    "$KEY": {
+                        "abstract_content": "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCzhWraqN",
+                        "end": {
+                            "col": 59,
+                            "line": 6,
+                            "offset": 232
+                        },
+                        "start": {
+                            "col": 1,
+                            "line": 6,
+                            "offset": 174
+                        }
+                    }
+                },
+                "severity": "ERROR",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/resources/keyStore.pem",
+            "start": {
+                "col": 1,
+                "line": 5,
+                "offset": 146
+            }
+        },
+        {
+            "check_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
+            "end": {
+                "col": 20,
+                "line": 32,
+                "offset": 1386
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "dc84e2180c2f9ee779cfa5493988d6d77f89caf66311b4d76116a382e00068973cf60b82748035f2cb21e534638157a4bf5edec1a68ea290c37ee341c48f667c_0",
+                "is_ignored": false,
+                "lines": "            <form th:action=\"@{/logout}\" method=\"post\" class=\"float-right\" sec:authorize=\"isAuthenticated()\">\n                <button type=\"submit\" class=\"btn btn-primary\">Sign Out</button>\n            </form>",
+                "message": "Manually-created forms in django templates should specify a csrf_token to prevent CSRF attacks",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "MEDIUM",
+                    "cwe": "CWE-352: Cross-Site Request Forgery (CSRF)",
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "MEDIUM",
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "MEDIUM",
+                    "references": [
+                        "https://docs.djangoproject.com/en/4.2/howto/csrf/"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "PeUyYG",
+                            "url": "https://semgrep.dev/playground/r/K3TvKZG/python.django.security.django-no-csrf-token.django-no-csrf-token",
+                            "version_id": "K3TvKZG"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/python.django.security.django-no-csrf-token.django-no-csrf-token",
+                    "shortlink": "https://sg.run/N0Bp",
+                    "source": "https://semgrep.dev/r/python.django.security.django-no-csrf-token.django-no-csrf-token",
+                    "subcategory": [
+                        "guardrail"
+                    ],
+                    "technology": [
+                        "django"
+                    ],
+                    "vulnerability_class": [
+                        "Cross-Site Request Forgery (CSRF)"
+                    ]
+                },
+                "metavars": {},
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/resources/templates/general.html",
+            "start": {
+                "col": 13,
+                "line": 30,
+                "offset": 1189
+            }
+        },
+        {
+            "check_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
+            "end": {
+                "col": 20,
+                "line": 33,
+                "offset": 1640
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "876fd515e634c5308adbe8d0970aa662358a6d405e683ffff7f18fd2fea6ffb1d8772d90d0ae4a04aab6c88eeb313045e497f2b6ac6249864a0834545eb6c45d_0",
+                "is_ignored": false,
+                "lines": "            <form th:action=\"@{/login-form-multi}\" method=\"post\">\n                <input type=\"hidden\" th:value=\"${loginCode}\" id=\"loginCode\" name=\"loginCode\">\n                <div class=\"form-group\">\n                    <label for=\"username\">Username</label>\n                    <input type=\"text\" class=\"form-control\" name=\"username\" id=\"username\"\n                           aria-describedby=\"usernameHelp\"\n                           placeholder=\"Enter Username\">\n                    <small id=\"usernameHelp\" class=\"form-text text-muted\">The username of your search account.</small>\n                </div>\n                <div class=\"form-group\">\n                    <label for=\"password\">Password</label>\n                    <input type=\"password\" class=\"form-control\" id=\"password\" name=\"password\" placeholder=\"Password\">\n                </div>\n                <div class=\"form-group\">\n                    <label for=\"remember\">Remember Me</label>\n                    <input type=\"checkbox\" class=\"form-control\" id=\"remember\" name=\"remember\" placeholder=\"Remember Me\">\n                </div>\n                <button type=\"submit\" class=\"btn btn-primary\">Submit</button>\n            </form>",
+                "message": "Manually-created forms in django templates should specify a csrf_token to prevent CSRF attacks",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "MEDIUM",
+                    "cwe": "CWE-352: Cross-Site Request Forgery (CSRF)",
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "MEDIUM",
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "MEDIUM",
+                    "references": [
+                        "https://docs.djangoproject.com/en/4.2/howto/csrf/"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "PeUyYG",
+                            "url": "https://semgrep.dev/playground/r/K3TvKZG/python.django.security.django-no-csrf-token.django-no-csrf-token",
+                            "version_id": "K3TvKZG"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/python.django.security.django-no-csrf-token.django-no-csrf-token",
+                    "shortlink": "https://sg.run/N0Bp",
+                    "source": "https://semgrep.dev/r/python.django.security.django-no-csrf-token.django-no-csrf-token",
+                    "subcategory": [
+                        "guardrail"
+                    ],
+                    "technology": [
+                        "django"
+                    ],
+                    "vulnerability_class": [
+                        "Cross-Site Request Forgery (CSRF)"
+                    ]
+                },
+                "metavars": {},
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/resources/templates/login-form-multi.html",
+            "start": {
+                "col": 13,
+                "line": 15,
+                "offset": 459
+            }
+        },
+        {
+            "check_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
+            "end": {
+                "col": 20,
+                "line": 28,
+                "offset": 1288
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "1e02aa6bcab6f17e6fbd7a6276b556912836292d8fb9cd57d24b4eb545a6089d7a8ba1ce1582baf789c72383e4f0d685f2806831e2cb96a2ebba41ed4c9f6679_0",
+                "is_ignored": false,
+                "lines": "            <form th:action=\"@{/login}\" method=\"post\">\n                <div class=\"form-group\">\n                    <label for=\"username\">Username</label>\n                    <input type=\"text\" class=\"form-control\" name=\"username\" id=\"username\"\n                           aria-describedby=\"usernameHelp\"\n                           placeholder=\"Enter Username\">\n                    <small id=\"usernameHelp\" class=\"form-text text-muted\">The username of your search account.</small>\n                </div>\n                <div class=\"form-group\">\n                    <label for=\"password\">Password</label>\n                    <input type=\"password\" class=\"form-control\" id=\"password\" name=\"password\" placeholder=\"Password\">\n                </div>\n                <button type=\"submit\" class=\"btn btn-primary\">Submit</button>\n            </form>",
+                "message": "Manually-created forms in django templates should specify a csrf_token to prevent CSRF attacks",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "MEDIUM",
+                    "cwe": "CWE-352: Cross-Site Request Forgery (CSRF)",
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "MEDIUM",
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "MEDIUM",
+                    "references": [
+                        "https://docs.djangoproject.com/en/4.2/howto/csrf/"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "PeUyYG",
+                            "url": "https://semgrep.dev/playground/r/K3TvKZG/python.django.security.django-no-csrf-token.django-no-csrf-token",
+                            "version_id": "K3TvKZG"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/python.django.security.django-no-csrf-token.django-no-csrf-token",
+                    "shortlink": "https://sg.run/N0Bp",
+                    "source": "https://semgrep.dev/r/python.django.security.django-no-csrf-token.django-no-csrf-token",
+                    "subcategory": [
+                        "guardrail"
+                    ],
+                    "technology": [
+                        "django"
+                    ],
+                    "vulnerability_class": [
+                        "Cross-Site Request Forgery (CSRF)"
+                    ]
+                },
+                "metavars": {},
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/resources/templates/login.html",
+            "start": {
+                "col": 13,
+                "line": 15,
+                "offset": 459
+            }
+        },
+        {
+            "check_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
+            "end": {
+                "col": 20,
+                "line": 20,
+                "offset": 884
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "fa97a3ba0ef008faf6a5f6723e143a2b9ee01cf47b00d1eb7090360ab3cf1fbffda3d0317940ea6e65ad22b578bc11da65362ebd10d6a61dc402d209f5090310_0",
+                "is_ignored": false,
+                "lines": "            <form th:action=\"@{/search}\" th:object=\"${search}\" method=\"post\" class=\"float-left\">\n                <div class=\"form-group\">\n                    <label for=\"search\">Find Items</label>\n                    <input th:field=\"*{searchText}\" type=\"text\" class=\"form-control\" id=\"search\" name=\"search\">\n                </div>\n                <button type=\"submit\" class=\"btn btn-primary\">Search</button>\n            </form>",
+                "message": "Manually-created forms in django templates should specify a csrf_token to prevent CSRF attacks",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "MEDIUM",
+                    "cwe": "CWE-352: Cross-Site Request Forgery (CSRF)",
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "MEDIUM",
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "MEDIUM",
+                    "references": [
+                        "https://docs.djangoproject.com/en/4.2/howto/csrf/"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "PeUyYG",
+                            "url": "https://semgrep.dev/playground/r/K3TvKZG/python.django.security.django-no-csrf-token.django-no-csrf-token",
+                            "version_id": "K3TvKZG"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/python.django.security.django-no-csrf-token.django-no-csrf-token",
+                    "shortlink": "https://sg.run/N0Bp",
+                    "source": "https://semgrep.dev/r/python.django.security.django-no-csrf-token.django-no-csrf-token",
+                    "subcategory": [
+                        "guardrail"
+                    ],
+                    "technology": [
+                        "django"
+                    ],
+                    "vulnerability_class": [
+                        "Cross-Site Request Forgery (CSRF)"
+                    ]
+                },
+                "metavars": {},
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/resources/templates/search.html",
+            "start": {
+                "col": 13,
+                "line": 14,
+                "offset": 467
+            }
+        },
+        {
+            "check_id": "python.django.security.django-no-csrf-token.django-no-csrf-token",
+            "end": {
+                "col": 20,
+                "line": 20,
+                "offset": 890
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "45633ee18796e1384a1eb9733f67da74e6e96d80c65aa34b30aa0c227c1ddca04f09a9f873a4373f0497f3ae1c5f7fa44d9229aba26942cd64da3ec0ab885606_0",
+                "is_ignored": false,
+                "lines": "            <form th:action=\"@{/admin/search}\" th:object=\"${search}\" method=\"post\" class=\"float-left\">\n                <div class=\"form-group\">\n                    <label for=\"search\">Find Users</label>\n                    <input th:field=\"*{searchText}\" type=\"text\" class=\"form-control\" id=\"search\" name=\"search\">\n                </div>\n                <button type=\"submit\" class=\"btn btn-primary\">Search</button>\n            </form>",
+                "message": "Manually-created forms in django templates should specify a csrf_token to prevent CSRF attacks",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "MEDIUM",
+                    "cwe": "CWE-352: Cross-Site Request Forgery (CSRF)",
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "MEDIUM",
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "likelihood": "MEDIUM",
+                    "references": [
+                        "https://docs.djangoproject.com/en/4.2/howto/csrf/"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "PeUyYG",
+                            "url": "https://semgrep.dev/playground/r/K3TvKZG/python.django.security.django-no-csrf-token.django-no-csrf-token",
+                            "version_id": "K3TvKZG"
+                        }
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/python.django.security.django-no-csrf-token.django-no-csrf-token",
+                    "shortlink": "https://sg.run/N0Bp",
+                    "source": "https://semgrep.dev/r/python.django.security.django-no-csrf-token.django-no-csrf-token",
+                    "subcategory": [
+                        "guardrail"
+                    ],
+                    "technology": [
+                        "django"
+                    ],
+                    "vulnerability_class": [
+                        "Cross-Site Request Forgery (CSRF)"
+                    ]
+                },
+                "metavars": {},
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "src/main/resources/templates/user-search.html",
+            "start": {
+                "col": 13,
+                "line": 14,
+                "offset": 467
+            }
+        }
+    ],
+    "skipped_rules": [],
+    "version": "1.48.0"
+}
