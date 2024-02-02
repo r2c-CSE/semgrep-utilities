@@ -4,8 +4,7 @@ import json
 import re
 import os
 
-SEMGREP_APP_TOKEN = "XXXX"
-FILTER_IMPORTANT_FINDINGS = True
+FILTER_IMPORTANT_FINDINGS = False
 
 def get_deployments():
     headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
@@ -22,7 +21,7 @@ def get_projects(slug_name):
     
     headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
 
-    r = requests.get('https://semgrep.dev/api/v1/deployments/' + slug_name + '/projects?page=0',headers=headers)
+    r = requests.get('https://semgrep.dev/api/v1/deployments/' + slug_name + '/projects',headers=headers)
     if r.status_code != 200:
         sys.exit(f'Get failed: {r.text}')
     data = json.loads(r.text)
@@ -33,9 +32,7 @@ def get_projects(slug_name):
 
 
 def get_findings_per_repo(slug_name, repo):
-      
     headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
-
     r = requests.get('https://semgrep.dev/api/v1/deployments/' + slug_name + '/findings?repos='+repo,headers=headers)
     if r.status_code != 200:
         sys.exit(f'Get failed: {r.text}')
@@ -47,9 +44,7 @@ def get_findings_per_repo(slug_name, repo):
          json.dump(data, file)
 
 def get_ruleboards(org_id):
-      
     headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
-
     r = requests.get('https://semgrep.dev/api/agent/deployments/' + org_id + '/ruleboards/global-policy',headers=headers)
     if r.status_code != 200:
         sys.exit(f'Get failed: {r.text}')
@@ -59,8 +54,7 @@ def get_ruleboards(org_id):
 
 if __name__ == "__main__":
     try:  
-        SEMGREP_APP_TOKEN = os.getenv("SEMGREP_APP_TOKEN") # Azure DevOps Personal Access Token
-
+        SEMGREP_APP_TOKEN = os.getenv("SEMGREP_APP_TOKEN") 
     except KeyError: 
         print("Please set the environment variable SEMGREP_APP_TOKEN") 
         sys.exit(1)
