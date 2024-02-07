@@ -1,3 +1,7 @@
+# Index
+* Creating (and approving) PRs to onboard Semgrep to GitHub repos
+* Logic to block pipelines depending on severity and confidence
+
 # Creating (and approving) PRs to onboard Semgrep to GitHub repos
 
 If you use branch protection on your GitHub repos, onboarding Semgrep to many repos at the same time is not currently possible through the Semgrep Cloud Platform UI. The scripts in this directory provide an alternative. The script `onboard-repos.sh` creates PRs for all targeted repos in an organization, and the script `approve-semgrep-prs.sh` approves and merges those PRs.
@@ -42,3 +46,7 @@ If errors occur in creating, reviewing, or merging the PR, the script will print
 5. Execute `onboard-repos.sh -o YOUR_GITHUB_ORG`. If you wish to test with a small number of repos first, set a low limit, such as `-l 5`.
 6. If PR creation is generally successful, proceed with `gh auth logout` and then `gh auth login` as the user who will approve and merge the PRs.
 7. Run `approve-semgrep-prs.sh` to approve the PRs. Run with `-m` to merge the PRs.
+
+# Logic to block pipelines depending on severity and confidence
+
+Sometime you want to block some PR scans for specific repositories but not other. As Multipolicies is not enabled at this moment, we can use a script like shown in the semgrep.yml file.
