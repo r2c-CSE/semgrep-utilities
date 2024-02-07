@@ -30,7 +30,7 @@ jobs:
             value=$(jq -r ".results[$k]" "$json_file");
             echo "$value" > finding_content.json
             severity=$(jq -r '.extra.severity' "finding_content.json");
-            confidence=$(jq -r '.extra.confidence' "finding_content.json");
+            confidence=$(jq -r '.extra.metadata.confidence' "finding_content.json");
             if [[ $severity == "ERROR" && $confidence == "HIGH" ]]; then
                 echo "Exiting with error code 1"
                 exit 1;
