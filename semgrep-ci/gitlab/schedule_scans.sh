@@ -2,7 +2,7 @@
 
 # This scripts needs to setup the next environment variables:
 ## SEMGREP_APP_TOKEN
-## GITLAB_ACCESS_TOKEN
+## GITLAB_ACCESS_TOKEN (API permissions)
 ## GITLAB_USER_ID
 
 # GitLab API URL to fetch repositories
