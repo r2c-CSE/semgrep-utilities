@@ -114,8 +114,8 @@ def process_sast_findings(df: pd.DataFrame, projectname, flag_report_from_api):
         df = df.loc[(df['check_id'].str.contains('ssc')==False)]
 
     # Get the list of all column names from headers
-    column_headers = list(df.columns.values)
-    logging.debug("The Column Header :", column_headers)
+    #column_headers = list(df.columns.values)
+    #logging.debug("The Column Header :", column_headers)
 
     # list of columns of interest to include in the report
     if flag_report_from_api:
@@ -142,6 +142,7 @@ def process_sast_findings(df: pd.DataFrame, projectname, flag_report_from_api):
             # 'extra.metadata.cwe2021-top25', 
             # 'extra.metadata.cwe2022-top25', 
         ]
+    print(df)
     df_red = df[interesting_columns_sast]
     
    
@@ -270,7 +271,7 @@ if __name__=="__main__":
                 flag_report_from_api = False
             else:
                 ## JSON report comes from API: 'https://semgrep.dev/api/v1/deployments/{slug_name}/findings?repos={repo}
-                df = json_normalize(data)
+                df = json_normalize(data['findings'])
                 flag_report_from_api = True
 
             if df.empty:
