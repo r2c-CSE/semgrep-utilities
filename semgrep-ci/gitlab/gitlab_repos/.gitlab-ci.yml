@@ -1,0 +1,10 @@
+
+semgrep:
+  image: semgrep/semgrep
+  script: semgrep ci
+  rules:
+  - if: 
+  - if:  == 
+  variables:
+    SEMGREP_APP_TOKEN: 98d5e5c55ea173bb221703399f570641b8db519c8232e261393261f9fcd60b92
+
