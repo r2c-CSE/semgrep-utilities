@@ -45,7 +45,9 @@ def get_findings_per_project(slug_name, project_name):
         repo_url = finding['repository']['url']
         file_path = finding['location']['file_path']
         line_number = finding['location']['line']
-        github_url = f"{repo_url}/blob/master/{file_path}#L{line_number}"
+        # Use ref to determine branch or fallback to "master" if ref is not provided
+        branch = ref.split("/")[-1] if ref else "master"
+        github_url = f"{repo_url}/blob/{branch}/{file_path}#L{line_number}"
         finding['github_url'] = github_url
 
     # Write modified JSON data to a file
