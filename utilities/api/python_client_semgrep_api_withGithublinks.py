@@ -3,6 +3,7 @@ import sys
 import json
 import re
 import os
+from urllib.parse import quote
 
 
 def get_deployments():
@@ -46,8 +47,9 @@ def get_findings_per_project(slug_name, project_name):
         file_path = finding['location']['file_path']
         line_number = finding['location']['line']
         # Use ref to determine branch or fallback to "master" if ref is not provided
-        branch = ref.split("/")[-1] if ref else "master"
-        github_url = f"{repo_url}/blob/{branch}/{file_path}#L{line_number}"
+        encoded_file_path = quote(file_path)
+        encoded_branch = quote(ref) if ref else "master"
+        github_url = f"{repo_url}/blob/{encoded_branch}/{encoded_file_path}#L{line_number}"
         finding['github_url'] = github_url
 
     # Write modified JSON data to a file
