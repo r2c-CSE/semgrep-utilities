@@ -21,12 +21,13 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                             "file": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
                             "start_line": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['line_number'],
                             "end_line": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['line_number'],
-                        #    "dependency": {
-                        #    "package": {
-                        #        "name": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package']
-                        #    },
-                        #    "version": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version']
-                        #    }
+                            "dependency": {
+                                "package": {
+                                    "name": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package']
+                                },
+                                "version": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version']
+                                }
+                            }
                         },
                         "identifiers": [
                             {
