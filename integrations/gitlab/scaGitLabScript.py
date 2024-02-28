@@ -26,7 +26,6 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                                     "name": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package']
                                 },
                                 "version": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version']
-                                }
                             }
                         },
                         "identifiers": [
@@ -46,7 +45,6 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                             + ":" + vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version'] 
                         }
                     }
-                        
             }
             data['vulnerabilities'].append(new_vuln)
 
