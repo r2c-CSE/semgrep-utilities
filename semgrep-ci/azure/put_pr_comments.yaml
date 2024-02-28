@@ -7,12 +7,11 @@ steps:
   fetchDepth: 100000
   persistCredentials: true
 - script: |
-    dotnet restore -p:RestorePackagesWithLockFile=True
     python -m pip install --upgrade pip
     pip install semgrep
     if [ $(Build.SourceBranchName) = "master" ]; then
         echo "Semgrep full scan"
-        semgrep ci --oss-only --json --output /home/vsts/work/1/a/findings.json
+        semgrep ci --json --output /home/vsts/work/1/a/findings.json
     elif [ $(System.PullRequest.PullRequestId) -ge 0 ]; then
         echo "Semgrep diff scan"
         export SEMGREP_PR_ID=$(System.PullRequest.PullRequestId)
@@ -65,6 +64,7 @@ steps:
               self.PULLREQUESTID = 0
               self.SYSTEM_TEAMPROJECT = os.getenv('SYSTEM_TEAMPROJECT')
               self.BUILD_REPOSITORY_ID = os.getenv('BUILD_REPOSITORY_ID')
+              self.BUILD_REPOSITORY_URI = os.getenv('BUILD_REPOSITORY_URI')
               self.SYSTEM_TEAMPROJECTID = os.getenv('SYSTEM_TEAMPROJECTID')
               self.PROJECT_NAME = os.getenv('BUILD_REPOSITORY_NAME')
               self.BUILD_REQUESTEDFOR=os.getenv('SYSTEM_COLLECTIONURI')  
@@ -75,7 +75,7 @@ steps:
               if (self.SYSTEM_PULLREQUEST_SOURCEBRANCH):
                 logging.debug (f"this is a PR as SYSTEM_PULLREQUEST_SOURCEBRANCH is {self.SYSTEM_PULLREQUEST_SOURCEBRANCH}")
                 temp = self.SYSTEM_PULLREQUEST_SOURCEBRANCH
-                self.BUILD_SOURCEBRANCHNAME = temp[temp.rindex('/')+1:]
+                self.BUILD_SOURCEBRANCHNAME = temp[temp.rindex('refs/heads')+11:]
                 logging.debug (f"BUILD_SOURCEBRANCHNAME is {self.BUILD_SOURCEBRANCHNAME}")
                 self.BUILD_SOURCEBRANCH = os.getenv('SYSTEM_PULLREQUEST_SOURCEBRANCH')
                 logging.debug (f"BUILD_SOURCEBRANCH is {self.BUILD_SOURCEBRANCH}")
@@ -90,7 +90,7 @@ steps:
               self.url = f"{self.SYSTEM_COLLECTIONURI}{self.SYSTEM_TEAMPROJECTID}/_apis/git/repositories/" \
                         f"{self.BUILD_REPOSITORY_ID}"
               
-              self.url_link_to_repo = f"{self.SYSTEM_COLLECTIONURI}_git/{self.SYSTEM_TEAMPROJECT}"
+              self.url_link_to_repo = f"{self.BUILD_REPOSITORY_URI}"
             
               self.url_to_work_items = f"{self.SYSTEM_COLLECTIONURI}{self.SYSTEM_TEAMPROJECTID}/_apis/wit/workitems/%24task"
 
@@ -158,7 +158,7 @@ steps:
           logging.debug (f"finding is {i}")
 
           # check if the rule is not ignored and rule is from the rule-board-pr-comments
-          if ((i['extra']['is_ignored'] == False) & (i['extra']['metadata']['semgrep.policy']['slug'] == "rule-board-pr-comments")):
+          if ((i['extra']['is_ignored'] == False) & (i['extra']['metadata']['semgrep.policy']['slug'] != "rule-board-audit")):
               
               logging.debug (f"semgrep_org is {semgrep_org}")
 
@@ -210,7 +210,7 @@ steps:
               msg_vuln_code_text = f"/{msg_file_path}:{msg_file_start_line}"
               logging.debug (f"msg_vuln_code_text is {msg_vuln_code_text}")   
 
-              msg_vuln_code_url = f"{msg.url_link_to_repo }" \
+              msg_vuln_code_url = f"{msg.url_link_to_repo}" \
                                   f"?path=/{msg_file_path}&" \
                                   f"version=GB{msg_src_branchname}&" \
                                   f"line={msg_file_start_line}&" \
@@ -223,7 +223,7 @@ steps:
               url_to_findings = f"https://semgrep.dev/orgs/{semgrep_org}/findings?repo={msg_project_name}&ref={msg_src_branch}"
 
               comment = f"**Link to code**- [{msg_vuln_code_text}]({msg_vuln_code_url}) \n\n" \
-                        f"**Link to commit**- [{msg_commit_id}]({msg.url_link_to_repo }/commit/{msg_commit_id}?ref={msg_src_branch})  \n\n" \
+                        f"**Link to commit**- [{msg_commit_id}]({msg.url_link_to_repo }/commit/{msg_commit_id})  \n\n" \
                         f"**Summary**- {msg_summary} \n\n" \
                         f"**More details on rule** - {msg_shortlink} \n\n" \
                         f"**Link to project findings in** [Semgrep]({url_to_findings}) \n\n"
