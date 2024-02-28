@@ -14,16 +14,17 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                         "id": vuln.get('extra')['fingerprint'][0:63],
                         "name": "Semgrep: " + vuln['check_id'],
                         "description": vuln.get('extra')['message'],
-                        "cve": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
                         "severity": get_severity(vuln),
                         "solution": "Upgrade dependencies to fixed versions: "+get_solution(vuln), 
                         "location": {
                             "file": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
+                            "start_line": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['line_number'],
+                            "end_line": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['line_number'],
                             "dependency": {
-                            "package": {
-                                "name": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package']
-                            },
-                            "version": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version']
+                                "package": {
+                                    "name": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package']
+                                },
+                                "version": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version']
                             }
                         },
                         "identifiers": [
@@ -43,7 +44,6 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                             + ":" + vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version'] 
                         }
                     }
-                        
             }
             data['vulnerabilities'].append(new_vuln)
 
