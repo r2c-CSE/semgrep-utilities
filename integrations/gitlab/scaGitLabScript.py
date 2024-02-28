@@ -14,7 +14,6 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                         "id": vuln.get('extra')['fingerprint'][0:63],
                         "name": "Semgrep: " + vuln['check_id'],
                         "description": vuln.get('extra')['message'],
-                        #"cve": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
                         "severity": get_severity(vuln),
                         "solution": "Upgrade dependencies to fixed versions: "+get_solution(vuln), 
                         "location": {
