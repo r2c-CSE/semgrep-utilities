@@ -126,7 +126,7 @@ def process_sast_findings(df: pd.DataFrame, projectname, flag_report_from_api):
             'location.file_path',
             'severity',
             'confidence',
-            'github_url'
+            'line_of_code_url'
         ]
     else: 
         interesting_columns_sast = [
@@ -143,7 +143,7 @@ def process_sast_findings(df: pd.DataFrame, projectname, flag_report_from_api):
             # 'extra.metadata.cwe', 
             # 'extra.metadata.cwe2021-top25', 
             # 'extra.metadata.cwe2022-top25', 
-            'github_url'
+            'line_of_code_url'
         ]
     print(df)
     df_red = df[interesting_columns_sast]

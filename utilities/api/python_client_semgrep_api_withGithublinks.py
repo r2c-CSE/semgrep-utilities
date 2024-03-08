@@ -6,6 +6,7 @@ import os
 from urllib.parse import quote
 
 
+
 def get_deployments():
     headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
 
@@ -46,16 +47,14 @@ def get_findings_per_project(slug_name, project_name):
         repo_url = finding['repository']['url']
         file_path = finding['location']['file_path']
         line_number = finding['location']['line']
-        # Use ref to determine branch or fallback to "master" if ref is not provided
-        encoded_file_path = quote(file_path)
-        encoded_branch = quote(ref) if ref else "master"
-        github_url = f"{repo_url}/blob/{encoded_branch}/{encoded_file_path}#L{line_number}"
-        finding['github_url'] = github_url
+        line_of_code_url = finding['line_of_code_url']
+
 
     # Write modified JSON data to a file
     file_path = re.sub(r"[^\w\s]", "", project_name) + ".json"
     with open(file_path, "w") as file:
         json.dump(data, file)
+
 
 
 if __name__ == "__main__":
