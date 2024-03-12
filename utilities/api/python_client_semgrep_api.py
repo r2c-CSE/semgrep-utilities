@@ -4,7 +4,6 @@ import json
 import re
 import os
 
-FILTER_IMPORTANT_FINDINGS = False
 
 def get_deployments():
     headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
@@ -33,24 +32,13 @@ def get_projects(slug_name):
 
 def get_findings_per_repo(slug_name, repo):
     headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
-    r = requests.get('https://semgrep.dev/api/v1/deployments/' + slug_name + '/findings?repos='+repo,headers=headers)
+    r = requests.get('https://semgrep.dev/api/v1/deployments/' + slug_name + '/findings?repos='+repo+'&dedup=true',headers=headers)
     if r.status_code != 200:
         sys.exit(f'Get failed: {r.text}')
     data = json.loads(r.text)
     file_path = re.sub(r"[^\w\s]", "", repo) + ".json"
-    if FILTER_IMPORTANT_FINDINGS == True:
-        data = [obj for obj in data['findings'] if obj["severity"] == "high" and obj["confidence"] == "high" or obj["confidence"] == "medium"]
     with open(file_path, "w") as file:
          json.dump(data, file)
-
-def get_ruleboards(org_id):
-    headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
-    r = requests.get('https://semgrep.dev/api/agent/deployments/' + org_id + '/ruleboards/global-policy',headers=headers)
-    if r.status_code != 200:
-        sys.exit(f'Get failed: {r.text}')
-    data = json.loads(r.text)
-    print(data)
-
 
 if __name__ == "__main__":
     try:  
@@ -60,4 +48,5 @@ if __name__ == "__main__":
         sys.exit(1)
     slug_name = get_deployments()
     get_projects(slug_name)
+    ##get_findings_per_repo(slug_name,"local_scan/api_check")
     ## add whatever method you want to try
