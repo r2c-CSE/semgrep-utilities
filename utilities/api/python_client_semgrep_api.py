@@ -32,7 +32,7 @@ def get_projects(slug_name):
 
 def get_findings_per_repo(slug_name, repo):
     headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
-    r = requests.get('https://semgrep.dev/api/v1/deployments/' + slug_name + '/findings?repos='+repo+'&dedup=true',headers=headers)
+    r = requests.get('https://semgrep.dev/api/v1/deployments/' + slug_name + '/findings?repos='+repo+'&dedup=false',headers=headers)
     if r.status_code != 200:
         sys.exit(f'Get failed: {r.text}')
     data = json.loads(r.text)
@@ -47,6 +47,6 @@ if __name__ == "__main__":
         print("Please set the environment variable SEMGREP_APP_TOKEN") 
         sys.exit(1)
     slug_name = get_deployments()
-    get_projects(slug_name)
-    ##get_findings_per_repo(slug_name,"local_scan/api_check")
+    # get_projects(slug_name) #you can comment this line out if you want the JSON report for just a single project
+    #get_findings_per_repo(slug_name,"local_scan/ms-api-test") #and uncomment this line to generate a JSON file for a single project
     ## add whatever method you want to try
