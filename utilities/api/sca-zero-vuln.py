@@ -34,7 +34,9 @@ def get_repositories_without_dependencies( SEMGREP_APP_TOKEN):
                 "name": "",
                 "repositoryId": [
                 repo_id
-                ]
+                ],
+                    "cursor": 0,
+                    "pageSize": 100
             }
         }
         response = requests.post(url, headers=headers, json=payload)
