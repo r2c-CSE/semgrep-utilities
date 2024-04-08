@@ -59,7 +59,7 @@ def get_projects(deployment_slug, headers):
     
 def get_all_findings(projects, headers):
     """
-    Gets all findings for all project, and writes each to a separate file.
+    Gets all findings for all projects.
     """
     for project in projects['projects']:
         project_name = project['name']
@@ -68,6 +68,10 @@ def get_all_findings(projects, headers):
     
 
 def get_findings_per_project(deployment_slug, project, headers):
+    """
+    Gets all findings for a project, and writes them to a file.
+    The file format is equivalent to what the API would return if it weren't paginated.
+    """
     project_findings = retrieve_paginated_data(f"{BASE_URL}/{deployment_slug}/findings?repos={project}&dedup=false", "findings", 3000, headers=headers)
     file_path = re.sub(r"[^\w\s]", "-", project) + ".json"
     with open(file_path, "w") as file:
