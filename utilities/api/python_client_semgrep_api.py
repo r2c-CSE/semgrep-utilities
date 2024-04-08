@@ -1,57 +1,78 @@
+import json
+import os
+import re
 import requests
 import sys
-import json
-import re
-import os
 
+BASE_URL = 'https://semgrep.dev/api/v1/deployments'
 
-def get_deployments():
-    headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
+def retrieve_paginated_data(endpoint, kind, page_size, headers):
+    """
+    Generalized function to retrieve multiple pages of data.
+    Returns all data as a JSON string (not a Python dict!) in the same format 
+    as the API would if it weren't paginated.
+    """
+    # Initialize values
+    data_list = []
+    hasMore = True
+    page = -1
+    while (hasMore == True):
+        page = page + 1
+        page_string = ""
+        if (kind == 'projects'):
+            page_string = f"?page_size={page_size}&page={page}"
+        else:
+            page_string = f"&page_size={page_size}&page={page}"
+        r = requests.get(f"{endpoint}{page_string}", headers=headers)
+        if r.status_code != 200:
+            sys.exit(f'Get failed: {r.text}')
+        data = r.json()
+        if not data.get(kind):
+            print(f"At page {page} there is no more data of {kind}")
+            hasMore = False
+        data_list.extend(data.get(kind))
+    return json.dumps({ f"{kind}": data_list})
 
-    r = requests.get('https://semgrep.dev/api/v1/deployments',headers=headers)
+def get_deployment(headers):
+    """
+    Gets the deployment slug for use in other API calls.
+    API tokens are currently per-deployment, so there's no need to 
+    iterate or paginate.
+    """
+    r = requests.get(BASE_URL, headers=headers)
     if r.status_code != 200:
         sys.exit(f'Get failed: {r.text}')
-    data = json.loads(r.text)
-    slug_name = data['deployments'][0].get('slug')
-    print("Accessing org: " + slug_name)
-    return slug_name
+    data = r.json()
 
-def get_projects(slug_name):
+    deployment_slug = data['deployments'][0].get('slug')
+    print("Accessing org: " + deployment_slug)
+    return deployment_slug
+
+
+def get_projects(deployment_slug, headers):
+    """
+    Gets the list of projects for use in other API calls.
+    This call must paginate to work for users with larger numbers of projects.
+    """
+    projects = retrieve_paginated_data(f"{BASE_URL}/{deployment_slug}/projects", "projects", 200, headers=headers)
+    return projects
     
-    headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
-
-    r = requests.get('https://semgrep.dev/api/v1/deployments/' + slug_name + '/projects',headers=headers)
-    if r.status_code != 200:
-        sys.exit(f'Get failed: {r.text}')
-    data = json.loads(r.text)
-    for project in data['projects']:
+def get_all_findings(projects, headers):
+    """
+    Gets all findings for all project, and writes each to a separate file.
+    """
+    for project in projects['projects']:
         project_name = project['name']
         print("Getting findings for: " + project_name)
-        get_findings_per_repo(slug_name, project_name)
-
-
-def get_findings_per_repo(slug_name, repo):
-    page = 0
-    data = get_findings_per_repo_per_page(slug_name, repo, 0)
-    hasMore = True
-    while (hasMore == True): 
-        page = page + 1
-        data = get_findings_per_repo_per_page(slug_name, repo, page)
-        if not data['findings']:
-            print("There are no more findings for repo: " + repo)
-            hasMore = False
+        get_findings_per_project(deployment_slug, project_name, headers)
     
 
-def get_findings_per_repo_per_page(slug_name, repo, page):
-    headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
-    r = requests.get('https://semgrep.dev/api/v1/deployments/' + slug_name + '/findings?repos='+repo+'&dedup=false&page='+str(page)+'&page_size=3000',headers=headers)
-    if r.status_code != 200:
-        sys.exit(f'Get failed: {r.status_code}')
-    data = json.loads(r.text)
-    file_path = re.sub(r"[^\w\s]", "", repo) + "page_" + str(page) + ".json"
+def get_findings_per_project(deployment_slug, project, headers):
+    project_findings = retrieve_paginated_data(f"{BASE_URL}/{deployment_slug}/findings?repos={project}&dedup=false", "findings", 3000, headers=headers)
+    file_path = re.sub(r"[^\w\s]", "-", project) + ".json"
     with open(file_path, "w") as file:
-         json.dump(data, file)
-    return data
+         file.write(project_findings)
+
 
 if __name__ == "__main__":
     try:  
@@ -59,7 +80,10 @@ if __name__ == "__main__":
     except KeyError: 
         print("Please set the environment variable SEMGREP_APP_TOKEN") 
         sys.exit(1)
-    slug_name = get_deployments()
-    get_projects(slug_name) #you can comment this line out if you want the JSON report for just a single project
-    #get_findings_per_repo(slug_name,"my_repo") #and uncomment this line to generate a JSON file for a single project
-    ## add whatever method you want to try
+    default_headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
+    deployment_slug = get_deployment(default_headers)
+    projects = get_projects(deployment_slug, default_headers) 
+    # Comment this line out if you don't want all projects
+    get_all_findings(json.loads(projects), default_headers)
+    # Uncomment the following line and add a project name to generate a JSON file for a single project
+    # get_findings_per_project(deployment_slug, "juice-shop", default_headers) 
