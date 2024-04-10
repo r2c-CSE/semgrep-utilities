@@ -8,58 +8,68 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
         data_semgrep = json.load(file_semgrep)
         for vuln in data_semgrep['results']:
 
-            links = [{"url": ref} for ref in vuln.get('extra').get('metadata')['references']]
+            if vuln['check_id'].startswith('ssc-'):
 
-            new_vuln = {
-                        "id": vuln.get('extra')['fingerprint'][0:63],
-                        "name": "Semgrep: " + vuln['check_id'],
-                        "description": vuln.get('extra')['message'],
-                        "severity": get_severity(vuln),
-                        "solution": "Upgrade dependencies to fixed versions: "+get_solution(vuln), 
-                        "location": {
-                            "file": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
-                            "start_line": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency').get('line_number'),
-                            "end_line": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency').get('line_number'),
-                            "dependency": {
-                                "package": {
-                                    "name": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package']
-                                },
-                                "version": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version']
+                links = [{"url": ref} for ref in vuln.get('extra').get('metadata')['references']]
+                package_name = vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package']
+                # get the last CWE in the list of CWEs (if more than 1 exists)
+                cwe_title = (vuln.get('extra').get('metadata').get('cwe', []) or [' CWE data missing'])[-1]
+                # remove the 'CWE-XXX: ' portion so only the CWE title remains
+                cwe_title = cwe_title[cwe_title.index(' ')+1:]
+
+                new_vuln = {
+                            "id": vuln.get('extra')['fingerprint'][0:63],
+                            "name": package_name + " - " + cwe_title,
+                            "description": vuln.get('extra')['message'],
+                            "severity": get_severity(vuln),
+                            "solution": "Upgrade dependencies to fixed versions: "+get_solution(vuln), 
+                            "location": {
+                                "file": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
+                                "start_line": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency').get('line_number'),
+                                "end_line": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency').get('line_number'),
+                                "dependency": {
+                                    "package": {
+                                        "name": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package']
+                                    },
+                                    "version": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version']
+                                }
+                            },
+                            "identifiers": [
+                                {
+                                    "type": "cve",
+                                    "name": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
+                                    "value": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
+                                    "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name="+vuln.get('extra').get('metadata')['sca-vuln-database-identifier']
+                                }
+                            ],
+                            "links": links,
+                            "details": {
+                                "vulnerable_package": {
+                                "type": "text",
+                                "name": "Vulnerable Package",
+                                "value": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package'] 
+                                + ":" + vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version'] 
                             }
-                        },
-                        "identifiers": [
-                            {
-                                "type": "cve",
-                                "name": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
-                                "value": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
-                                "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name="+vuln.get('extra').get('metadata')['sca-vuln-database-identifier']
-                            }
-                        ],
-                        "links": links,
-                        "details": {
-                            "vulnerable_package": {
-                            "type": "text",
-                            "name": "Vulnerable Package",
-                            "value": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package'] 
-                            + ":" + vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version'] 
                         }
-                    }
-            }
-            data['vulnerabilities'].append(new_vuln)
+                }
+                data['vulnerabilities'].append(new_vuln)
 
         for vuln in data_semgrep['results']:
-            new_file = { "path": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
-                        "package_manager": vuln.get('extra').get('sca_info').get('dependency_match').get('dependency_pattern')['ecosystem'],
-                        "dependencies": [
-                            {
-                            "package": {
-                                "name": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package'] 
-                            },
-                            "version": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version'] 
-                            }
-                        ]
-            }
-            data['dependency_files'].append(new_file)
+
+            if vuln['check_id'].startswith('ssc-'):
+
+                new_file = { "path": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
+                            "package_manager": vuln.get('extra').get('sca_info').get('dependency_match').get('dependency_pattern')['ecosystem'],
+                            "dependencies": [
+                                {
+                                "package": {
+                                    "name": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package'] 
+                                },
+                                "version": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version'] 
+                                }
+                            ]
+                }
+                data['dependency_files'].append(new_file)
 
         new_scan_info = get_new_scan_info(data_semgrep)
         data['scan'] = new_scan_info
