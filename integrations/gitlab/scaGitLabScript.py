@@ -39,6 +39,12 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                                     "name": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
                                     "value": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
                                     "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name="+vuln.get('extra').get('metadata')['sca-vuln-database-identifier']
+                                },
+                                {
+                                    "type": "semgrep_ssc",
+                                    "name": vuln['check_id'],
+                                    "value": vuln['check_id'],
+                                    "url": vuln.get('extra').get('metadata').get('semgrep.dev').get('rule')['url']
                                 }
                             ],
                             "links": links,
@@ -55,7 +61,7 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
 
         for vuln in data_semgrep['results']:
             if vuln['check_id'].startswith('ssc-'):
-                
+
                 new_file = { "path": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
                             "package_manager": vuln.get('extra').get('sca_info').get('dependency_match').get('dependency_pattern')['ecosystem'],
                             "dependencies": [
