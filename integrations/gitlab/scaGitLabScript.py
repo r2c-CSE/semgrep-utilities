@@ -110,7 +110,7 @@ def get_new_scan_info(data):
     new_scan_info = {
         "analyzer": {
         "id": "semgrep_dep_scan",
-        "name": "Semgrep",
+        "name": "Supply Chain",
         "url": "https://semgrep.dev",
         "vendor": {
             "name": "Semgrep"
@@ -119,7 +119,7 @@ def get_new_scan_info(data):
         },
         "scanner": {
         "id": "semgrep_dep_scan",
-        "name": "Semgrep",
+        "name": "Supply Chain",
         "url": "https://semgrep.dev",
         "vendor": {
             "name": "Semgrep"
