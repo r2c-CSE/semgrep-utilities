@@ -3,7 +3,7 @@ import sys
 from datetime import datetime
 
 def conversion_semgrep_to_gitlab(report_semgrep, data):
-    print("Populating data from Semgrep JSON report")
+    print("Populating Supply Chain findings data from Semgrep JSON report")
     with open(report_semgrep, 'r') as file_semgrep:
         data_semgrep = json.load(file_semgrep)
         for vuln in data_semgrep['results']:
@@ -78,7 +78,7 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
         new_scan_info = get_new_scan_info(data_semgrep)
         data['scan'] = new_scan_info
 
-    print("Dumping to a GitLab JSON report")
+    print("Dumping to a GitLab Dependency JSON report")
     with open('gl-dependency-scanning-report.json', 'w') as f:
         json.dump(data, f, indent=4)  # pretty print JSON
 
@@ -146,7 +146,7 @@ if __name__ == "__main__":
     else:
         report_semgrep = "report-ssc.json" # adding a default value in case it's not supplied at runtime
 
-    print("Starting conversion process from Semgrep JSON to GitLab JSON")
+    print("Starting conversion process from Semgrep JSON to GitLab Dependency JSON")
     data = {
         "version": "15.0.0",
         "vulnerabilities": [],
