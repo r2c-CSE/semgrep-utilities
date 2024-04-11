@@ -12,8 +12,9 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                 links = [{"url": ref} for ref in vuln.get('extra').get('metadata')['references']]
                 package_name = vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package']
                 # get the last CWE in the list of CWEs (if more than 1 exists)
+                # if `cwe` does not exist, return empty list, if empty list, return list with default data
                 cwe_title = (vuln.get('extra').get('metadata').get('cwe', []) or [' CWE data missing'])[-1]
-                # remove the 'CWE-XXX: ' portion so only the CWE title remains
+                # snip the CWE string after the first space character so only the CWE title remains
                 cwe_title = cwe_title[cwe_title.index(' ')+1:]
 
                 new_vuln = {
@@ -58,9 +59,6 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                         }
                 }
                 data['vulnerabilities'].append(new_vuln)
-
-        for vuln in data_semgrep['results']:
-            if vuln['check_id'].startswith('ssc-'):
 
                 new_file = { "path": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
                             "package_manager": vuln.get('extra').get('sca_info').get('dependency_match').get('dependency_pattern')['ecosystem'],
@@ -107,6 +105,7 @@ def get_solution(vuln):
 def get_new_scan_info(data):
     current_datetime = datetime.now()
     formatted_datetime = current_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+    # by having the `name` be "Supply Chain" and the `vendor` be "Semgrep", this looks good in the GitLab UI
     new_scan_info = {
         "analyzer": {
         "id": "semgrep_dep_scan",
