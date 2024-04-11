@@ -3,68 +3,80 @@ import sys
 from datetime import datetime
 
 def conversion_semgrep_to_gitlab(report_semgrep, data):
-    print("Populating data from Semgrep JSON report")
+    print("Populating Supply Chain findings data from Semgrep JSON report")
     with open(report_semgrep, 'r') as file_semgrep:
         data_semgrep = json.load(file_semgrep)
         for vuln in data_semgrep['results']:
+            if vuln['check_id'].startswith('ssc-'):
 
-            links = [{"url": ref} for ref in vuln.get('extra').get('metadata')['references']]
+                links = [{"url": ref} for ref in vuln.get('extra').get('metadata')['references']]
+                package_name = vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package']
+                # get the last CWE in the list of CWEs (if more than 1 exists)
+                # if `cwe` does not exist, return empty list, if empty list, return list with default data
+                cwe_title = (vuln.get('extra').get('metadata').get('cwe', []) or [' CWE data missing'])[-1]
+                # snip the CWE string after the first space character so only the CWE title remains
+                cwe_title = cwe_title[cwe_title.index(' ')+1:]
 
-            new_vuln = {
-                        "id": vuln.get('extra')['fingerprint'][0:63],
-                        "name": "Semgrep: " + vuln['check_id'],
-                        "description": vuln.get('extra')['message'],
-                        "severity": get_severity(vuln),
-                        "solution": "Upgrade dependencies to fixed versions: "+get_solution(vuln), 
-                        "location": {
-                            "file": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
-                            "start_line": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency').get('line_number'),
-                            "end_line": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency').get('line_number'),
-                            "dependency": {
-                                "package": {
-                                    "name": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package']
-                                },
-                                "version": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version']
-                            }
-                        },
-                        "identifiers": [
-                            {
-                                "type": "cve",
-                                "name": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
-                                "value": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
-                                "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name="+vuln.get('extra').get('metadata')['sca-vuln-database-identifier']
-                            }
-                        ],
-                        "links": links,
-                        "details": {
-                            "vulnerable_package": {
-                            "type": "text",
-                            "name": "Vulnerable Package",
-                            "value": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package'] 
-                            + ":" + vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version'] 
-                        }
-                    }
-            }
-            data['vulnerabilities'].append(new_vuln)
-
-        for vuln in data_semgrep['results']:
-            new_file = { "path": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
-                        "package_manager": vuln.get('extra').get('sca_info').get('dependency_match').get('dependency_pattern')['ecosystem'],
-                        "dependencies": [
-                            {
-                            "package": {
-                                "name": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package'] 
+                new_vuln = {
+                            "id": vuln.get('extra')['fingerprint'][0:63],
+                            "name": package_name + " - " + cwe_title,
+                            "description": vuln.get('extra')['message'],
+                            "severity": get_severity(vuln),
+                            "solution": "Upgrade dependencies to fixed versions: "+get_solution(vuln), 
+                            "location": {
+                                "file": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
+                                "start_line": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency').get('line_number'),
+                                "end_line": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency').get('line_number'),
+                                "dependency": {
+                                    "package": {
+                                        "name": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package']
+                                    },
+                                    "version": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version']
+                                }
                             },
-                            "version": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version'] 
+                            "identifiers": [
+                                {
+                                    "type": "cve",
+                                    "name": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
+                                    "value": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
+                                    "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name="+vuln.get('extra').get('metadata')['sca-vuln-database-identifier']
+                                },
+                                {
+                                    "type": "semgrep_ssc",
+                                    "name": vuln['check_id'],
+                                    "value": vuln['check_id'],
+                                    "url": vuln.get('extra').get('metadata').get('semgrep.dev').get('rule')['url']
+                                }
+                            ],
+                            "links": links,
+                            "details": {
+                                "vulnerable_package": {
+                                "type": "text",
+                                "name": "Vulnerable Package",
+                                "value": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package'] 
+                                + ":" + vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version'] 
                             }
-                        ]
-            }
-            data['dependency_files'].append(new_file)
+                        }
+                }
+                data['vulnerabilities'].append(new_vuln)
+
+                new_file = { "path": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
+                            "package_manager": vuln.get('extra').get('sca_info').get('dependency_match').get('dependency_pattern')['ecosystem'],
+                            "dependencies": [
+                                {
+                                "package": {
+                                    "name": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package'] 
+                                },
+                                "version": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version'] 
+                                }
+                            ]
+                }
+                data['dependency_files'].append(new_file)
 
         new_scan_info = get_new_scan_info(data_semgrep)
         data['scan'] = new_scan_info
 
-    print("Dumping to a GitLab JSON report")
+    print("Dumping to a GitLab Dependency JSON report")
     with open('gl-dependency-scanning-report.json', 'w') as f:
         json.dump(data, f, indent=4)  # pretty print JSON
 
@@ -93,10 +105,11 @@ def get_solution(vuln):
 def get_new_scan_info(data):
     current_datetime = datetime.now()
     formatted_datetime = current_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+    # by having the `name` be "Supply Chain" and the `vendor` be "Semgrep", this looks good in the GitLab UI
     new_scan_info = {
         "analyzer": {
         "id": "semgrep_dep_scan",
-        "name": "Semgrep",
+        "name": "Supply Chain",
         "url": "https://semgrep.dev",
         "vendor": {
             "name": "Semgrep"
@@ -105,7 +118,7 @@ def get_new_scan_info(data):
         },
         "scanner": {
         "id": "semgrep_dep_scan",
-        "name": "Semgrep",
+        "name": "Supply Chain",
         "url": "https://semgrep.dev",
         "vendor": {
             "name": "Semgrep"
@@ -132,7 +145,7 @@ if __name__ == "__main__":
     else:
         report_semgrep = "report-ssc.json" # adding a default value in case it's not supplied at runtime
 
-    print("Starting conversion process from Semgrep JSON to GitLab JSON")
+    print("Starting conversion process from Semgrep JSON to GitLab Dependency JSON")
     data = {
         "version": "15.0.0",
         "vulnerabilities": [],
