@@ -52,10 +52,28 @@ steps:
       logging.basicConfig(level=loglevel)
       logging.debug (loglevel)
 
+      class WorkItemPerRule():
+          
+          '''Creating an Instance of Work Item Per Rule'''
+
+          def __init__(self, rule_name, message, file_info, 
+                      vuln_code_url, severity, url_to_semgrep, 
+                      area, iteration, policy, relevant_since):
+              self.rule_name = rule_name
+              self.message = message
+              self.file_info = file_info
+              self.vuln_code_url = vuln_code_url
+              self.severity = severity
+              self.url_to_semgrep = url_to_semgrep
+              self.area = area
+              self.iteration = iteration
+              self.policy = policy
+              self.relevant_since = relevant_since
 
       class WorkItem():
+          
           '''Creating an Instance of Work Item'''
-
+          
           def __init__(self):
               # Get the environment variables from the pipeline
               self.PROJECT_NAME = os.getenv('BUILD_REPOSITORY_NAME')
@@ -111,7 +129,8 @@ steps:
               ''' Add work items to Azure DevOps Pull Request'''
               logging.info (f"Added workitem")
               link_to_pr = '{ "op": "add", "path": "/relations/-", "value": { "rel": "ArtifactLink", "url": "vstfs:///Git/PullRequestId/'+ str(self.SYSTEM_TEAMPROJECTID) +'/'+ str(self.BUILD_REPOSITORY_ID) +'/'+ str(self.PULLREQUESTID) +'", "attributes": { "name": "pull request" } } }'
-              html_description = "<!DOCTYPE html> <html> <body> <p> <strong>Summary: </strong>" + summary + "</p> <p></p> <p><strong>Link to code: </strong><a href=" + vuln_code_url + ">" + file_info + "</a></p><p></p><p><strong>Link to project findings in Semgrep: </strong><a href=" + url_to_semgrep + ">" + url_to_semgrep + "</a></p><p></p><p><strong>Severity: " + severity + "</strong></p></body></html> "
+              list_link_to_code = "<p><strong>Link to code: </strong>" + file_info + "</p>"
+              html_description = "<!DOCTYPE html> <html> <body> <p> <strong>Summary: </strong>" + summary + "</p> <p></p>" + list_link_to_code + "<p></p><p><strong>Link to project findings in Semgrep: </strong><a href=" + url_to_semgrep + ">" + url_to_semgrep + "</a></p><p></p><p><strong>Severity: " + severity + "</strong></p></body></html> "
               #data = '[ { "op": "add", "path": "/fields/System.Title", "from": null, "value": "' + title + '" }, { "op": "add", "path": "/fields/System.AssignedTo", "value": "'+ self.BUILD_REQUESTEDFOREMAIL + '" },' + link_to_pr + ', { "op": "add", "path": "/fields/System.Tags", "value":  "'+ tags + '" },{ "op": "add", "path": "/fields/System.AreaPath", "value":  "'+ area + '" }, { "op": "add", "path": "/fields/System.Description", "value": "' + html_description + '" }]'
               data = '[ { "op": "add", "path": "/fields/System.Title", "from": null, "value": "' + title + '" }, { "op": "add", "path": "/fields/System.AssignedTo", "value": "'+ self.BUILD_REQUESTEDFOREMAIL + '" },' + link_to_pr + ', { "op": "add", "path": "/fields/System.Tags", "value":  "'+ tags + '" },{ "op": "add", "path": "/fields/System.AreaPath", "value":  "'+ area + '" },{ "op": "add", "path": "/fields/System.IterationPath", "value":  "' + iteration + '" } ,{ "op": "add", "path": "/fields/System.Description", "value": "' + html_description + '" }]'
               logging.debug(f"{data}")
@@ -194,6 +213,9 @@ steps:
       work_item_area = workitem.get_area_path("temp.csv", email_to_search, default_area)
       logging.info(f"work_item_area: {work_item_area}")
 
+      # Create an empty hash table (dictionary)
+      group_work_item_per_rule = {}
+
       # Iterating through the findings in findings.json file
       for i in findings['findings']:
           logging.debug (f"finding is {i}")
@@ -227,11 +249,6 @@ steps:
                               f"lineStartColumn={i['location']['column']}&" \
                               f"lineEndColumn={i['location']['end_column']}&" \
                               f"lineStyle=plain&_a=contents"
-
-          ## format: 2023-09-18 07:49:42+00:00
-          time_pipeline = workitem.PIPELINESTARTTIME[0:19]
-          time_pipeline = datetime.strptime(time_pipeline, '%Y-%m-%d %H:%M:%S')
-          logging.debug(time_pipeline)
           
           ## 2023-09-15T15:34:38.059101Z
           work_item_relevant_since = work_item_relevant_since[0:19]
@@ -240,15 +257,43 @@ steps:
 
           url_to_semgrep = f"https://semgrep.dev/orgs/{org_name}/findings?repo={project_name}&ref={branch_name}"
 
+          logging.info(f"Creating object work_item_per_rule")
+          work_item_per_rule = WorkItemPerRule(work_item_summary, work_item_message, work_item_file_info, 
+          work_item_vuln_code_url, work_item_severity, url_to_semgrep, work_item_area, default_iteration, 
+          work_item_policy, time_relevante_since)
+
+          ## format: 2023-09-18 07:49:42+00:00
+          time_pipeline = workitem.PIPELINESTARTTIME[0:19]
+          time_pipeline = datetime.strptime(time_pipeline, '%Y-%m-%d %H:%M:%S')
+          logging.debug(time_pipeline)
+
           if (time_relevante_since > time_pipeline and work_item_policy != 'rule-board-audit'):
-              logging.info(f"New finding: {work_item_finding_id}")
-              workitem.add_work_items(work_item_summary, work_item_message, work_item_file_info, work_item_vuln_code_url, work_item_severity, url_to_semgrep, work_item_area, default_iteration, "semgrep5")
+            logging.debug (f"New finding in the pipeline!!")
+            if work_item_summary in group_work_item_per_rule:
+                work_item_per_rule_to_update = group_work_item_per_rule[work_item_summary]
+                work_item_per_rule_to_update.file_info = work_item_per_rule_to_update.file_info + "<p></p>" + "<a href=" + work_item_vuln_code_url + ">" + work_item_file_info + "</a>"
+                
+                group_work_item_per_rule[work_item_summary] = work_item_per_rule_to_update
+                logging.debug (f"Updating the work item!!")
+            else:
+                work_item_per_rule.file_info = "<p></p><a href=" + work_item_vuln_code_url + ">" + work_item_file_info + "</a>"
+                group_work_item_per_rule[work_item_summary] = work_item_per_rule
+                logging.debug (f"Adding a new work item!!")
+            
         
       # Closing file
-      f.close()                    
+      f.close()        
+
+      # Iterating through the work items 
+      for rule in group_work_item_per_rule:
+          logging.info (f"Creating work item for rule: {rule}")
+          wi = group_work_item_per_rule[rule]
+          logging.debug(f"Addding new work item for finding: {wi.file_info}")
+          workitem.add_work_items(wi.rule_name, wi.message, wi.file_info, wi.vuln_code_url, wi.severity, wi.url_to_semgrep, wi.area, wi.iteration, "semgrep7")
+
+
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     LOG_LEVEL: DEBUG
   condition: ne(variables['Build.SourceBranchName'], 'master')
-    
   displayName: 'Python script to add work items'
