@@ -1,0 +1,38 @@
+# Example Github actions definition that shows using a private container including the scripts in this repo
+# Make sure you set the private image to be accessible by this runner / repo (in Github packages)
+
+on:
+  workflow_dispatch: {}
+  # pull_request: {}
+  # push:
+  #   branches:
+  #   - main
+  #   - master
+  #   paths:
+  #   - .github/workflows/semgrep.yml
+  # schedule:
+  # - cron: 5 20 * * *
+name: Semgrep xSarif
+jobs:
+  semgrep:
+    name: semgrep/ci
+    runs-on: ubuntu-latest
+    env:
+        SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+    container:
+        image: ghcr.io/testgrep/cse-findings-sarif/semgrep-with-sarif-transform:latest
+    steps:
+    - uses: actions/checkout@v4
+    - run: semgrep ci --json -o semgrep-findings.json
+      continue-on-error: true
+    - run: python /transform/semgrep-json-to-sarif.py --json ./semgrep-findings.json --sarif ./semgrep-sarif.json
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v4
+      with:
+        name: semgrep-sarif.json
+        path: ./semgrep-sarif.json
+    - name: Upload SARIF to GHAS Dashboard
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+          sarif_file: semgrep-sarif.json
+      if: always()
