@@ -2135,7 +2135,7 @@
                 "engine_kind": "OSS",
                 "fingerprint": "d76113d8b089c59072094ee8a27436bfff0b7d6524f41968528cc312540feabe48594557564f39403fdb6ba06c10fb66f4e4faa41bc7eee051583ae2775a0ceb_0",
                 "is_ignored": false,
-                "lines": "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",
+                "lines": "fake_pat_11AHWLR6Y0hiIvbeRgM9zr_ZpvsCZqlh2jyyj5M79G6nggsTRIgSPR6oczDVLzNm9tXDLVL5VEwRYcj1tY",
                 "message": "To revoke the token, visit the `Active tokens` page in the organization settings screen: `https://github.com/organizations/<ORGRANIZATION>/settings/personal-access-tokens/active`. From here, select the token, and revoke it using the drop down field and selecting `\"Revoke\"`.",
                 "metadata": {
                     "category": "security",
@@ -2193,7 +2193,7 @@
                 },
                 "metavars": {
                     "$1": {
-                        "abstract_content": "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",
+                        "abstract_content": "fake_pat_11AHWLR6Y0hiIvbeRgM9zr_ZpvsCZqlh2jyyj5M79G6nggsTRIgSPR6oczDVLzNm9tXDLVL5VEwRYcj1tY",
                         "end": {
                             "col": 94,
                             "line": 1,
@@ -2206,7 +2206,7 @@
                         }
                     },
                     "$2": {
-                        "abstract_content": "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",
+                        "abstract_content": "fake_pat_11AHWLR6Y0hiIvbeRgM9zr_ZpvsCZqlh2jyyj5M79G6nggsTRIgSPR6oczDVLzNm9tXDLVL5VEwRYcj1tY",
                         "end": {
                             "col": 94,
                             "line": 1,
@@ -2232,7 +2232,7 @@
                         }
                     },
                     "$REGEX": {
-                        "abstract_content": "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",
+                        "abstract_content": "fake_pat_11AHWLR6Y0hiIvbeRgM9zr_ZpvsCZqlh2jyyj5M79G6nggsTRIgSPR6oczDVLzNm9tXDLVL5VEwRYcj1tY",
                         "end": {
                             "col": 94,
                             "line": 1,
@@ -2266,7 +2266,7 @@
                 "engine_kind": "OSS",
                 "fingerprint": "02bb2329497055a65d1d5ecef04015a04c32a6b82103db2dc16e769a47ef472407e3423f490843bd1f84ccfd22b5a0637f06af01263bd3ef2a8dcf4c2d2d08f5_0",
                 "is_ignored": false,
-                "lines": "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",
+                "lines": "fake_pat_11AHWLR6Y0KJfH1SIAgHQY_YwWw8Jay3sgXJzlWs7ggl3GYDT2aU7YdKfbyPAN74AKXECS637Qs4DVjX0H",
                 "message": "To revoke the token, visit the `Active tokens` page in the organization settings screen: `https://github.com/organizations/<ORGRANIZATION>/settings/personal-access-tokens/active`. From here, select the token, and revoke it using the drop down field and selecting `\"Revoke\"`.",
                 "metadata": {
                     "category": "security",
@@ -2324,7 +2324,7 @@
                 },
                 "metavars": {
                     "$1": {
-                        "abstract_content": "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",
+                        "abstract_content": "fake_pat_11AHWLR6Y0KJfH1SIAgHQY_YwWw8Jay3sgXJzlWs7ggl3GYDT2aU7YdKfbyPAN74AKXECS637Qs4DVjX0H",
                         "end": {
                             "col": 94,
                             "line": 3,
@@ -2337,7 +2337,7 @@
                         }
                     },
                     "$2": {
-                        "abstract_content": "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",
+                        "abstract_content": "fake_pat_11AHWLR6Y0KJfH1SIAgHQY_YwWw8Jay3sgXJzlWs7ggl3GYDT2aU7YdKfbyPAN74AKXECS637Qs4DVjX0H",
                         "end": {
                             "col": 94,
                             "line": 3,
@@ -2363,7 +2363,7 @@
                         }
                     },
                     "$REGEX": {
-                        "abstract_content": "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",
+                        "abstract_content": "fake_pat_11AHWLR6Y0KJfH1SIAgHQY_YwWw8Jay3sgXJzlWs7ggl3GYDT2aU7YdKfbyPAN74AKXECS637Qs4DVjX0H",
                         "end": {
                             "col": 94,
                             "line": 3,
