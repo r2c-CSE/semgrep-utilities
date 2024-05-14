@@ -1,3 +1,6 @@
+# This Dockerfile is used to show how to base on the official semgrep image
+# And include the script to convert semgrep json output to SARIF format
+
 FROM semgrep/semgrep:latest
 
 COPY ./src /transform/
