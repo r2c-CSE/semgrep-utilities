@@ -51,12 +51,23 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                             "links": links,
                             "details": {
                                 "vulnerable_package": {
-                                "type": "text",
-                                "name": "Vulnerable Package",
-                                "value": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package'] 
-                                + ":" + vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version'] 
-                            }
-                        }
+                                    "type": "text",
+                                    "name": "Vulnerable Package",
+                                    "value": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package'] 
+                                    + ":" + vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['version'] 
+                                },
+                                "exposure": {
+                                    "type": "text",
+                                    "name": "Exposure",
+                                    "value": get_exposure(vuln)
+                                },
+                                "confidence": {
+                                    "type": "text",
+                                    "name": "Confidence",
+                                    "value": vuln.get('extra').get('metadata').get('confidence', "UNKNOWN")
+                                }
+                            },
+                            "flags": get_flags(vuln)
                 }
                 data['vulnerabilities'].append(new_vuln)
 
@@ -89,6 +100,44 @@ def get_severity(vuln):
         if severity == "Moderate":
             severity = "Medium"
     return severity
+
+def get_exposure(vuln):
+
+    sca_kind = vuln.get('extra').get('metadata').get('sca-kind', 'None')
+    reachable = vuln.get('extra').get('sca_info')['reachable']
+
+    if sca_kind == "upgrade-only":
+        return "Reachable"
+    elif sca_kind == "legacy":
+        return "Undetermined"
+    elif reachable:
+        return "Reachable"
+    else:
+        return "Unreachable"
+
+def get_flags(vuln):
+
+    all_flags = []
+
+    if get_exposure(vuln) == "Unreachable":
+        
+        flag = {
+            "description": "Semgrep found no way to reach this vulnerability while scanning your code.",
+            "origin": "Semgrep Supply Chain",
+            "type": "flagged-as-likely-false-positive"
+        }
+        all_flags.append(flag)
+    
+    if vuln.get('extra').get('metadata').get('confidence', "UNKNOWN") == "LOW":
+        
+        flag = {
+            "description": "This finding is from a low confidence rule.",
+            "origin": "Semgrep Supply Chain",
+            "type": "flagged-as-likely-false-positive"
+        }
+        all_flags.append(flag)
+    
+    return all_flags
 
 def get_solution(vuln):
     sca_fix_versions = vuln.get('extra').get('metadata').get('sca-fix-versions', [])
@@ -140,10 +189,15 @@ def to_hungarian_case(input_string):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) == 2:
+    if len(sys.argv) == 1:
+        print("A JSON file name argument must be provided.")
+        sys.exit()
+
+    if sys.argv[1].endswith('.json'):
         report_semgrep = sys.argv[1]
     else:
-        report_semgrep = "report-ssc.json" # adding a default value in case it's not supplied at runtime
+        print("Invalid file name. Your first argument must be a `*.json` file name.")
+        sys.exit()
 
     print("Starting conversion process from Semgrep JSON to GitLab Dependency JSON")
     data = {

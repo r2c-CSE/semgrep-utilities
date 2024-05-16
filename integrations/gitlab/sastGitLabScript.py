@@ -2,6 +2,8 @@ import json
 import sys
 from datetime import datetime
 
+legacy = False
+
 def conversion_semgrep_to_gitlab(report_semgrep, data):
     print("Populating Code findings data from Semgrep JSON report")
     with open(report_semgrep, 'r') as file_semgrep:
@@ -24,7 +26,7 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                             },
                             "identifiers": [
                                 {
-                                    "type": "semgrep_code",
+                                    "type": "semgrep_code" if legacy==False else "semgrep_type",
                                     "name": vuln['check_id'],
                                     "value": vuln['check_id'],
                                     "url": vuln.get('extra').get('metadata').get('semgrep.dev').get('rule')['url']
@@ -33,9 +35,9 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                             "links": links,
                             "details": {
                                 "confidence": {
-                                "name": "Confidence",
-                                "type": "text",
-                                "value": vuln.get('extra').get('metadata').get('confidence', "UNKNOWN")
+                                    "name": "Confidence",
+                                    "type": "text",
+                                    "value": vuln.get('extra').get('metadata').get('confidence', "UNKNOWN")
                                 }
                             },
                             "flags": get_flags(vuln)
@@ -72,7 +74,7 @@ def get_flags(vuln):
         
         flag = {
             "description": "This finding is from a low confidence rule.",
-            "origin": "Semgrep",
+            "origin": "Semgrep Code",
             "type": "flagged-as-likely-false-positive"
         }
         all_flags.append(flag)
@@ -86,8 +88,8 @@ def get_new_scan_info(data):
     # by having the `name` be "Code" and the `vendor` be "Semgrep", this looks good in the GitLab UI
     new_scan_info = {
         "analyzer": {
-        "id": "semgrep_code_scan",
-        "name": "Code",
+        "id": "semgrep_code_scan" if legacy==False else "semgrep",
+        "name": "Code" if legacy==False else "Semgrep",
         "url": "https://semgrep.dev",
         "vendor": {
             "name": "Semgrep"
@@ -95,8 +97,8 @@ def get_new_scan_info(data):
         "version": data['version']
         },
         "scanner": {
-        "id": "semgrep_code_scan",
-        "name": "Code",
+        "id": "semgrep_code_scan" if legacy==False else "semgrep",
+        "name": "Code" if legacy==False else "Semgrep",
         "url": "https://semgrep.dev",
         "vendor": {
             "name": "Semgrep"
@@ -112,10 +114,20 @@ def get_new_scan_info(data):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) == 2:
+    if len(sys.argv) == 1:
+        print("A JSON file name argument must be provided.")
+        sys.exit()
+
+    if sys.argv[1].endswith('.json'):
         report_semgrep = sys.argv[1]
     else:
-        report_semgrep = "report-code.json" # adding a default value in case it's not supplied at runtime
+        print("Invalid file name. Your first argument must be a `*.json` file name.")
+        sys.exit()
+
+    if len(sys.argv) > 2:
+        if sys.argv[2] in ("-l", "--legacy"):
+            legacy = True
+            print("Generating GitLab report using legacy analyzer/scanner ID and identifier type")  
 
     print("Starting conversion process from Semgrep JSON to GitLab SAST JSON")
     data = {
