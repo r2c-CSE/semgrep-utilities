@@ -36,8 +36,9 @@ def finding_to_sarif_result(finding):
 def finding_to_help_markdown_references(finding):
     references = ""
     references += f"\n - [Semgrep Rule]({finding['extra']['metadata']['source']})"
-    for ref in finding['extra']['metadata']['references']:
-        references += f"\n - [{ref}]({ref})"
+    if 'references' in finding['extra']['metadata']:
+        for ref in finding['extra']['metadata']['references']:
+            references += f"\n - [{ref}]({ref})"
     return f"{references}\n"
 
 def finding_to_driver_rule_help_markdown(finding):
