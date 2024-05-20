@@ -1,0 +1,1064 @@
+{
+    "errors": [
+        {
+            "code": 2,
+            "level": "warn",
+            "message": "Other syntax error at line app/static/loader.js:1:\n Failure: lexing: empty token",
+            "path": "app/static/loader.js",
+            "type": "Other syntax error"
+        },
+        {
+            "code": 3,
+            "level": "warn",
+            "message": "Syntax error at line app/templates/test.html:1:\n `{% extends \"layout.html\" %}\n{% block body %}` was unexpected",
+            "path": "app/templates/test.html",
+            "spans": [
+                {
+                    "end": {
+                        "col": 17,
+                        "line": 2,
+                        "offset": 44
+                    },
+                    "file": "app/templates/test.html",
+                    "start": {
+                        "col": 1,
+                        "line": 1,
+                        "offset": 0
+                    }
+                },
+                {
+                    "end": {
+                        "col": 15,
+                        "line": 17,
+                        "offset": 14
+                    },
+                    "file": "app/templates/test.html",
+                    "start": {
+                        "col": 1,
+                        "line": 17,
+                        "offset": 0
+                    }
+                }
+            ],
+            "type": [
+                "PartialParsing",
+                [
+                    {
+                        "end": {
+                            "col": 17,
+                            "line": 2,
+                            "offset": 44
+                        },
+                        "path": "app/templates/test.html",
+                        "start": {
+                            "col": 1,
+                            "line": 1,
+                            "offset": 0
+                        }
+                    },
+                    {
+                        "end": {
+                            "col": 15,
+                            "line": 17,
+                            "offset": 14
+                        },
+                        "path": "app/templates/test.html",
+                        "start": {
+                            "col": 1,
+                            "line": 17,
+                            "offset": 0
+                        }
+                    }
+                ]
+            ]
+        },
+        {
+            "code": 3,
+            "level": "warn",
+            "message": "Syntax error at line app/templates/yaml_test.html:1:\n `{% extends \"layout.html\" %}\n{% block body %}` was unexpected",
+            "path": "app/templates/yaml_test.html",
+            "spans": [
+                {
+                    "end": {
+                        "col": 17,
+                        "line": 2,
+                        "offset": 44
+                    },
+                    "file": "app/templates/yaml_test.html",
+                    "start": {
+                        "col": 1,
+                        "line": 1,
+                        "offset": 0
+                    }
+                },
+                {
+                    "end": {
+                        "col": 15,
+                        "line": 17,
+                        "offset": 14
+                    },
+                    "file": "app/templates/yaml_test.html",
+                    "start": {
+                        "col": 1,
+                        "line": 17,
+                        "offset": 0
+                    }
+                }
+            ],
+            "type": [
+                "PartialParsing",
+                [
+                    {
+                        "end": {
+                            "col": 17,
+                            "line": 2,
+                            "offset": 44
+                        },
+                        "path": "app/templates/yaml_test.html",
+                        "start": {
+                            "col": 1,
+                            "line": 1,
+                            "offset": 0
+                        }
+                    },
+                    {
+                        "end": {
+                            "col": 15,
+                            "line": 17,
+                            "offset": 14
+                        },
+                        "path": "app/templates/yaml_test.html",
+                        "start": {
+                            "col": 1,
+                            "line": 17,
+                            "offset": 0
+                        }
+                    }
+                ]
+            ]
+        },
+        {
+            "code": 3,
+            "level": "warn",
+            "message": "Syntax error at line app/templates/view.html:1:\n `{% extends \"layout.html\" %}\n{% block body %}` was unexpected",
+            "path": "app/templates/view.html",
+            "spans": [
+                {
+                    "end": {
+                        "col": 17,
+                        "line": 2,
+                        "offset": 44
+                    },
+                    "file": "app/templates/view.html",
+                    "start": {
+                        "col": 1,
+                        "line": 1,
+                        "offset": 0
+                    }
+                },
+                {
+                    "end": {
+                        "col": 15,
+                        "line": 17,
+                        "offset": 14
+                    },
+                    "file": "app/templates/view.html",
+                    "start": {
+                        "col": 1,
+                        "line": 17,
+                        "offset": 0
+                    }
+                }
+            ],
+            "type": [
+                "PartialParsing",
+                [
+                    {
+                        "end": {
+                            "col": 17,
+                            "line": 2,
+                            "offset": 44
+                        },
+                        "path": "app/templates/view.html",
+                        "start": {
+                            "col": 1,
+                            "line": 1,
+                            "offset": 0
+                        }
+                    },
+                    {
+                        "end": {
+                            "col": 15,
+                            "line": 17,
+                            "offset": 14
+                        },
+                        "path": "app/templates/view.html",
+                        "start": {
+                            "col": 1,
+                            "line": 17,
+                            "offset": 0
+                        }
+                    }
+                ]
+            ]
+        }
+    ],
+    "interfile_languages_used": [
+        "JavaScript",
+        "Python"
+    ],
+    "paths": {
+        "scanned": [
+            ".github/workflows/semgrep.yml",
+            ".gitignore",
+            ".python-version",
+            ".vscode/settings.json",
+            "Dockerfile",
+            "README.md",
+            "app/Files/elastic.py",
+            "app/Files/openai.py",
+            "app/Files/test.txt",
+            "app/Pipfile",
+            "app/Pipfile.lock",
+            "app/__init__.py",
+            "app/app.py",
+            "app/readme.md",
+            "app/requirements.txt.old",
+            "app/static/loader.js",
+            "app/templates/index.html",
+            "app/templates/layout.html",
+            "app/templates/test.html",
+            "app/templates/view.html",
+            "app/templates/yaml_test.html",
+            "app/test.db",
+            "old-workflows/semgrep.yml"
+        ]
+    },
+    "results": [
+        {
+            "check_id": "dockerfile.audit.dockerfile-source-not-pinned.dockerfile-source-not-pinned",
+            "end": {
+                "col": 26,
+                "line": 1,
+                "offset": 25
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "3c3982bad19e52c07c0a241b12ffd6e5151b588e5b88785c1c72ae1a6e40776d1ef10bd20e2d9ed4a4084fd53c71c1d114a998615b9ec89d05137397cacb7b31_0",
+                "is_ignored": false,
+                "lines": "FROM python:2.7.14-jessie",
+                "message": "To ensure reproducible builds, pin Dockerfile `FROM` commands to a specific hash. You can find the hash by running `docker pull python` and then  specify it with `python:2.7.14-jessie@sha256:<hash goes here>`",
+                "metadata": {
+                    "category": "best-practice",
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "license": "Commons Clause License Condition v1.0[LGPL-2.1-only]",
+                    "references": [
+                        "https://stackoverflow.com/a/33511811/4965"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "community",
+                            "rule_id": "DbUGEW",
+                            "rule_name": "dockerfile.audit.dockerfile-source-not-pinned.dockerfile-source-not-pinned",
+                            "url": "https://semgrep.dev/playground/r/JdTNpKG/dockerfile.audit.dockerfile-source-not-pinned.dockerfile-source-not-pinned",
+                            "version_id": "JdTNpKG"
+                        },
+                        "src": "new-rule"
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/dockerfile.audit.dockerfile-source-not-pinned.dockerfile-source-not-pinned",
+                    "shortlink": "https://sg.run/RgD8",
+                    "source": "https://semgrep.dev/r/dockerfile.audit.dockerfile-source-not-pinned.dockerfile-source-not-pinned",
+                    "technology": [
+                        "docker"
+                    ]
+                },
+                "metavars": {
+                    "$IMAGE": {
+                        "abstract_content": "python",
+                        "end": {
+                            "col": 12,
+                            "line": 1,
+                            "offset": 11
+                        },
+                        "start": {
+                            "col": 6,
+                            "line": 1,
+                            "offset": 5
+                        }
+                    },
+                    "$VERSION": {
+                        "abstract_content": "2.7.14-jessie",
+                        "end": {
+                            "col": 26,
+                            "line": 1,
+                            "offset": 25
+                        },
+                        "start": {
+                            "col": 13,
+                            "line": 1,
+                            "offset": 12
+                        }
+                    }
+                },
+                "severity": "INFO",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "Dockerfile",
+            "start": {
+                "col": 1,
+                "line": 1,
+                "offset": 0
+            }
+        },
+        {
+            "check_id": "python.elasticsearch.python-elasticsearch-hardcoded-bearer-auth.python-elasticsearch-hardcoded-bearer-auth",
+            "end": {
+                "col": 2,
+                "line": 9,
+                "offset": 201
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "02887294f7d840dd44ac5ad6267a7c580315086849768a5542f2bc3eedb9ee7d6220ac648ee66233fb90f0f6aff5812993c310dab9b85c4e9779c911924ac62c_0",
+                "is_ignored": false,
+                "lines": "bendy_search = Elasticsearch(\n    \"https://localhost:9200\",\n    bearer_auth=secret\n)",
+                "message": "A secret is hard-coded in the application. Secrets stored in source code, such as credentials, identifiers, and other types of sensitive data, can be leaked and used by internal or external malicious actors. Use environment variables to securely provide credentials and other secrets or retrieve them from a secure vault or Hardware Security Module (HSM).",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "HIGH",
+                    "cwe": [
+                        "CWE-798: Use of Hard-coded Credentials"
+                    ],
+                    "cwe2021-top25": true,
+                    "cwe2022-top25": true,
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "impact": "MEDIUM",
+                    "license": "Copyright 2023 Semgrep, Inc.",
+                    "likelihood": "HIGH",
+                    "owasp": [
+                        "A07:2021 - Identification and Authentication Failures"
+                    ],
+                    "references": [
+                        "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html"
+                    ],
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "pro_rules",
+                            "rule_id": "QrUQZl",
+                            "rule_name": "python.elasticsearch.python-elasticsearch-hardcoded-bearer-auth.python-elasticsearch-hardcoded-bearer-auth",
+                            "url": "https://semgrep.dev/playground/r/1QTO7qJ/python.elasticsearch.python-elasticsearch-hardcoded-bearer-auth.python-elasticsearch-hardcoded-bearer-auth",
+                            "version_id": "1QTO7qJ"
+                        },
+                        "src": "new-rule"
+                    },
+                    "semgrep.policy": {
+                        "id": 53432,
+                        "name": "Rule Board - PR Comments column",
+                        "slug": "rule-board-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/python.elasticsearch.python-elasticsearch-hardcoded-bearer-auth.python-elasticsearch-hardcoded-bearer-auth",
+                    "shortlink": "https://sg.run/w5lP",
+                    "source": "https://semgrep.dev/r/python.elasticsearch.python-elasticsearch-hardcoded-bearer-auth.python-elasticsearch-hardcoded-bearer-auth",
+                    "subcategory": [
+                        "vuln"
+                    ],
+                    "technology": [
+                        "elastic",
+                        "elasticsearch",
+                        "secrets"
+                    ],
+                    "vulnerability_class": [
+                        "Hard-coded Secrets"
+                    ]
+                },
+                "metavars": {},
+                "severity": "WARNING",
+                "validation_state": "NO_VALIDATOR"
+            },
+            "path": "app/Files/elastic.py",
+            "start": {
+                "col": 16,
+                "line": 6,
+                "offset": 132
+            }
+        },
+        {
+            "check_id": "secrets.services.openai.openai",
+            "end": {
+                "col": 68,
+                "line": 3,
+                "offset": 115
+            },
+            "extra": {
+                "engine_kind": "PRO",
+                "fingerprint": "3e2f3dc26c548347df2647a2f768af26a03e42fdee9afae38c0d66dea2adcd84bea34dbec13804a3e92e956ebd1c741582f2b23e031f87c2bf77abdb539dab31_0",
+                "is_ignored": false,
+                "lines": "openai.api_key=\"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\"",
+                "message": "A secret is hard-coded in the application. Secrets stored in source code, such as credentials, identifiers, and other types of sensitive data, can be leaked and used by internal or external malicious actors. It is recommended to rotate the secret and retrieve them from a secure secret vault or Hardware Security Module (HSM), alternatively environment variables can be used if allowed by your company policy.",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "MEDIUM",
+                    "cwe": [
+                        "CWE-798: Use of Hard-coded Credentials"
+                    ],
+                    "cwe2020-top25": true,
+                    "cwe2021-top25": true,
+                    "cwe2022-top25": true,
+                    "dev.semgrep.actions": [
+                        "comment"
+                    ],
+                    "dev.semgrep.validation_state.actions": {
+                        "error": "comment",
+                        "invalid": "comment",
+                        "valid": "comment"
+                    },
+                    "impact": "HIGH",
+                    "license": "Copyright 2023 Semgrep, Inc.",
+                    "likelihood": "LOW",
+                    "owasp": [
+                        "A07:2021 - Identification and Authentication Failures"
+                    ],
+                    "product": "secrets",
+                    "references": [
+                        "https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures"
+                    ],
+                    "secret_type": "OpenAI",
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "pro_rules",
+                            "rule_id": "kxUP9Q",
+                            "rule_name": "secrets.services.openai.openai",
+                            "url": "https://semgrep.dev/playground/r/JdT6YRv/secrets.services.openai.openai",
+                            "version_id": "JdT6YRv"
+                        },
+                        "src": "new-rule"
+                    },
+                    "semgrep.policy": {
+                        "id": 106590,
+                        "name": "Secrets Rule Board - PR Comments column",
+                        "slug": "rule-board-secrets-pr-comments"
+                    },
+                    "semgrep.url": "https://semgrep.dev/r/secrets.services.openai.openai",
+                    "shortlink": "https://sg.run/BADR",
+                    "source": "https://semgrep.dev/r/secrets.services.openai.openai",
+                    "subcategory": [
+                        "vuln"
+                    ],
+                    "supersedes": [
+                        "generic.secrets.gitleaks.openai-api-key.openai-api-key",
+                        "go.secrets.openai.openai-hardcoded-secret.openai-hardcoded-secret",
+                        "kotlin.openai.openai-hardcoded-secret.openai-hardcoded-secret",
+                        "python.openai.openai-hardcoded-secret.openai-hardcoded-secret"
+                    ],
+                    "technology": [
+                        "secrets"
+                    ],
+                    "vulnerability_class": [
+                        "Hard-coded Secrets"
+                    ]
+                },
+                "metavars": {
+                    "$1": {
+                        "abstract_content": "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",
+                        "end": {
+                            "col": 68,
+                            "line": 3,
+                            "offset": 115
+                        },
+                        "start": {
+                            "col": 17,
+                            "line": 3,
+                            "offset": 64
+                        }
+                    },
+                    "$2": {
+                        "abstract_content": "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",
+                        "end": {
+                            "col": 68,
+                            "line": 3,
+                            "offset": 115
+                        },
+                        "start": {
+                            "col": 17,
+                            "line": 3,
+                            "offset": 64
+                        }
+                    },
+                    "$REGEX": {
+                        "abstract_content": "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",
+                        "end": {
+                            "col": 68,
+                            "line": 3,
+                            "offset": 115
+                        },
+                        "start": {
+                            "col": 17,
+                            "line": 3,
+                            "offset": 64
+                        }
+                    }
+                },
+                "severity": "ERROR",
+                "validation_state": "CONFIRMED_INVALID"
+            },
+            "path": "app/Files/openai.py",
+            "start": {
+                "col": 17,
+                "line": 3,
+                "offset": 64
+            }
+        },
+        {
+            "check_id": "ssc-8e0e4ec5-5988-4d1d-8ddb-bdaa23f8af38",
+            "end": {
+                "col": 0,
+                "line": 19,
+                "offset": 0
+            },
+            "extra": {
+                "engine_kind": "OSS",
+                "fingerprint": "149cd89001d6b37149f961a5ac5602d62cac954c8a9919c0bc5d38d84f1cd72bfc31ae0a41612c332c40107c6e68847041674945f89db02f2a529382340f0582_0",
+                "is_ignored": false,
+                "lines": "        \"aiohttp\": {",
+                "message": "Affected versions of aiohttp are vulnerable to Improper Input Validation. The vulnerability arises when inadequate validation allows an attacker to manipulate HTTP requests, including modifying headers or crafting new requests when controlling the HTTP version, particularly evident when the Connection header is directed to the headers parameter, enabling CRLF injection by bypassing validation when a list is passed.",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "HIGH",
+                    "cve": "CVE-2023-49081",
+                    "cwe": [
+                        "CWE-20: Improper Input Validation"
+                    ],
+                    "dev.semgrep.actions": [
+                        "block"
+                    ],
+                    "ghsa": "GHSA-q3qx-c6g2-7pw2",
+                    "license": "Copyright 2023 Semgrep, Inc.",
+                    "owasp": [
+                        "A03:2021 - Injection",
+                        "A06:2021 - Vulnerable and Outdated Components"
+                    ],
+                    "publish-date": "2023-11-27T23:17:42Z",
+                    "references": [
+                        "https://github.com/advisories/GHSA-q3qx-c6g2-7pw2",
+                        "https://nvd.nist.gov/vuln/detail/CVE-2023-49081"
+                    ],
+                    "sca-fix-versions": [
+                        {
+                            "aiohttp": "3.9.0"
+                        }
+                    ],
+                    "sca-kind": "reachable",
+                    "sca-schema": 20230302,
+                    "sca-severity": "HIGH",
+                    "sca-vuln-database-identifier": "CVE-2023-49081",
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "custom",
+                            "rule_id": "eqU0v36",
+                            "url": "https://semgrep.dev/orgs/-/supply-chain/advisories?q=ssc-8e0e4ec5-5988-4d1d-8ddb-bdaa23f8af38",
+                            "version_id": "o5Tyy9R"
+                        }
+                    },
+                    "semgrep.url": "https://semgrep.dev/orgs/-/supply-chain/advisories?q=ssc-8e0e4ec5-5988-4d1d-8ddb-bdaa23f8af38",
+                    "source": "https://semgrep.dev/orgs/-/supply-chain/advisories?q=ssc-8e0e4ec5-5988-4d1d-8ddb-bdaa23f8af38",
+                    "technology": [
+                        "python"
+                    ],
+                    "vulnerability_class": [
+                        "Improper Validation"
+                    ]
+                },
+                "metavars": {},
+                "sca_info": {
+                    "dependency_match": {
+                        "dependency_pattern": {
+                            "ecosystem": "pypi",
+                            "package": "aiohttp",
+                            "semver_range": "< 3.9.0"
+                        },
+                        "found_dependency": {
+                            "allowed_hashes": {
+                                "sha256": [
+                                    "03543dcf98a6619254b409be2d22b51f21ec66272be4ebda7b04e6412e4b2e14",
+                                    "03baa76b730e4e15a45f81dfe29a8d910314143414e528737f8589ec60cf7391",
+                                    "0a63f03189a6fa7c900226e3ef5ba4d3bd047e18f445e69adbd65af433add5a2",
+                                    "10c8cefcff98fd9168cdd86c4da8b84baaa90bf2da2269c6161984e6737bf23e",
+                                    "147ae376f14b55f4f3c2b118b95be50a369b89b38a971e80a17c3fd623f280c9",
+                                    "176a64b24c0935869d5bbc4c96e82f89f643bcdf08ec947701b9dbb3c956b7dd",
+                                    "17b79c2963db82086229012cff93ea55196ed31f6493bb1ccd2c62f1724324e4",
+                                    "1a45865451439eb320784918617ba54b7a377e3501fb70402ab84d38c2cd891b",
+                                    "1b3ea7edd2d24538959c1c1abf97c744d879d4e541d38305f9bd7d9b10c9ec41",
+                                    "22f6eab15b6db242499a16de87939a342f5a950ad0abaf1532038e2ce7d31567",
+                                    "3032dcb1c35bc330134a5b8a5d4f68c1a87252dfc6e1262c65a7e30e62298275",
+                                    "33587f26dcee66efb2fff3c177547bd0449ab7edf1b73a7f5dea1e38609a0c54",
+                                    "34ce9f93a4a68d1272d26030655dd1b58ff727b3ed2a33d80ec433561b03d67a",
+                                    "3a80464982d41b1fbfe3154e440ba4904b71c1a53e9cd584098cd41efdb188ef",
+                                    "3b90467ebc3d9fa5b0f9b6489dfb2c304a1db7b9946fa92aa76a831b9d587e99",
+                                    "3d89efa095ca7d442a6d0cbc755f9e08190ba40069b235c9886a8763b03785da",
+                                    "3d8ef1a630519a26d6760bc695842579cb09e373c5f227a21b67dc3eb16cfea4",
+                                    "3f43255086fe25e36fd5ed8f2ee47477408a73ef00e804cb2b5cba4bf2ac7f5e",
+                                    "40653609b3bf50611356e6b6554e3a331f6879fa7116f3959b20e3528783e699",
+                                    "41a86a69bb63bb2fc3dc9ad5ea9f10f1c9c8e282b471931be0268ddd09430b04",
+                                    "493f5bc2f8307286b7799c6d899d388bbaa7dfa6c4caf4f97ef7521b9cb13719",
+                                    "4a6cadebe132e90cefa77e45f2d2f1a4b2ce5c6b1bfc1656c1ddafcfe4ba8131",
+                                    "4c745b109057e7e5f1848c689ee4fb3a016c8d4d92da52b312f8a509f83aa05e",
+                                    "4d347a172f866cd1d93126d9b239fcbe682acb39b48ee0873c73c933dd23bd0f",
+                                    "4dac314662f4e2aa5009977b652d9b8db7121b46c38f2073bfeed9f4049732cd",
+                                    "4ddaae3f3d32fc2cb4c53fab020b69a05c8ab1f02e0e59665c6f7a0d3a5be54f",
+                                    "5393fb786a9e23e4799fec788e7e735de18052f83682ce2dfcabaf1c00c2c08e",
+                                    "59f029a5f6e2d679296db7bee982bb3d20c088e52a2977e3175faf31d6fb75d1",
+                                    "5a7bdf9e57126dc345b683c3632e8ba317c31d2a41acd5800c10640387d193ed",
+                                    "5b3f2e06a512e94722886c0827bee9807c86a9f698fac6b3aee841fab49bbfb4",
+                                    "5ce45967538fb747370308d3145aa68a074bdecb4f3a300869590f725ced69c1",
+                                    "5e14f25765a578a0a634d5f0cd1e2c3f53964553a00347998dfdf96b8137f777",
+                                    "618c901dd3aad4ace71dfa0f5e82e88b46ef57e3239fc7027773cb6d4ed53531",
+                                    "652b1bff4f15f6287550b4670546a2947f2a4575b6c6dff7760eafb22eacbf0b",
+                                    "6c08e8ed6fa3d477e501ec9db169bfac8140e830aa372d77e4a43084d8dd91ab",
+                                    "6ddb2a2026c3f6a68c3998a6c47ab6795e4127315d2e35a09997da21865757f8",
+                                    "6e601588f2b502c93c30cd5a45bfc665faaf37bbe835b7cfd461753068232074",
+                                    "6e74dd54f7239fcffe07913ff8b964e28b712f09846e20de78676ce2a3dc0bfc",
+                                    "7235604476a76ef249bd64cb8274ed24ccf6995c4a8b51a237005ee7a57e8643",
+                                    "7ab43061a0c81198d88f39aaf90dae9a7744620978f7ef3e3708339b8ed2ef01",
+                                    "7c7837fe8037e96b6dd5cfcf47263c1620a9d332a87ec06a6ca4564e56bd0f36",
+                                    "80575ba9377c5171407a06d0196b2310b679dc752d02a1fcaa2bc20b235dbf24",
+                                    "80a37fe8f7c1e6ce8f2d9c411676e4bc633a8462844e38f46156d07a7d401654",
+                                    "8189c56eb0ddbb95bfadb8f60ea1b22fcfa659396ea36f6adcc521213cd7b44d",
+                                    "854f422ac44af92bfe172d8e73229c270dc09b96535e8a548f99c84f82dde241",
+                                    "880e15bb6dad90549b43f796b391cfffd7af373f4646784795e20d92606b7a51",
+                                    "8b631e26df63e52f7cce0cce6507b7a7f1bc9b0c501fcde69742130b32e8782f",
+                                    "8c29c77cc57e40f84acef9bfb904373a4e89a4e8b74e71aa8075c021ec9078c2",
+                                    "91f6d540163f90bbaef9387e65f18f73ffd7c79f5225ac3d3f61df7b0d01ad15",
+                                    "92c0cea74a2a81c4c76b62ea1cac163ecb20fb3ba3a75c909b9fa71b4ad493cf",
+                                    "9bcb89336efa095ea21b30f9e686763f2be4478f1b0a616969551982c4ee4c3b",
+                                    "a1f4689c9a1462f3df0a1f7e797791cd6b124ddbee2b570d34e7f38ade0e2c71",
+                                    "a3fec6a4cb5551721cdd70473eb009d90935b4063acc5f40905d40ecfea23e05",
+                                    "a5d794d1ae64e7753e405ba58e08fcfa73e3fad93ef9b7e31112ef3c9a0efb52",
+                                    "a86d42d7cba1cec432d47ab13b6637bee393a10f664c425ea7b305d1301ca1a3",
+                                    "adfbc22e87365a6e564c804c58fc44ff7727deea782d175c33602737b7feadb6",
+                                    "aeb29c84bb53a84b1a81c6c09d24cf33bb8432cc5c39979021cc0f98c1292a1a",
+                                    "aede4df4eeb926c8fa70de46c340a1bc2c6079e1c40ccf7b0eae1313ffd33519",
+                                    "b744c33b6f14ca26b7544e8d8aadff6b765a80ad6164fb1a430bbadd593dfb1a",
+                                    "b7a00a9ed8d6e725b55ef98b1b35c88013245f35f68b1b12c5cd4100dddac333",
+                                    "bb96fa6b56bb536c42d6a4a87dfca570ff8e52de2d63cabebfd6fb67049c34b6",
+                                    "bbcf1a76cf6f6dacf2c7f4d2ebd411438c275faa1dc0c68e46eb84eebd05dd7d",
+                                    "bca5f24726e2919de94f047739d0a4fc01372801a3672708260546aa2601bf57",
+                                    "bf2e1a9162c1e441bf805a1fd166e249d574ca04e03b34f97e2928769e91ab5c",
+                                    "c4eb3b82ca349cf6fadcdc7abcc8b3a50ab74a62e9113ab7a8ebc268aad35bb9",
+                                    "c6cc15d58053c76eacac5fa9152d7d84b8d67b3fde92709195cb984cfb3475ea",
+                                    "c6cd05ea06daca6ad6a4ca3ba7fe7dc5b5de063ff4daec6170ec0f9979f6c332",
+                                    "c844fd628851c0bc309f3c801b3a3d58ce430b2ce5b359cd918a5a76d0b20cb5",
+                                    "c9cb1565a7ad52e096a6988e2ee0397f72fe056dadf75d17fa6b5aebaea05622",
+                                    "cab9401de3ea52b4b4c6971db5fb5c999bd4260898af972bf23de1c6b5dd9d71",
+                                    "cd468460eefef601ece4428d3cf4562459157c0f6523db89365202c31b6daebb",
+                                    "d1e6a862b76f34395a985b3cd39a0d949ca80a70b6ebdea37d3ab39ceea6698a",
+                                    "d1f9282c5f2b5e241034a009779e7b2a1aa045f667ff521e7948ea9b56e0c5ff",
+                                    "d265f09a75a79a788237d7f9054f929ced2e69eb0bb79de3798c468d8a90f945",
+                                    "db3fc6120bce9f446d13b1b834ea5b15341ca9ff3f335e4a951a6ead31105480",
+                                    "dbf3a08a06b3f433013c143ebd72c15cac33d2914b8ea4bea7ac2c23578815d6",
+                                    "de04b491d0e5007ee1b63a309956eaed959a49f5bb4e84b26c8f5d49de140fa9",
+                                    "e4b09863aae0dc965c3ef36500d891a3ff495a2ea9ae9171e4519963c12ceefd",
+                                    "e595432ac259af2d4630008bf638873d69346372d38255774c0e286951e8b79f",
+                                    "e75b89ac3bd27d2d043b234aa7b734c38ba1b0e43f07787130a0ecac1e12228a",
+                                    "ea9eb976ffdd79d0e893869cfe179a8f60f152d42cb64622fca418cd9b18dc2a",
+                                    "eafb3e874816ebe2a92f5e155f17260034c8c341dad1df25672fb710627c6949",
+                                    "ee3c36df21b5714d49fc4580247947aa64bcbe2939d1b77b4c8dcb8f6c9faecc",
+                                    "f352b62b45dff37b55ddd7b9c0c8672c4dd2eb9c0f9c11d395075a84e2c40f75",
+                                    "fabb87dd8850ef0f7fe2b366d44b77d7e6fa2ea87861ab3844da99291e81e60f",
+                                    "fe11310ae1e4cd560035598c3f29d86cef39a83d244c7466f95c27ae04850f10",
+                                    "fe7ba4a51f33ab275515f66b0a236bcde4fb5561498fe8f898d4e549b2e4509f"
+                                ]
+                            },
+                            "ecosystem": "pypi",
+                            "line_number": 19,
+                            "package": "aiohttp",
+                            "transitivity": "transitive",
+                            "version": "3.8.4"
+                        },
+                        "lockfile": "app/Pipfile.lock"
+                    },
+                    "reachability_rule": true,
+                    "reachable": false,
+                    "sca_finding_schema": 20220913
+                },
+                "severity": "ERROR"
+            },
+            "path": "app/Pipfile.lock",
+            "start": {
+                "col": 0,
+                "line": 19,
+                "offset": 0
+            }
+        },
+        {
+            "check_id": "ssc-d0a1a87a-6de2-47e5-a88c-750862958e31",
+            "end": {
+                "col": 0,
+                "line": 19,
+                "offset": 0
+            },
+            "extra": {
+                "engine_kind": "OSS",
+                "fingerprint": "06977a6039074e2529405ca0f65fb45ee8fc8495ec0a66233e183860be21e3e6a575b25bd09d7b336ec40a5c8fe6d03d17c705a5a5cc513c61101c0599649fd0_0",
+                "is_ignored": false,
+                "lines": "        \"aiohttp\": {",
+                "message": "Affected versions of aiohttp are vulnerable to Improper Limitation Of A Pathname To A Restricted Directory ('Path Traversal'). Improperly configuring static resource resolution in aiohttp when used as a web server  using `follow_symlinks=True` can result in the unauthorized reading of arbitrary files on the system as there is no  validation to check if a given file path is within the root directory.",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "HIGH",
+                    "cve": "CVE-2024-23334",
+                    "cwe": [
+                        "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+                    ],
+                    "dev.semgrep.actions": [],
+                    "ghsa": "GHSA-5h86-8mv2-jq9f",
+                    "license": "Copyright 2023 Semgrep, Inc.",
+                    "owasp": [
+                        "A01:2021 - Broken Access Control",
+                        "A05:2017 - Broken Access Control",
+                        "A06:2021 - Vulnerable and Outdated Components"
+                    ],
+                    "publish-date": "2024-01-29T22:31:03Z",
+                    "references": [
+                        "https://github.com/advisories/GHSA-5h86-8mv2-jq9f",
+                        "https://nvd.nist.gov/vuln/detail/CVE-2024-23334"
+                    ],
+                    "sca-fix-versions": [
+                        {
+                            "aiohttp": "3.9.2"
+                        }
+                    ],
+                    "sca-kind": "reachable",
+                    "sca-schema": 20230302,
+                    "sca-severity": "MODERATE",
+                    "sca-vuln-database-identifier": "CVE-2024-23334",
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "custom",
+                            "rule_id": "2ZUz6w3",
+                            "url": "https://semgrep.dev/orgs/-/supply-chain/advisories?q=ssc-d0a1a87a-6de2-47e5-a88c-750862958e31",
+                            "version_id": "rxT2JQj"
+                        }
+                    },
+                    "semgrep.url": "https://semgrep.dev/orgs/-/supply-chain/advisories?q=ssc-d0a1a87a-6de2-47e5-a88c-750862958e31",
+                    "source": "https://semgrep.dev/orgs/-/supply-chain/advisories?q=ssc-d0a1a87a-6de2-47e5-a88c-750862958e31",
+                    "technology": [
+                        "python"
+                    ],
+                    "vulnerability_class": [
+                        "Path Traversal"
+                    ]
+                },
+                "metavars": {},
+                "sca_info": {
+                    "dependency_match": {
+                        "dependency_pattern": {
+                            "ecosystem": "pypi",
+                            "package": "aiohttp",
+                            "semver_range": ">= 1.0.5, < 3.9.2"
+                        },
+                        "found_dependency": {
+                            "allowed_hashes": {
+                                "sha256": [
+                                    "03543dcf98a6619254b409be2d22b51f21ec66272be4ebda7b04e6412e4b2e14",
+                                    "03baa76b730e4e15a45f81dfe29a8d910314143414e528737f8589ec60cf7391",
+                                    "0a63f03189a6fa7c900226e3ef5ba4d3bd047e18f445e69adbd65af433add5a2",
+                                    "10c8cefcff98fd9168cdd86c4da8b84baaa90bf2da2269c6161984e6737bf23e",
+                                    "147ae376f14b55f4f3c2b118b95be50a369b89b38a971e80a17c3fd623f280c9",
+                                    "176a64b24c0935869d5bbc4c96e82f89f643bcdf08ec947701b9dbb3c956b7dd",
+                                    "17b79c2963db82086229012cff93ea55196ed31f6493bb1ccd2c62f1724324e4",
+                                    "1a45865451439eb320784918617ba54b7a377e3501fb70402ab84d38c2cd891b",
+                                    "1b3ea7edd2d24538959c1c1abf97c744d879d4e541d38305f9bd7d9b10c9ec41",
+                                    "22f6eab15b6db242499a16de87939a342f5a950ad0abaf1532038e2ce7d31567",
+                                    "3032dcb1c35bc330134a5b8a5d4f68c1a87252dfc6e1262c65a7e30e62298275",
+                                    "33587f26dcee66efb2fff3c177547bd0449ab7edf1b73a7f5dea1e38609a0c54",
+                                    "34ce9f93a4a68d1272d26030655dd1b58ff727b3ed2a33d80ec433561b03d67a",
+                                    "3a80464982d41b1fbfe3154e440ba4904b71c1a53e9cd584098cd41efdb188ef",
+                                    "3b90467ebc3d9fa5b0f9b6489dfb2c304a1db7b9946fa92aa76a831b9d587e99",
+                                    "3d89efa095ca7d442a6d0cbc755f9e08190ba40069b235c9886a8763b03785da",
+                                    "3d8ef1a630519a26d6760bc695842579cb09e373c5f227a21b67dc3eb16cfea4",
+                                    "3f43255086fe25e36fd5ed8f2ee47477408a73ef00e804cb2b5cba4bf2ac7f5e",
+                                    "40653609b3bf50611356e6b6554e3a331f6879fa7116f3959b20e3528783e699",
+                                    "41a86a69bb63bb2fc3dc9ad5ea9f10f1c9c8e282b471931be0268ddd09430b04",
+                                    "493f5bc2f8307286b7799c6d899d388bbaa7dfa6c4caf4f97ef7521b9cb13719",
+                                    "4a6cadebe132e90cefa77e45f2d2f1a4b2ce5c6b1bfc1656c1ddafcfe4ba8131",
+                                    "4c745b109057e7e5f1848c689ee4fb3a016c8d4d92da52b312f8a509f83aa05e",
+                                    "4d347a172f866cd1d93126d9b239fcbe682acb39b48ee0873c73c933dd23bd0f",
+                                    "4dac314662f4e2aa5009977b652d9b8db7121b46c38f2073bfeed9f4049732cd",
+                                    "4ddaae3f3d32fc2cb4c53fab020b69a05c8ab1f02e0e59665c6f7a0d3a5be54f",
+                                    "5393fb786a9e23e4799fec788e7e735de18052f83682ce2dfcabaf1c00c2c08e",
+                                    "59f029a5f6e2d679296db7bee982bb3d20c088e52a2977e3175faf31d6fb75d1",
+                                    "5a7bdf9e57126dc345b683c3632e8ba317c31d2a41acd5800c10640387d193ed",
+                                    "5b3f2e06a512e94722886c0827bee9807c86a9f698fac6b3aee841fab49bbfb4",
+                                    "5ce45967538fb747370308d3145aa68a074bdecb4f3a300869590f725ced69c1",
+                                    "5e14f25765a578a0a634d5f0cd1e2c3f53964553a00347998dfdf96b8137f777",
+                                    "618c901dd3aad4ace71dfa0f5e82e88b46ef57e3239fc7027773cb6d4ed53531",
+                                    "652b1bff4f15f6287550b4670546a2947f2a4575b6c6dff7760eafb22eacbf0b",
+                                    "6c08e8ed6fa3d477e501ec9db169bfac8140e830aa372d77e4a43084d8dd91ab",
+                                    "6ddb2a2026c3f6a68c3998a6c47ab6795e4127315d2e35a09997da21865757f8",
+                                    "6e601588f2b502c93c30cd5a45bfc665faaf37bbe835b7cfd461753068232074",
+                                    "6e74dd54f7239fcffe07913ff8b964e28b712f09846e20de78676ce2a3dc0bfc",
+                                    "7235604476a76ef249bd64cb8274ed24ccf6995c4a8b51a237005ee7a57e8643",
+                                    "7ab43061a0c81198d88f39aaf90dae9a7744620978f7ef3e3708339b8ed2ef01",
+                                    "7c7837fe8037e96b6dd5cfcf47263c1620a9d332a87ec06a6ca4564e56bd0f36",
+                                    "80575ba9377c5171407a06d0196b2310b679dc752d02a1fcaa2bc20b235dbf24",
+                                    "80a37fe8f7c1e6ce8f2d9c411676e4bc633a8462844e38f46156d07a7d401654",
+                                    "8189c56eb0ddbb95bfadb8f60ea1b22fcfa659396ea36f6adcc521213cd7b44d",
+                                    "854f422ac44af92bfe172d8e73229c270dc09b96535e8a548f99c84f82dde241",
+                                    "880e15bb6dad90549b43f796b391cfffd7af373f4646784795e20d92606b7a51",
+                                    "8b631e26df63e52f7cce0cce6507b7a7f1bc9b0c501fcde69742130b32e8782f",
+                                    "8c29c77cc57e40f84acef9bfb904373a4e89a4e8b74e71aa8075c021ec9078c2",
+                                    "91f6d540163f90bbaef9387e65f18f73ffd7c79f5225ac3d3f61df7b0d01ad15",
+                                    "92c0cea74a2a81c4c76b62ea1cac163ecb20fb3ba3a75c909b9fa71b4ad493cf",
+                                    "9bcb89336efa095ea21b30f9e686763f2be4478f1b0a616969551982c4ee4c3b",
+                                    "a1f4689c9a1462f3df0a1f7e797791cd6b124ddbee2b570d34e7f38ade0e2c71",
+                                    "a3fec6a4cb5551721cdd70473eb009d90935b4063acc5f40905d40ecfea23e05",
+                                    "a5d794d1ae64e7753e405ba58e08fcfa73e3fad93ef9b7e31112ef3c9a0efb52",
+                                    "a86d42d7cba1cec432d47ab13b6637bee393a10f664c425ea7b305d1301ca1a3",
+                                    "adfbc22e87365a6e564c804c58fc44ff7727deea782d175c33602737b7feadb6",
+                                    "aeb29c84bb53a84b1a81c6c09d24cf33bb8432cc5c39979021cc0f98c1292a1a",
+                                    "aede4df4eeb926c8fa70de46c340a1bc2c6079e1c40ccf7b0eae1313ffd33519",
+                                    "b744c33b6f14ca26b7544e8d8aadff6b765a80ad6164fb1a430bbadd593dfb1a",
+                                    "b7a00a9ed8d6e725b55ef98b1b35c88013245f35f68b1b12c5cd4100dddac333",
+                                    "bb96fa6b56bb536c42d6a4a87dfca570ff8e52de2d63cabebfd6fb67049c34b6",
+                                    "bbcf1a76cf6f6dacf2c7f4d2ebd411438c275faa1dc0c68e46eb84eebd05dd7d",
+                                    "bca5f24726e2919de94f047739d0a4fc01372801a3672708260546aa2601bf57",
+                                    "bf2e1a9162c1e441bf805a1fd166e249d574ca04e03b34f97e2928769e91ab5c",
+                                    "c4eb3b82ca349cf6fadcdc7abcc8b3a50ab74a62e9113ab7a8ebc268aad35bb9",
+                                    "c6cc15d58053c76eacac5fa9152d7d84b8d67b3fde92709195cb984cfb3475ea",
+                                    "c6cd05ea06daca6ad6a4ca3ba7fe7dc5b5de063ff4daec6170ec0f9979f6c332",
+                                    "c844fd628851c0bc309f3c801b3a3d58ce430b2ce5b359cd918a5a76d0b20cb5",
+                                    "c9cb1565a7ad52e096a6988e2ee0397f72fe056dadf75d17fa6b5aebaea05622",
+                                    "cab9401de3ea52b4b4c6971db5fb5c999bd4260898af972bf23de1c6b5dd9d71",
+                                    "cd468460eefef601ece4428d3cf4562459157c0f6523db89365202c31b6daebb",
+                                    "d1e6a862b76f34395a985b3cd39a0d949ca80a70b6ebdea37d3ab39ceea6698a",
+                                    "d1f9282c5f2b5e241034a009779e7b2a1aa045f667ff521e7948ea9b56e0c5ff",
+                                    "d265f09a75a79a788237d7f9054f929ced2e69eb0bb79de3798c468d8a90f945",
+                                    "db3fc6120bce9f446d13b1b834ea5b15341ca9ff3f335e4a951a6ead31105480",
+                                    "dbf3a08a06b3f433013c143ebd72c15cac33d2914b8ea4bea7ac2c23578815d6",
+                                    "de04b491d0e5007ee1b63a309956eaed959a49f5bb4e84b26c8f5d49de140fa9",
+                                    "e4b09863aae0dc965c3ef36500d891a3ff495a2ea9ae9171e4519963c12ceefd",
+                                    "e595432ac259af2d4630008bf638873d69346372d38255774c0e286951e8b79f",
+                                    "e75b89ac3bd27d2d043b234aa7b734c38ba1b0e43f07787130a0ecac1e12228a",
+                                    "ea9eb976ffdd79d0e893869cfe179a8f60f152d42cb64622fca418cd9b18dc2a",
+                                    "eafb3e874816ebe2a92f5e155f17260034c8c341dad1df25672fb710627c6949",
+                                    "ee3c36df21b5714d49fc4580247947aa64bcbe2939d1b77b4c8dcb8f6c9faecc",
+                                    "f352b62b45dff37b55ddd7b9c0c8672c4dd2eb9c0f9c11d395075a84e2c40f75",
+                                    "fabb87dd8850ef0f7fe2b366d44b77d7e6fa2ea87861ab3844da99291e81e60f",
+                                    "fe11310ae1e4cd560035598c3f29d86cef39a83d244c7466f95c27ae04850f10",
+                                    "fe7ba4a51f33ab275515f66b0a236bcde4fb5561498fe8f898d4e549b2e4509f"
+                                ]
+                            },
+                            "ecosystem": "pypi",
+                            "line_number": 19,
+                            "package": "aiohttp",
+                            "transitivity": "transitive",
+                            "version": "3.8.4"
+                        },
+                        "lockfile": "app/Pipfile.lock"
+                    },
+                    "reachability_rule": true,
+                    "reachable": false,
+                    "sca_finding_schema": 20220913
+                },
+                "severity": "ERROR"
+            },
+            "path": "app/Pipfile.lock",
+            "start": {
+                "col": 0,
+                "line": 19,
+                "offset": 0
+            }
+        },
+        {
+            "check_id": "ssc-parity-7be4c062dbad5fb929d2d351319f12dc78530c01",
+            "end": {
+                "col": 0,
+                "line": 19,
+                "offset": 0
+            },
+            "extra": {
+                "engine_kind": "OSS",
+                "fingerprint": "4ed574b58cf3599975229717ea0a6b960a2d29b4842f70d6d18bb38ccad254836967c89f43cf6d349e664e5b8f21acb778e69f803c4d40d45687d11e8f0264ab_0",
+                "is_ignored": false,
+                "lines": "        \"aiohttp\": {",
+                "message": "aiohttp < 3.9.2 is vulnerable to Inconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling').",
+                "metadata": {
+                    "category": "security",
+                    "confidence": "LOW",
+                    "cve": "CVE-2024-23829",
+                    "cwe": [
+                        "CWE-1357: Reliance on Uncontrolled Component",
+                        "CWE-444: Inconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling')"
+                    ],
+                    "dev.semgrep.actions": [],
+                    "ghsa": "GHSA-8qpw-xqxj-h4r2",
+                    "license": "Copyright 2023 Semgrep, Inc.",
+                    "owasp": [
+                        "A06:2021 - Vulnerable and Outdated Components"
+                    ],
+                    "publish-date": "2024-01-29T22:30:07Z",
+                    "references": [
+                        "https://nvd.nist.gov/vuln/detail/CVE-2024-23829",
+                        "https://github.com/advisories/GHSA-8qpw-xqxj-h4r2"
+                    ],
+                    "sca-fix-versions": [
+                        {
+                            "aiohttp": "3.9.2"
+                        }
+                    ],
+                    "sca-kind": "legacy",
+                    "sca-schema": 20230302,
+                    "sca-severity": "MODERATE",
+                    "sca-vuln-database-identifier": "CVE-2024-23829",
+                    "semgrep.dev": {
+                        "rule": {
+                            "origin": "custom",
+                            "rule_id": "10UOyx2",
+                            "url": "https://semgrep.dev/orgs/-/supply-chain/advisories?q=ssc-parity-7be4c062dbad5fb929d2d351319f12dc78530c01",
+                            "version_id": "0bTrQgP"
+                        }
+                    },
+                    "semgrep.url": "https://semgrep.dev/orgs/-/supply-chain/advisories?q=ssc-parity-7be4c062dbad5fb929d2d351319f12dc78530c01",
+                    "source": "https://semgrep.dev/orgs/-/supply-chain/advisories?q=ssc-parity-7be4c062dbad5fb929d2d351319f12dc78530c01",
+                    "technology": [
+                        "python"
+                    ],
+                    "vulnerability_class": [
+                        "Improper Validation",
+                        "Other"
+                    ]
+                },
+                "metavars": {},
+                "sca_info": {
+                    "dependency_match": {
+                        "dependency_pattern": {
+                            "ecosystem": "pypi",
+                            "package": "aiohttp",
+                            "semver_range": ">=0, <3.9.2"
+                        },
+                        "found_dependency": {
+                            "allowed_hashes": {
+                                "sha256": [
+                                    "03543dcf98a6619254b409be2d22b51f21ec66272be4ebda7b04e6412e4b2e14",
+                                    "03baa76b730e4e15a45f81dfe29a8d910314143414e528737f8589ec60cf7391",
+                                    "0a63f03189a6fa7c900226e3ef5ba4d3bd047e18f445e69adbd65af433add5a2",
+                                    "10c8cefcff98fd9168cdd86c4da8b84baaa90bf2da2269c6161984e6737bf23e",
+                                    "147ae376f14b55f4f3c2b118b95be50a369b89b38a971e80a17c3fd623f280c9",
+                                    "176a64b24c0935869d5bbc4c96e82f89f643bcdf08ec947701b9dbb3c956b7dd",
+                                    "17b79c2963db82086229012cff93ea55196ed31f6493bb1ccd2c62f1724324e4",
+                                    "1a45865451439eb320784918617ba54b7a377e3501fb70402ab84d38c2cd891b",
+                                    "1b3ea7edd2d24538959c1c1abf97c744d879d4e541d38305f9bd7d9b10c9ec41",
+                                    "22f6eab15b6db242499a16de87939a342f5a950ad0abaf1532038e2ce7d31567",
+                                    "3032dcb1c35bc330134a5b8a5d4f68c1a87252dfc6e1262c65a7e30e62298275",
+                                    "33587f26dcee66efb2fff3c177547bd0449ab7edf1b73a7f5dea1e38609a0c54",
+                                    "34ce9f93a4a68d1272d26030655dd1b58ff727b3ed2a33d80ec433561b03d67a",
+                                    "3a80464982d41b1fbfe3154e440ba4904b71c1a53e9cd584098cd41efdb188ef",
+                                    "3b90467ebc3d9fa5b0f9b6489dfb2c304a1db7b9946fa92aa76a831b9d587e99",
+                                    "3d89efa095ca7d442a6d0cbc755f9e08190ba40069b235c9886a8763b03785da",
+                                    "3d8ef1a630519a26d6760bc695842579cb09e373c5f227a21b67dc3eb16cfea4",
+                                    "3f43255086fe25e36fd5ed8f2ee47477408a73ef00e804cb2b5cba4bf2ac7f5e",
+                                    "40653609b3bf50611356e6b6554e3a331f6879fa7116f3959b20e3528783e699",
+                                    "41a86a69bb63bb2fc3dc9ad5ea9f10f1c9c8e282b471931be0268ddd09430b04",
+                                    "493f5bc2f8307286b7799c6d899d388bbaa7dfa6c4caf4f97ef7521b9cb13719",
+                                    "4a6cadebe132e90cefa77e45f2d2f1a4b2ce5c6b1bfc1656c1ddafcfe4ba8131",
+                                    "4c745b109057e7e5f1848c689ee4fb3a016c8d4d92da52b312f8a509f83aa05e",
+                                    "4d347a172f866cd1d93126d9b239fcbe682acb39b48ee0873c73c933dd23bd0f",
+                                    "4dac314662f4e2aa5009977b652d9b8db7121b46c38f2073bfeed9f4049732cd",
+                                    "4ddaae3f3d32fc2cb4c53fab020b69a05c8ab1f02e0e59665c6f7a0d3a5be54f",
+                                    "5393fb786a9e23e4799fec788e7e735de18052f83682ce2dfcabaf1c00c2c08e",
+                                    "59f029a5f6e2d679296db7bee982bb3d20c088e52a2977e3175faf31d6fb75d1",
+                                    "5a7bdf9e57126dc345b683c3632e8ba317c31d2a41acd5800c10640387d193ed",
+                                    "5b3f2e06a512e94722886c0827bee9807c86a9f698fac6b3aee841fab49bbfb4",
+                                    "5ce45967538fb747370308d3145aa68a074bdecb4f3a300869590f725ced69c1",
+                                    "5e14f25765a578a0a634d5f0cd1e2c3f53964553a00347998dfdf96b8137f777",
+                                    "618c901dd3aad4ace71dfa0f5e82e88b46ef57e3239fc7027773cb6d4ed53531",
+                                    "652b1bff4f15f6287550b4670546a2947f2a4575b6c6dff7760eafb22eacbf0b",
+                                    "6c08e8ed6fa3d477e501ec9db169bfac8140e830aa372d77e4a43084d8dd91ab",
+                                    "6ddb2a2026c3f6a68c3998a6c47ab6795e4127315d2e35a09997da21865757f8",
+                                    "6e601588f2b502c93c30cd5a45bfc665faaf37bbe835b7cfd461753068232074",
+                                    "6e74dd54f7239fcffe07913ff8b964e28b712f09846e20de78676ce2a3dc0bfc",
+                                    "7235604476a76ef249bd64cb8274ed24ccf6995c4a8b51a237005ee7a57e8643",
+                                    "7ab43061a0c81198d88f39aaf90dae9a7744620978f7ef3e3708339b8ed2ef01",
+                                    "7c7837fe8037e96b6dd5cfcf47263c1620a9d332a87ec06a6ca4564e56bd0f36",
+                                    "80575ba9377c5171407a06d0196b2310b679dc752d02a1fcaa2bc20b235dbf24",
+                                    "80a37fe8f7c1e6ce8f2d9c411676e4bc633a8462844e38f46156d07a7d401654",
+                                    "8189c56eb0ddbb95bfadb8f60ea1b22fcfa659396ea36f6adcc521213cd7b44d",
+                                    "854f422ac44af92bfe172d8e73229c270dc09b96535e8a548f99c84f82dde241",
+                                    "880e15bb6dad90549b43f796b391cfffd7af373f4646784795e20d92606b7a51",
+                                    "8b631e26df63e52f7cce0cce6507b7a7f1bc9b0c501fcde69742130b32e8782f",
+                                    "8c29c77cc57e40f84acef9bfb904373a4e89a4e8b74e71aa8075c021ec9078c2",
+                                    "91f6d540163f90bbaef9387e65f18f73ffd7c79f5225ac3d3f61df7b0d01ad15",
+                                    "92c0cea74a2a81c4c76b62ea1cac163ecb20fb3ba3a75c909b9fa71b4ad493cf",
+                                    "9bcb89336efa095ea21b30f9e686763f2be4478f1b0a616969551982c4ee4c3b",
+                                    "a1f4689c9a1462f3df0a1f7e797791cd6b124ddbee2b570d34e7f38ade0e2c71",
+                                    "a3fec6a4cb5551721cdd70473eb009d90935b4063acc5f40905d40ecfea23e05",
+                                    "a5d794d1ae64e7753e405ba58e08fcfa73e3fad93ef9b7e31112ef3c9a0efb52",
+                                    "a86d42d7cba1cec432d47ab13b6637bee393a10f664c425ea7b305d1301ca1a3",
+                                    "adfbc22e87365a6e564c804c58fc44ff7727deea782d175c33602737b7feadb6",
+                                    "aeb29c84bb53a84b1a81c6c09d24cf33bb8432cc5c39979021cc0f98c1292a1a",
+                                    "aede4df4eeb926c8fa70de46c340a1bc2c6079e1c40ccf7b0eae1313ffd33519",
+                                    "b744c33b6f14ca26b7544e8d8aadff6b765a80ad6164fb1a430bbadd593dfb1a",
+                                    "b7a00a9ed8d6e725b55ef98b1b35c88013245f35f68b1b12c5cd4100dddac333",
+                                    "bb96fa6b56bb536c42d6a4a87dfca570ff8e52de2d63cabebfd6fb67049c34b6",
+                                    "bbcf1a76cf6f6dacf2c7f4d2ebd411438c275faa1dc0c68e46eb84eebd05dd7d",
+                                    "bca5f24726e2919de94f047739d0a4fc01372801a3672708260546aa2601bf57",
+                                    "bf2e1a9162c1e441bf805a1fd166e249d574ca04e03b34f97e2928769e91ab5c",
+                                    "c4eb3b82ca349cf6fadcdc7abcc8b3a50ab74a62e9113ab7a8ebc268aad35bb9",
+                                    "c6cc15d58053c76eacac5fa9152d7d84b8d67b3fde92709195cb984cfb3475ea",
+                                    "c6cd05ea06daca6ad6a4ca3ba7fe7dc5b5de063ff4daec6170ec0f9979f6c332",
+                                    "c844fd628851c0bc309f3c801b3a3d58ce430b2ce5b359cd918a5a76d0b20cb5",
+                                    "c9cb1565a7ad52e096a6988e2ee0397f72fe056dadf75d17fa6b5aebaea05622",
+                                    "cab9401de3ea52b4b4c6971db5fb5c999bd4260898af972bf23de1c6b5dd9d71",
+                                    "cd468460eefef601ece4428d3cf4562459157c0f6523db89365202c31b6daebb",
+                                    "d1e6a862b76f34395a985b3cd39a0d949ca80a70b6ebdea37d3ab39ceea6698a",
+                                    "d1f9282c5f2b5e241034a009779e7b2a1aa045f667ff521e7948ea9b56e0c5ff",
+                                    "d265f09a75a79a788237d7f9054f929ced2e69eb0bb79de3798c468d8a90f945",
+                                    "db3fc6120bce9f446d13b1b834ea5b15341ca9ff3f335e4a951a6ead31105480",
+                                    "dbf3a08a06b3f433013c143ebd72c15cac33d2914b8ea4bea7ac2c23578815d6",
+                                    "de04b491d0e5007ee1b63a309956eaed959a49f5bb4e84b26c8f5d49de140fa9",
+                                    "e4b09863aae0dc965c3ef36500d891a3ff495a2ea9ae9171e4519963c12ceefd",
+                                    "e595432ac259af2d4630008bf638873d69346372d38255774c0e286951e8b79f",
+                                    "e75b89ac3bd27d2d043b234aa7b734c38ba1b0e43f07787130a0ecac1e12228a",
+                                    "ea9eb976ffdd79d0e893869cfe179a8f60f152d42cb64622fca418cd9b18dc2a",
+                                    "eafb3e874816ebe2a92f5e155f17260034c8c341dad1df25672fb710627c6949",
+                                    "ee3c36df21b5714d49fc4580247947aa64bcbe2939d1b77b4c8dcb8f6c9faecc",
+                                    "f352b62b45dff37b55ddd7b9c0c8672c4dd2eb9c0f9c11d395075a84e2c40f75",
+                                    "fabb87dd8850ef0f7fe2b366d44b77d7e6fa2ea87861ab3844da99291e81e60f",
+                                    "fe11310ae1e4cd560035598c3f29d86cef39a83d244c7466f95c27ae04850f10",
+                                    "fe7ba4a51f33ab275515f66b0a236bcde4fb5561498fe8f898d4e549b2e4509f"
+                                ]
+                            },
+                            "ecosystem": "pypi",
+                            "line_number": 19,
+                            "package": "aiohttp",
+                            "transitivity": "transitive",
+                            "version": "3.8.4"
+                        },
+                        "lockfile": "app/Pipfile.lock"
+                    },
+                    "reachability_rule": false,
+                    "reachable": false,
+                    "sca_finding_schema": 20220913
+                },
+                "severity": "WARNING"
+            },
+            "path": "app/Pipfile.lock",
+            "start": {
+                "col": 0,
+                "line": 19,
+                "offset": 0
+            }
+        }
+    ],
+    "skipped_rules": [],
+    "version": "1.67.0"
+}
