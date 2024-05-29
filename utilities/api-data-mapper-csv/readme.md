@@ -1,7 +1,7 @@
 # Semgrep Data Mapper
 
 ## Description
-This repository is a tool for formatting Semgrep data to make reporting and analysis easier. It has utilities for normalizing and flattening Semgrep scan and rule data into CSV format for reporting purposes. It is designed to streamline the process of extracting actionable insights from Semgrep outputs.
+This is a tool for formatting Semgrep data to make reporting and analysis easier. It has utilities for normalizing and flattening Semgrep scan and rule data into CSV format for reporting purposes. It is designed to streamline the process of extracting actionable insights from Semgrep outputs.
 
 ## Prerequisites
 Before you run this tool, ensure you have the following installed:
