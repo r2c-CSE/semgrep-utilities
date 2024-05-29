@@ -1,0 +1,60 @@
+{
+    "meta": {
+        "branch": "main",
+        "ci_job_url": null,
+        "commit": "fakeCommit",
+        "commit_author_email": "fake_author@users.noreply.github.com",
+        "commit_author_image_url": null,
+        "commit_author_name": "fake_author",
+        "commit_author_username": null,
+        "commit_timestamp": "2024-01-01T01:27:04",
+        "commit_title": "happy new year",
+        "is_code_scan": false,
+        "is_full_scan": true,
+        "is_sca_scan": false,
+        "is_secrets_scan": false,
+        "on": "unknown",
+        "pull_request_author_image_url": null,
+        "pull_request_author_username": null,
+        "pull_request_id": null,
+        "pull_request_title": null,
+        "repo_url": "https://github.com/fake-org/fake-app",
+        "repository": "fake-app",
+        "scan_environment": "git",
+        "semgrep_version": "1.71",
+        "version": "v1"
+    },
+    "project_config": {
+        "version": "v1"
+    },
+    "project_metadata": {
+        "branch": "main",
+        "ci_job_url": null,
+        "commit": "fakeCommit",
+        "commit_author_email": "fake_author@users.noreply.github.com",
+        "commit_author_image_url": null,
+        "commit_author_name": "fake_author",
+        "commit_author_username": null,
+        "commit_timestamp": "2024-01-01T01:27:04",
+        "commit_title": "happy new year",
+        "is_code_scan": false,
+        "is_full_scan": true,
+        "is_sca_scan": false,
+        "is_secrets_scan": false,
+        "on": "unknown",
+        "pull_request_author_image_url": null,
+        "pull_request_author_username": null,
+        "pull_request_id": null,
+        "pull_request_title": null,
+        "repo_url": "https://github.com/fake-org/fake-app",
+        "repository": "fake-app",
+        "scan_environment": "git",
+        "semgrep_version": "1.71"
+    },
+    "scan_metadata": {
+        "cli_version": "1.71",
+        "dry_run": true,
+        "requested_products": [],
+        "unique_id": "fa50ef5d-a517-4dcc-a8c8-1da8447a7419"
+    }
+}
