@@ -6,7 +6,7 @@ This is a tool for formatting Semgrep data to make reporting and analysis easier
 ## Prerequisites
 Before you run this tool, ensure you have the following installed:
 - Python 3.7 or higher
-- [pipenv](https://pypi.org/project/pipenv/)
+- [pipenv](https://pypi.org/project/pipenv/) or Docker
 
 ## Usage
 Run either with pipenv or with Docker.
