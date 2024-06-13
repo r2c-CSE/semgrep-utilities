@@ -13,10 +13,13 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
 
                 links = [{"url": ref} for ref in vuln.get('extra').get('metadata')['references']]
                 rule_name = vuln['check_id']
+                rule_name = rule_name[rule_name.rfind('.')+1:]
+                rule_name = rule_name.replace('-', ' ')
+                rule_name = rule_name.title()
 
                 new_vuln = {
                             "id": vuln.get('extra')['fingerprint'][0:63],
-                            "name": rule_name[rule_name.rfind('.')+1:],
+                            "name": rule_name,
                             "description": vuln.get('extra')['message'],
                             "severity": get_severity(vuln), 
                             "location": {
