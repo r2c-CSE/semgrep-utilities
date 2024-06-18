@@ -13,11 +13,16 @@ Example:
 export GITHUB_PERSONAL_ACCESS_TOKEN=ghp_BunchOfSecretStuffGoesHere
 ```
 
-The Token will need the following scopes:
+The Token will need the following scopes (for classic tokens):
 - repo
 - read:org
 - read:user
 - user:email
+
+In case of fine-grained tokens, following scopes are needed:
+- Repositories > Contents > Access: Read-only
+- Repositories > Metadata > Access: Read-only
+- Organization > Members > Access: Read-only
 
 The script takes the following arguements:
 - The name of the github organization
