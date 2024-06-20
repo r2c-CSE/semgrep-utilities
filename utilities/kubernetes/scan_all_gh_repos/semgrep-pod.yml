@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: semgrep-scan
+  labels:
+    app: web
+spec:
+  containers:
+    - name: semgrep-scan
+      image: sebastianrevuelta/my-semgrep-image:2.0
+      command: ["python", "scan.py"]  # This is redundant if the image has the ENTRYPOINT set
+      env:
+      - name: SEMGREP_APP_TOKEN
+        value: 'xxxxx'
+      - name: GITHUB_TOKEN
+        value: 'xxxxx'    
+      - name: ORG_NAME
+        value: 'r2c-CSE'   
