@@ -1,0 +1,39 @@
+on:
+  workflow_dispatch: {}
+  pull_request: {}
+  push:
+    branches:
+    - main
+    paths:
+    - .github/workflows/semgrep.yml
+  schedule:
+  # random HH:MM to avoid a load spike on GitHub Actions at 00:00
+  - cron: 2 20 * * *
+name: Semgrep
+jobs:
+  semgrep:
+    name: semgrep/ci
+    runs-on: ubuntu-20.04
+    env:
+      SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+    container:
+      image: returntocorp/semgrep
+    steps:
+    - uses: actions/checkout@v3
+    - run: |
+        echo "Running semgrep and dumping results to JSON file"
+        semgrep ci --json --output report.json || true
+        json_file=report.json
+        echo "Iterating through findings"
+        findings=$(jq -r '.results[]' "$json_file")
+        for k in $(jq '.results | keys | .[]' "$json_file"); do
+            value=$(jq -r ".results[$k]" "$json_file");
+            echo "$value" > finding_content.json
+            severity=$(jq -r '.extra.severity' "finding_content.json");
+            confidence=$(jq -r '.extra.metadata.confidence' "finding_content.json");
+            if [[ $severity == "ERROR" && $confidence == "HIGH" ]]; then
+                echo "Exiting with error code 1"
+                exit 1;
+            fi
+        done
+        echo "There are no critical-high findings"
