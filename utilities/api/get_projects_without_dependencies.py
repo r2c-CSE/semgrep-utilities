@@ -63,12 +63,36 @@ def retrieve_paginated_data(endpoint, kind, page_size, headers):
 
     return json.dumps({ f"{kind}": data_list})
 
+def retrieve_paginated_data_from_cursor(endpoint, kind, headers):
+    """
+    Generalized function to retrieve multiple pages of data.
+    Returns all data as a JSON string (not a Python dict!) in the same format 
+    as the API would if it weren't paginated.
+    """
+    # Initialize values
+    data_list = []
+    hasMore = True
+    cursor = 0
+    
+    while (hasMore == True):
+        payload = {"pageSize": 100, "cursor": cursor}
+        r = requests.post(f"{endpoint}", headers=headers, json=payload) 
+        if r.status_code != 200:
+            sys.exit(f'Get failed: {r.text}')
+        data = r.json()
+        hasMore = data['hasMore']
+        cursor = data['cursor']
+        data_list.extend(data.get(kind))
+        print(f"Waiting 5 seconds...cursor: ",{cursor})
+        time.sleep(5)
+    return json.dumps({ f"{kind}": data_list})
+
 def get_projects(deployment_slug, headers):
     projects = retrieve_paginated_data(f"{BASE_URL}/{deployment_slug}/projects", "projects", 200, headers=headers)
     return projects
 
 def get_repo_with_dependencies(org_id, headers):
-    projects = retrieve_paginated_data(f"{BASE_URL}/{org_id}/dependencies/repositories", "repositorySummaries", 100, headers=headers)
+    projects = retrieve_paginated_data_from_cursor(f"{BASE_URL}/{org_id}/dependencies/repositories", "repositorySummaries", headers=headers)
     return projects
 
 def diff_df(repos_with_dependencies, total_repos):
