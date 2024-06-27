@@ -2,6 +2,7 @@ import requests
 import sys
 import json
 import os
+import time
 import logging
 from pathlib import Path
 
@@ -83,7 +84,6 @@ def retrieve_paginated_data_from_cursor(endpoint, kind, headers):
         hasMore = data['hasMore']
         cursor = data['cursor']
         data_list.extend(data.get(kind))
-        print(f"Waiting 5 seconds...cursor: ",{cursor})
         time.sleep(5)
     return json.dumps({ f"{kind}": data_list})
 
@@ -130,15 +130,25 @@ if __name__ == "__main__":
 
     logging.info("Getting Repos with dependencies")
     repos_with_dependencies = get_repo_with_dependencies(org_id, headers)
+
     data_repos_with_dependencies = json.loads(repos_with_dependencies)
+    n_with_deps = len(data_repos_with_dependencies['repositorySummaries'])
     with open("repos_with_dependencies.json", "w") as file:
          json.dump(data_repos_with_dependencies, file)
 
     logging.info("Getting all projects")
     total_repos = get_projects(slug_name, headers)
     data_total_repos = json.loads(total_repos)
+    n_total = len(data_total_repos['projects'])
 
     logging.info("Getting projects without dependencies")
     repos_without_dependencies = diff_df(data_repos_with_dependencies, data_total_repos)
+    n_without_deps = len(repos_without_dependencies['projects'])
     with open("repos_without_dependencies.json", "w") as file:
          json.dump(repos_without_dependencies, file)
+
+    print(f"Total projects: ", n_total)
+    perc_with_deps = round((n_with_deps/n_total)*100)
+    perc_without_deps = round((n_without_deps/n_total)*100)
+    print(f"Projects with dependencies: ", n_with_deps, " --> ", perc_with_deps, "%")
+    print(f"Projects without dependencies: ", n_without_deps, " --> ", perc_without_deps, "%")
