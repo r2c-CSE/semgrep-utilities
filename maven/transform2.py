@@ -1,8 +1,9 @@
 import subprocess
 import re
+import sys
 
 # Run the sbt dependencyTree command and capture the output
-result = subprocess.run(["cat", "maven_dep_tree.txt"], capture_output=True, text=True)
+result = subprocess.run(["cat", sys.argv[1]], capture_output=True, text=True)
 
 # Assign the output to actual_lines
 actual_lines = result.stdout
