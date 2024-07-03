@@ -1,6 +1,5 @@
 # Index
 * Creating (and approving) PRs to onboard Semgrep to GitHub repos
-* Logic to block pipelines depending on severity and confidence
 
 # Creating (and approving) PRs to onboard Semgrep to GitHub repos
 
@@ -47,6 +46,3 @@ If errors occur in creating, reviewing, or merging the PR, the script will print
 6. If PR creation is generally successful, proceed with `gh auth logout` and then `gh auth login` as the user who will approve and merge the PRs.
 7. Run `approve-semgrep-prs.sh` to approve the PRs. Run with `-m` to merge the PRs.
 
-# Logic to block pipelines depending on severity and confidence
-
-Sometime you want to block some PR scans for specific repositories but not other. As Multipolicies is not enabled at this moment, we can use a script like shown in the semgrep.yml file.
