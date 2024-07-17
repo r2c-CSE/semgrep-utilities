@@ -146,9 +146,7 @@ A few customers use SBT to construct their dependency tree. For those unfamiliar
 
 ### SBT Dependency Tree Output
 
-Using the **`sbt dependencyTree`** command yields a dependency tree that is SBT-specific but akin to the one required by SSC. Here's an example of what that looks like:
-
-[dep_tree_sbt.txt](https://prod-files-secure.s3.us-west-2.amazonaws.com/aeaf09c9-e827-4fed-b6a2-cc0fcc31bc3c/2a455114-d9a5-4bd4-b285-f2a960571d67/dep_tree_sbt.txt)
+Using the **`sbt dependencyTree`** command yields a dependency tree that is SBT-specific but akin to the one required by SSC.
 
 To run this command, the user first needs to add the appropriate plugin:
 **`addDependencyTreePlugin`** 
