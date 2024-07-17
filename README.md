@@ -140,7 +140,7 @@ bash.lang.security.ifs-tampering.ifs-tampering,0.044
 
 ## Scala Transformation
 
-If you’re a clever one, you might remember that Scala is not on our list of [supported languages](https://semgrep.dev/docs/supported-languages/#semgrep-supply-chain) for SSC. However, Scala is a Java derivative. And while Java rules can attend the Scala party, reachability rules are like that one friend who didn't get the invite. So for now, Scala's flying solo with parity and lockfile support, no reachability plus-one. That being said, we don’t have any specific support for Scala ecosystems/package files.
+Scala is currently not on our list of [supported languages](https://semgrep.dev/docs/supported-languages/#semgrep-supply-chain) for SSC. However, Scala is a Java derivative. And while Java rules can attend the Scala party, reachability rules are like that one friend who didn't get the invite. So for now, Scala's flying solo with parity and lockfile support, no reachability plus-one. That being said, we don’t have any specific support for Scala ecosystems/package files.
 
 A few customers use SBT to construct their dependency tree. For those unfamiliar, a guide to use SBT can be found [here](https://www.baeldung.com/scala/sbt-dependency-tree).
 
