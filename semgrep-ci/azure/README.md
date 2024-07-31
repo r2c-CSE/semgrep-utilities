@@ -14,3 +14,19 @@ In addition to that, the work item has the following information:
 To fill out the [Area Path](https://learn.microsoft.com/en-us/azure/devops/organizations/settings/set-area-paths?view=azure-devops&tabs=browser) the script will read
 a csv file from a specific repository that will match email and AreaPath. The email is the email author of the pull request.
 
+## Schedule Scan for Azure projects
+This script will clone all repositories for a given Azure project and Azure organization.
+
+The logic is:
+* Check if the project is inactive (there is a csv file: InactiveProjects.csv).
+* Skip the repo if it is inactive
+* Clone the repo
+* Generate the lockfile for .NET, NPM, Java (Maven, Gradle) and Scala.
+* Run a semgrep scan.
+* Delete the repo
+
+The variables we should set are:
+* AZURE_TOKEN
+* AZURE_ORGANIZATION
+* AZURE_PROJECT
+* SEMGREP_APP_TOKEN
