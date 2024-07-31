@@ -11,7 +11,8 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
         for vuln in data_semgrep['results']:
             if not vuln['check_id'].startswith('ssc-'):
 
-                links = [{"url": ref} for ref in vuln.get('extra').get('metadata')['references']]
+                # Most rules have reference links but not all
+                links = [{"url": ref} for ref in vuln.get('extra').get('metadata').get('references', [])]
                 rule_name = vuln['check_id']
                 rule_name = rule_name[rule_name.rfind('.')+1:]
                 rule_name = rule_name.replace('-', ' ')
