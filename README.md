@@ -164,7 +164,7 @@ SSC scans require a **`maven_dep_tree.txt`** file in a format which is generated
 
 1. **Python Script Transformation**
     
-    A Python script was developed to convert the SBT `dependencyTree` output to a Maven-compatible format. The script can be run from the root of the Scala project (after setting up the `dependencyTree` SBT plugin discussed above) with the following command:
+    Use a Python script to convert the SBT `dependencyTree` output to a Maven-compatible format. The script can be run from the root of the Scala project (after setting up the `dependencyTree` SBT plugin discussed above) with the following command:
     
     `python3 transform.py > maven_dep_tree.txt` 
     You can find the Python script under the scala folder.
