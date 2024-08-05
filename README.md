@@ -199,7 +199,7 @@ Then you’re good to go with testing; the rest of the file can stay the same. J
 
 If you make any changes, you’d want to make similar changes in the script and in the task. If you have any concerns about this, feel free to reach out to us at Semgrep for assistance in integrating the changes.
 
-### What happens if the maven_dep_tree.txt is already generated but it is not in the format SSC expect?
+### What happens if the maven_dep_tree.txt is already generated but it is not in the format SSC expects?
 
 If, for any reason, the file `maven_dep_tree.txt` is already generated in the project, you would still need to execute the `transform.py` script to get a compatible maven dependency file.
 
