@@ -148,7 +148,7 @@ If you use SBT to construct your dependency tree, this script can help you trans
 
 Using the **`sbt dependencyTree`** command yields a dependency tree that is SBT-specific but akin to the one required by SSC.
 
-To run this command, the user first needs to add the appropriate plugin:
+To run this command, first add the appropriate plugin:
 **`addDependencyTreePlugin`** 
 
 Or for sbt ≤ 1.3, 
