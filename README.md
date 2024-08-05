@@ -197,7 +197,7 @@ Then you’re good to go with testing; the rest of the file can stay the same. J
 
 `python3 transform.py {filename-of-intermediate-file}` 
 
-If you make any changes, you’d want to make similar changes in the script and in the task. If you don’t know Scala/Java and the changes are complicated enough that you aren’t sure how to express them, you can ask ChatGPT to help you convert your changes to a format that’s compatible with a `build.sbt` file.
+If you make any changes, you’d want to make similar changes in the script and in the task. If you have any concerns about this, feel free to reach out to us at Semgrep for assistance in integrating the changes.
 
 ### What happens if the maven_dep_tree.txt is already generated but it is not in the format SSC expect?
 
