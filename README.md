@@ -171,7 +171,7 @@ SSC scans require a **`maven_dep_tree.txt`** file in a format which is generated
     
 2. **SBT Command Transformation**
     
-    An SBT task was written to automatically transform the output and write it to a **`maven_dep_tree.txt`** file, rather than requiring a dependency on an external Python script. 
+    Use an SBT task to automatically transform the output and write it to a `maven_dep_tree.txt` file, rather than requiring a dependency on an external Python script. 
     
     The task is called `dependencyTreeTransform` and is defined in the provided `build.sbt` file. Run `sbt dependencyTreeTransform` to execute this task.
 
