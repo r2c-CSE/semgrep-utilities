@@ -179,7 +179,7 @@ With either of these transformation methods, a **`maven_dep_tree.txt`** file is 
 
 ### Testing the script and/or task
 
-Since the Python script works on intermediate output, you may receive the `dependencyTree` output from the customer rather than their original SBT file if there are issues. At the beginning of the Python script, it normally has these lines:
+Since the Python script works on intermediate output, you may want to test it with the `dependencyTree` output rather than the original SBT file if there are issues. At the beginning of the Python script, it normally has these lines:
 ```
 # Run the sbt dependencyTree command and capture the output
 result = subprocess.run(["sbt", "dependencyTree"], capture_output=True, text=True)
