@@ -50,8 +50,6 @@ def transform_lines_with_space(original):
     
     return "\n".join(transformed_lines)
 
-
-
 # Print the transformed output with correct spacing
 final_transformed_output = extract_and_transform_lines(actual_lines)
 print(final_transformed_output)
