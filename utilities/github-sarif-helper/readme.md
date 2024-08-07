@@ -1,4 +1,4 @@
-# Findings > Sarif
+# Semgrep Findings > Sarif (for Github)
 This is a utility for taking a semgrep findings json and converting it to a sarif file for the Github security dashboard.
 
 While you'd be right in thinking you don't need one because semgrep supports `--sarif` - that doesn't give you control of which findings you actual want in your sarif nor does it fill in all of the Github specific fields.
