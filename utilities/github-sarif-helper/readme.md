@@ -10,6 +10,6 @@ The `./src/semgrep-json-to-sarif.py` script does the heavy lifting while the inc
 The script takes 2 optional args: `--json` to specify a source json file and `--sarif` to specify the sarif to be created.
 
 Example:
-```semgrep-json-to-sarif.py --json ./semgrep-findings.json --sarif ./semgrep-sarif.json```
+```python semgrep-json-to-sarif.py --json ./semgrep-findings.json --sarif ./semgrep-sarif.json```
 
 The resulting sarif file can then be [uploaded to Github](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/uploading-a-sarif-file-to-github).
