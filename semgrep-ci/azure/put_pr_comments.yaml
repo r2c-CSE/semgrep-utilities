@@ -7,6 +7,7 @@ steps:
   fetchDepth: 100000
   persistCredentials: true
 - script: |
+    dotnet restore -p:RestorePackagesWithLockFile=True
     python -m pip install --upgrade pip
     pip install semgrep
     if [ $(Build.SourceBranchName) = "master" ]; then
@@ -153,12 +154,26 @@ steps:
         
       logging.debug (f"findings['results'] is {findings['results']}")
 
+      # there is no blocking issue
+      blocking = False
+      
       # Iterating through the findings in findings.json file
       for i in findings['results']:
           logging.debug (f"finding is {i}")
 
+          policy = "rule-board-audit"
+          if 'semgrep.policy' in i['extra']['metadata']:
+              policy = i['extra']['metadata']['semgrep.policy']['slug']
+
+          reachability = False
+          sca_severity = "LOW"
+          if 'sca_info' in i['extra']:
+              reachability = i['extra']['sca_info']['reachable']
+              sca_severity = i['extra']['metadata']['sca-severity']
+              logging.debug (f"reachability is {reachability}")
+              logging.debug (f"sca_severity is {sca_severity}")
           # check if the rule is not ignored and rule is from the rule-board-pr-comments
-          if ((i['extra']['is_ignored'] == False) & (i['extra']['metadata']['semgrep.policy']['slug'] != "rule-board-audit")):
+          if ((i['extra']['is_ignored'] == False) and (policy != "rule-board-audit" or (reachability == True and (sca_severity == "HIGH" or sca_severity == "CRITICAL")))):
               
               logging.debug (f"semgrep_org is {semgrep_org}")
 
@@ -198,8 +213,9 @@ steps:
               msg_file_end_col = i['end']['col']
               logging.debug (f"msg_file_end_col is {msg_file_end_col}")   
 
-              msg_shortlink = i['extra']['metadata']['shortlink']
-              logging.debug (f"msg_shortlink is {msg_shortlink}") 
+              if 'semgrep.url' in i['extra']['metadata']:
+                msg_shortlink = i['extra']['metadata']['semgrep.url']
+                logging.debug (f"msg_shortlink is {msg_shortlink}") 
 
               msg_vuln_code = i['extra']['lines']
               logging.debug (f"msg_vuln_code is {msg_vuln_code}") 
@@ -221,6 +237,8 @@ steps:
               logging.debug (f"msg_vuln_code_url is {msg_vuln_code_url}")
 
               url_to_findings = f"https://semgrep.dev/orgs/{semgrep_org}/findings?repo={msg_project_name}&ref={msg_src_branch}"
+              if 'sca_info' in i['extra']:
+                url_to_findings = f"https://semgrep.dev/orgs/{semgrep_org}/supply-chain/vulnerabilities?repo={msg_project_name}&ref={msg_src_branch}"
 
               comment = f"**Link to code**- [{msg_vuln_code_text}]({msg_vuln_code_url}) \n\n" \
                         f"**Link to commit**- [{msg_commit_id}]({msg.url_link_to_repo }/commit/{msg_commit_id})  \n\n" \
@@ -228,15 +246,18 @@ steps:
                         f"**More details on rule** - {msg_shortlink} \n\n" \
                         f"**Link to project findings in** [Semgrep]({url_to_findings}) \n\n"
               result = msg.add(comment=comment)
+              logging.info(f"Putting comment for rule: {msg_summary}")
               if result is False:
                   logging.error(f"Sending message failed with comment: {result}")
         
       # Closing file
-      f.close()                    
+      f.close()        
+
+      if blocking is True:
+          logging.debug("There are blocking findings")      
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-    LOG_LEVEL: DEBUG
-    SEMGREP_ORG: r2c-cse
+    LOG_LEVEL: INFO
+    SEMGREP_ORG: sebas_org
   condition: ne(variables['Build.SourceBranchName'], 'master')
-    
   displayName: 'Python script to add pull request comment'
