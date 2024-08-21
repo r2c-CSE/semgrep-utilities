@@ -20,8 +20,10 @@ dependencyTreeTransform := {
   line.replace("[info]", "").replace("[S]", "").trim
 }.filterNot { line =>
   line.matches("^[ |]+$") || line.isEmpty
+  // This regex is short and simple because "evicted" is sometimes truncated
+  // When revising, recommended to check behavior and performance with a regex tester
 }.filterNot{ line => 
-  line.matches(".+evicted by: .+")
+  line.matches("\(evi.+")
 }.map { line =>
   val parts = line.split(':')
   val formattedLine = if (parts.length > 2) {
