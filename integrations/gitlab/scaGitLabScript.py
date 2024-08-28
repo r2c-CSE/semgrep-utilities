@@ -93,12 +93,8 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
 
 def get_severity(vuln):
     severity = to_hungarian_case(vuln.get('extra').get('metadata')['sca-severity'])
-    kind = vuln.get('extra').get('metadata')['sca-kind']
-    if kind == "reachable":
-        severity = "Critical"
-    else:
-        if severity == "Moderate":
-            severity = "Medium"
+    if severity == "Moderate":
+        severity = "Medium"
     return severity
 
 def get_exposure(vuln):
