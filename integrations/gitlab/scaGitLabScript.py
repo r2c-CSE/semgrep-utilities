@@ -145,11 +145,12 @@ def get_solution(vuln):
     if not sca_fix_versions:
         return "No known fixed versions"
 
-    solution_string = ""
-    for sol in sca_fix_versions:
-        solution_string = str(sol)[1:-1].replace("'", "")
-    
-    return solution_string
+    solutions = []
+    for solution in sca_fix_versions:
+        for package, version in solution.items():
+            solutions.append(f"{package}:{version}")
+
+    return ", ".join(solutions)
 
 def get_new_scan_info(data):
     current_datetime = datetime.now()
