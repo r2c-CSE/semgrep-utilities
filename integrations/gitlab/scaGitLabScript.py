@@ -64,7 +64,7 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                                 "transitivity": {
                                     "type": "text",
                                     "name": "Transitivity",
-                                    "value": vuln.get('extra').get('sca_info').get('found_dependency').get('transitivity', "UNKNOWN")
+                                    "value": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency').get('transitivity', "UNKNOWN")
                                     
                                 },
                                 "confidence": {
