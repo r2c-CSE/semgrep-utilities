@@ -61,6 +61,12 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                                     "name": "Exposure",
                                     "value": get_exposure(vuln)
                                 },
+                                "transitivity": {
+                                    "type": "text",
+                                    "name": "Transitivity",
+                                    "value": vuln.get('extra').get('sca_info').get('found_dependency').get('transitivity', "UNKNOWN")
+                                    
+                                },
                                 "confidence": {
                                     "type": "text",
                                     "name": "Confidence",
