@@ -23,7 +23,7 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                             "name": package_name + " - " + cwe_title,
                             "description": vuln.get('extra')['message'],
                             "severity": get_severity(vuln),
-                            "solution": "Upgrade dependencies to fixed versions (grouped by package): "+get_solution(vuln), 
+                            "solution": "Upgrade dependencies to fixed versions: "+get_solution(vuln), 
                             "location": {
                                 "file": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
                                 "start_line": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency').get('line_number'),
@@ -161,7 +161,7 @@ def get_solution(vuln):
     for package, versions in solutions.items():
         # Sort the versions
         sorted_versions = sorted(versions)
-        formatted_solutions.append(f"{package}: {', '.join(sorted_versions).join(';')}")
+        formatted_solutions.append(f"{package}: {', '.join(sorted_versions)};")
 
     # Join the lines with newline for formatting
     return "\n".join(formatted_solutions)
