@@ -1,6 +1,7 @@
 import json
 import sys
 from datetime import datetime
+from collections import defaultdict
 
 def conversion_semgrep_to_gitlab(report_semgrep, data):
     print("Populating Supply Chain findings data from Semgrep JSON report")
@@ -145,14 +146,24 @@ def get_solution(vuln):
     sca_fix_versions = vuln.get('extra').get('metadata').get('sca-fix-versions', [])
     
     if not sca_fix_versions:
-        return "No known fixed versions"
+        return "<p>No known fixed versions</p>"
 
-    solutions = []
+    # Use defaultdict to group versions by package name
+    solutions = defaultdict(list)
+    
+    # Group versions by package
     for solution in sca_fix_versions:
         for package, version in solution.items():
-            solutions.append(f"{package}:{version}")
+            solutions[package].append(version)
+    
+    # Format the output as HTML list items
+    formatted_solutions = []
+    for package, versions in solutions.items():
+        # Append the package and sorted versions as a list item with a semicolon
+        formatted_solutions.append(f"<li>{package}: {', '.join(versions)};</li>")
 
-    return ", ".join(solutions)
+    # Wrap the list items in an unordered list
+    return "<ul>" + "\n".join(formatted_solutions) + "</ul>"
 
 def get_new_scan_info(data):
     current_datetime = datetime.now()
