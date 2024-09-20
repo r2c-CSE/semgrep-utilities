@@ -146,7 +146,7 @@ def get_solution(vuln):
     sca_fix_versions = vuln.get('extra').get('metadata').get('sca-fix-versions', [])
     
     if not sca_fix_versions:
-        return "No known fixed versions"
+        return "<p>No known fixed versions</p>"
 
     # Use defaultdict to group versions by package name
     solutions = defaultdict(list)
@@ -156,15 +156,16 @@ def get_solution(vuln):
         for package, version in solution.items():
             solutions[package].append(version)
     
-    # Sort the versions for each package and format the output
+    # Sort the versions for each package and format the output as HTML list items
     formatted_solutions = []
     for package, versions in solutions.items():
         # Sort the versions
         sorted_versions = sorted(versions)
-        formatted_solutions.append(f"{package}: {', '.join(sorted_versions)};")
+        # Append the package and sorted versions as a list item with a semicolon
+        formatted_solutions.append(f"<li>{package}: {', '.join(sorted_versions)};</li>")
 
-    # Join the lines with newline for formatting
-    return "\n".join(formatted_solutions)
+    # Wrap the list items in an unordered list
+    return "<p>Upgrade dependencies to fixed versions:</p><ul>" + "\n".join(formatted_solutions) + "</ul>"
 
 def get_new_scan_info(data):
     current_datetime = datetime.now()
