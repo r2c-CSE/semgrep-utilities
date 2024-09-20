@@ -1,6 +1,7 @@
 import json
 import sys
 from datetime import datetime
+from collections import defaultdict
 
 def conversion_semgrep_to_gitlab(report_semgrep, data):
     print("Populating Supply Chain findings data from Semgrep JSON report")
