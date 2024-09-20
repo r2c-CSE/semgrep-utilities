@@ -156,13 +156,11 @@ def get_solution(vuln):
         for package, version in solution.items():
             solutions[package].append(version)
     
-    # Sort the versions for each package and format the output as HTML list items
+    # Format the output as HTML list items
     formatted_solutions = []
     for package, versions in solutions.items():
-        # Sort the versions
-        sorted_versions = sorted(versions)
         # Append the package and sorted versions as a list item with a semicolon
-        formatted_solutions.append(f"<li>{package}: {', '.join(sorted_versions)};</li>")
+        formatted_solutions.append(f"<li>{package}: {', '.join(versions)};</li>")
 
     # Wrap the list items in an unordered list
     return "<ul>" + "\n".join(formatted_solutions) + "</ul>"
