@@ -161,7 +161,7 @@ def get_solution(vuln):
     for package, versions in solutions.items():
         # Sort the versions
         sorted_versions = sorted(versions)
-        formatted_solutions.append(f"{package}: {', '.join(sorted_versions).join';'}")
+        formatted_solutions.append(f"{package}: {', '.join(sorted_versions).join(';')}")
 
     # Join the lines with newline for formatting
     return "\n".join(formatted_solutions)
