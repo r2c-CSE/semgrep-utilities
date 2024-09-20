@@ -164,7 +164,7 @@ def get_solution(vuln):
         formatted_solutions.append(f"{package}: {', '.join(sorted_versions)}")
 
     # Join the lines with newline for formatting
-    return formatted_solutions
+    return "\n".join(formatted_solutions)
 
 def get_new_scan_info(data):
     current_datetime = datetime.now()
