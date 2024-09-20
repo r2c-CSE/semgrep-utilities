@@ -165,7 +165,7 @@ def get_solution(vuln):
         formatted_solutions.append(f"<li>{package}: {', '.join(sorted_versions)};</li>")
 
     # Wrap the list items in an unordered list
-    return "<p>Upgrade dependencies to fixed versions:</p><ul>" + "\n".join(formatted_solutions) + "</ul>"
+    return "<ul>" + "\n".join(formatted_solutions) + "</ul>"
 
 def get_new_scan_info(data):
     current_datetime = datetime.now()
