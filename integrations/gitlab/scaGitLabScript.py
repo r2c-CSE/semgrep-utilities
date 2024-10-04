@@ -163,7 +163,7 @@ def get_solution(vuln):
         formatted_solutions.append(f"- **{package}**: {', '.join(versions)};")
 
     # Join the lines for Markdown
-    return "### Upgrade dependencies to fixed versions:\n" + "\n".join(formatted_solutions)
+    return "\n" + "\n".join(formatted_solutions)
 
 def get_new_scan_info(data):
     current_datetime = datetime.now()
