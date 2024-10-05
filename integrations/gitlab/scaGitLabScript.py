@@ -159,11 +159,11 @@ def get_solution(vuln):
     # Format the output as HTML list items
     formatted_solutions = []
     for package, versions in solutions.items():
-        # Append the package and sorted versions as a list item with a semicolon
-        formatted_solutions.append(f"<li>{package}: {', '.join(versions)};</li>")
+        # Append the package and sorted versions as a Markdown list item
+        formatted_solutions.append(f"- **{package}**: {', '.join(versions)};")
 
-    # Wrap the list items in an unordered list
-    return "<ul>" + "\n".join(formatted_solutions) + "</ul>"
+    # Join the lines for Markdown
+    return "\n" + "\n".join(formatted_solutions)
 
 def get_new_scan_info(data):
     current_datetime = datetime.now()
