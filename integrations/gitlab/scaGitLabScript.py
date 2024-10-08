@@ -102,6 +102,10 @@ def get_severity(vuln):
     severity = to_hungarian_case(vuln.get('extra').get('metadata')['sca-severity'])
     if severity == "Moderate":
         severity = "Medium"
+    if low_severity_unreachable == True:
+        exposure = get_exposure(vuln)
+        if exposure == "Unreachable":
+            severity = "Info"
     return severity
 
 def get_exposure(vuln):
@@ -212,6 +216,9 @@ if __name__ == "__main__":
     else:
         print("Invalid file name. Your first argument must be a `*.json` file name.")
         sys.exit()
+
+    low_severity_unreachable = os.getenv('LOW_SEVERITY_UNREACHABLE', False)
+    print(low_severity_unreachable)
 
     print("Starting conversion process from Semgrep JSON to GitLab Dependency JSON")
     data = {
