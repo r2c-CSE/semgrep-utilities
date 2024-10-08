@@ -103,7 +103,7 @@ def get_severity(vuln, lower_severity_unreachable):
     severity = to_hungarian_case(vuln.get('extra').get('metadata')['sca-severity'])
     if severity == "Moderate":
         severity = "Medium"
-    if low_severity_unreachable == "True":
+    if lower_severity_unreachable == "True":
         exposure = get_exposure(vuln)
         if exposure == "Unreachable":
             severity = "Info"
