@@ -217,17 +217,14 @@ if __name__ == "__main__":
     lowering_unreachable = False  # Default to False unless explicitly set
 
     try:
-        # Define options: 'h' for help, 'l:' for the '--lowering-unreachable' which expects a value
-        opts, args = getopt.getopt(user_inputs, "h", ["help", "lowering-unreachable="])
-        print("+++")
-        print(opts)
-        print(args)
-        # The first non-option argument will be treated as the json_file
-        if len(args) > 0:
-            report_semgrep = args[0]
-            print(report_semgrep)
+        # Define options: 'h' for help, '--lowering-unreachable' which expects a value
+        opts, args = getopt.getopt(user_inputs[1:], "h", ["lowering-unreachable=", "help"])
+        
+        if sys.argv[1].endswith('.json'):
+            report_semgrep = sys.argv[1]
         else:
-            raise ValueError("No JSON file provided.")
+            print("Invalid file name. Your first argument must be a `*.json` file name.")
+            sys.exit()
 
     except getopt.GetoptError as err:
         print(str(err))
@@ -236,15 +233,10 @@ if __name__ == "__main__":
 
     # Parse options
     for opt, arg in opts:
-        print("+++")
-        print(opt)
-        print(arg)
         if opt in ('-h', '--help'):
             print('Usage: scaGitLabScript.py <json_file> [--lowering-unreachable true|false]')
             sys.exit()
         elif opt == '--lowering-unreachable':
-            print("***")
-            print(arg.lower())
             if arg.lower() == 'true':
                 lowering_unreachable = True
             elif arg.lower() == 'false':
