@@ -222,7 +222,7 @@ if __name__ == "__main__":
 
         # The first non-option argument will be treated as the json_file
         if len(args) > 0:
-            json_file = args[0]
+            report_semgrep = args[0]
         else:
             raise ValueError("No JSON file provided.")
 
