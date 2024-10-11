@@ -103,7 +103,7 @@ def get_severity(vuln, lower_severity_unreachable):
     severity = to_hungarian_case(vuln.get('extra').get('metadata')['sca-severity'])
     if severity == "Moderate":
         severity = "Medium"
-    if lower_severity_unreachable == "True":
+    if lower_severity_unreachable == True:
         exposure = get_exposure(vuln)
         if exposure == "Unreachable":
             severity = "Info"
@@ -204,22 +204,35 @@ def to_hungarian_case(input_string):
     hungarian_case_words = input_string[0].upper() + input_string[1:].lower()
     return hungarian_case_words
 
+def str_to_bool(value):
+    return value.lower() in ("true", "1", "yes", "on")
 
 
 if __name__ == "__main__":
 
-    if len(sys.argv) == 1:
-        print("A JSON file name argument must be provided.")
-        sys.exit()
+    user_inputs = sys.argv[1:]
+    # get option and value pair from getopt
+    try:
+        opts, args = getopt.getopt(user_inputs, "u", ["unreachable="])
+        #lets's check out how getopt parse the arguments
+        logging.debug(opts)
+        logging.debug(args)
+    except getopt.GetoptError:
+        logging.debug('pass the arguments like -u <true|false> --unreachable <true|false>')
+        sys.exit(2)
 
     if sys.argv[1].endswith('.json'):
         report_semgrep = sys.argv[1]
     else:
         print("Invalid file name. Your first argument must be a `*.json` file name.")
         sys.exit()
-
-    lower_severity_unreachable = os.getenv('LOWER_SEVERITY_UNREACHABLE', "False")
-
+        
+    for opt, arg in opts:
+        if opt in ("-u", "--unreachable"):
+            lower_severity_unreachable = str_to_bool(arg)
+        else:
+            lower_severity_unreachable = False
+            
     print("Starting conversion process from Semgrep JSON to GitLab Dependency JSON")
     data = {
         "version": "15.0.0",
