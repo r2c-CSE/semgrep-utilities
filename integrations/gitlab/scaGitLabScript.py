@@ -227,13 +227,14 @@ if __name__ == "__main__":
     else:
         print("Invalid file name. Your first argument must be a `*.json` file name.")
         sys.exit()
-        
+
+    lower_severity_unreachable = False
     for opt, arg in opts:
         if opt in ("-u", "--unreachable"):
             lower_severity_unreachable = str_to_bool(arg)
-        else:
-            lower_severity_unreachable = False
             
+    print("lower_severity_unreachable")
+    print(lower_severity_unreachable)
     print("Starting conversion process from Semgrep JSON to GitLab Dependency JSON")
     data = {
         "version": "15.0.0",
