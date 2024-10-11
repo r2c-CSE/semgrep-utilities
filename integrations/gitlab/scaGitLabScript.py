@@ -219,7 +219,9 @@ if __name__ == "__main__":
     try:
         # Define options: 'h' for help, 'l:' for the '--lowering-unreachable' which expects a value
         opts, args = getopt.getopt(user_inputs, "h", ["help", "lowering-unreachable="])
-
+        print("+++")
+        print(opts)
+        print(args)
         # The first non-option argument will be treated as the json_file
         if len(args) > 0:
             report_semgrep = args[0]
@@ -236,6 +238,7 @@ if __name__ == "__main__":
     for opt, arg in opts:
         print("+++")
         print(opt)
+        print(arg)
         if opt in ('-h', '--help'):
             print('Usage: scaGitLabScript.py <json_file> [--lowering-unreachable true|false]')
             sys.exit()
