@@ -217,9 +217,9 @@ if __name__ == "__main__":
     user_inputs = sys.argv[1:]
     # get option and value pair from getopt
     try:
-        opts, args = getopt.getopt(user_inputs, "u", ["unreachable="])
+        opts, args = getopt.getopt(user_inputs, "lowering-unreachable")
     except getopt.GetoptError:
-        logging.debug('pass the arguments like <Findings JSON file> -u <true|false> or <Findings JSON file> --unreachable <true|false>')
+        logging.debug('pass the arguments like <Findings JSON file> --lowering-unreachable <true|false>')
         sys.exit(2)
 
     if sys.argv[1].endswith('.json'):
@@ -230,7 +230,7 @@ if __name__ == "__main__":
 
     lower_severity_unreachable = False
     for opt, arg in opts:
-        if opt in ("-u", "--unreachable"):
+        if opt in ("--lowering-unreachable"):
             lower_severity_unreachable = str_to_bool(arg)
             
     print("lower_severity_unreachable")
