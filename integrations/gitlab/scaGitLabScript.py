@@ -223,6 +223,7 @@ if __name__ == "__main__":
         # The first non-option argument will be treated as the json_file
         if len(args) > 0:
             report_semgrep = args[0]
+            print(report_semgrep)
         else:
             raise ValueError("No JSON file provided.")
 
@@ -233,10 +234,14 @@ if __name__ == "__main__":
 
     # Parse options
     for opt, arg in opts:
+        print("+++")
+        print(opt)
         if opt in ('-h', '--help'):
             print('Usage: scaGitLabScript.py <json_file> [--lowering-unreachable true|false]')
             sys.exit()
         elif opt == '--lowering-unreachable':
+            print("***")
+            print(arg.lower())
             if arg.lower() == 'true':
                 lowering_unreachable = True
             elif arg.lower() == 'false':
