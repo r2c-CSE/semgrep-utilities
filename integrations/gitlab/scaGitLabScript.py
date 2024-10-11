@@ -214,7 +214,7 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO)
     
-   lowering_unreachable = False  # Default to False unless explicitly set
+    lowering_unreachable = False  # Default to False unless explicitly set
 
     try:
         # Define options: 'h' for help, 'l:' for the '--lowering-unreachable' which expects a value
