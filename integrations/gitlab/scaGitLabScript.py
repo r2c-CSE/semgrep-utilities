@@ -213,12 +213,12 @@ def str_to_bool(value):
 if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO)
-    
+    user_inputs = sys.argv[1:]
     lowering_unreachable = False  # Default to False unless explicitly set
 
     try:
         # Define options: 'h' for help, 'l:' for the '--lowering-unreachable' which expects a value
-        opts, args = getopt.getopt(argv, "h", ["help", "lowering-unreachable="])
+        opts, args = getopt.getopt(user_inputs, "h", ["help", "lowering-unreachable="])
 
         # The first non-option argument will be treated as the json_file
         if len(args) > 0:
