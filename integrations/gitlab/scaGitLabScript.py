@@ -2,6 +2,7 @@ import json
 import sys
 import os
 import getopt
+import logging
 from datetime import datetime
 from collections import defaultdict
 
@@ -211,13 +212,12 @@ def str_to_bool(value):
 
 if __name__ == "__main__":
 
+    logging.basicConfig(level=logging.INFO)
+    
     user_inputs = sys.argv[1:]
     # get option and value pair from getopt
     try:
         opts, args = getopt.getopt(user_inputs, "u", ["unreachable="])
-        #lets's check out how getopt parse the arguments
-        logging.debug(opts)
-        logging.debug(args)
     except getopt.GetoptError:
         logging.debug('pass the arguments like <Findings JSON file> -u <true|false> or <Findings JSON file> --unreachable <true|false>')
         sys.exit(2)
