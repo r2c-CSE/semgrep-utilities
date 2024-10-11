@@ -245,9 +245,6 @@ if __name__ == "__main__":
                 print('Invalid value for --lowering-unreachable. Use true or false.')
                 sys.exit(2)
 
-            
-    print("lowering_unreachable")
-    print(lowering_unreachable)
     print("Starting conversion process from Semgrep JSON to GitLab Dependency JSON")
     data = {
         "version": "15.0.0",
