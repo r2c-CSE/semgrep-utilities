@@ -214,24 +214,37 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO)
     
-    user_inputs = sys.argv[1:]
-    # get option and value pair from getopt
+   lowering_unreachable = False  # Default to False unless explicitly set
+
     try:
-        opts, args = getopt.getopt(user_inputs, "lu", ["lowering-unreachable="])
-    except getopt.GetoptError:
-        logging.debug('pass the arguments like <Findings JSON file> --lowering-unreachable <true|false>')
+        # Define options: 'h' for help, 'l:' for the '--lowering-unreachable' which expects a value
+        opts, args = getopt.getopt(argv, "h", ["help", "lowering-unreachable="])
+
+        # The first non-option argument will be treated as the json_file
+        if len(args) > 0:
+            json_file = args[0]
+        else:
+            raise ValueError("No JSON file provided.")
+
+    except getopt.GetoptError as err:
+        print(str(err))
+        print('Usage: scaGitLabScript.py <json_file> [--lowering-unreachable true|false]')
         sys.exit(2)
 
-    if sys.argv[1].endswith('.json'):
-        report_semgrep = sys.argv[1]
-    else:
-        print("Invalid file name. Your first argument must be a `*.json` file name.")
-        sys.exit()
-
-    lower_severity_unreachable = False
+    # Parse options
     for opt, arg in opts:
-        if opt in ("--lowering-unreachable"):
-            lower_severity_unreachable = str_to_bool(arg)
+        if opt in ('-h', '--help'):
+            print('Usage: scaGitLabScript.py <json_file> [--lowering-unreachable true|false]')
+            sys.exit()
+        elif opt == '--lowering-unreachable':
+            if arg.lower() == 'true':
+                lowering_unreachable = True
+            elif arg.lower() == 'false':
+                lowering_unreachable = False
+            else:
+                print('Invalid value for --lowering-unreachable. Use true or false.')
+                sys.exit(2)
+
             
     print("lower_severity_unreachable")
     print(lower_severity_unreachable)
