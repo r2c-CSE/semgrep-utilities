@@ -1,6 +1,7 @@
 import json
 import sys
 import os
+import getopt
 from datetime import datetime
 from collections import defaultdict
 
@@ -218,7 +219,7 @@ if __name__ == "__main__":
         logging.debug(opts)
         logging.debug(args)
     except getopt.GetoptError:
-        logging.debug('pass the arguments like -u <true|false> --unreachable <true|false>')
+        logging.debug('pass the arguments like <Findings JSON file> -u <true|false> or <Findings JSON file> --unreachable <true|false>')
         sys.exit(2)
 
     if sys.argv[1].endswith('.json'):
