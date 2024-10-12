@@ -9,19 +9,127 @@ def build_sarif_result_locations(finding):
                 "uriBaseId": "%SRCROOT%"
             },
             "region": {
-                "endColumn": finding['end']['col'] if (finding['end']['col'] > 0) else 1,
+                "endColumn": parse_loc_col(finding['end']),
                 "endLine": finding['end']['line'],
                 "snippet": {
                     "text": finding['extra']['lines']
                 },
-                "startColumn": finding['start']['col'] if (finding['start']['col'] > 0) else 1,
+                "startColumn": parse_loc_col(finding['start']),
                 "startLine": finding['start']['line']
             }
         }
     }]
 
+def parse_loc_col(loc):
+    return loc['col'] if (loc['col'] > 0) else 1
+
+def parse_loc_cliloc(trace_item):
+    loc_data = trace_item[1][0]
+    return {
+        "location": {
+            "physicalLocation": {
+                "artifactLocation": {
+                    "uri": loc_data['path'],
+                },
+                "region": {
+                    "endColumn": parse_loc_col(loc_data['end']),
+                    "endLine": loc_data['end']['line'],
+                    "startColumn": parse_loc_col(loc_data['start']),
+                    "startLine": loc_data['start']['line'],
+                    "snippet": { "text": trace_item[1][1] }
+                }
+            }
+        },
+        "nestingLevel": 0
+    }
+
+def parse_loc_no_label(trace_item):
+    loc_data = trace_item[0]
+    return {
+        "location": {
+            "physicalLocation": {
+                "artifactLocation": {
+                    "uri": loc_data['path'],
+                },
+                "region": {
+                    "endColumn": parse_loc_col(loc_data['end']),
+                    "endLine": loc_data['end']['line'],
+                    "startColumn": parse_loc_col(loc_data['start']),
+                    "startLine": loc_data['start']['line'],
+                    "snippet": { "text": trace_item[1] }
+                }
+            }
+        },
+        "nestingLevel": 0
+    }
+
+def parse_loc_content(trace_item):
+    loc_data = trace_item[0]['location']
+    return {
+        "location": {
+            "physicalLocation": {
+                "artifactLocation": {
+                    "uri": loc_data['path'],
+                },
+                "region": {
+                    "endColumn": parse_loc_col(loc_data['end']),
+                    "endLine": loc_data['end']['line'],
+                    "startColumn": parse_loc_col(loc_data['start']),
+                    "startLine": loc_data['start']['line'],
+                    "snippet": { "text": trace_item[0]['content'] }
+                }
+            }
+        },
+        "nestingLevel": 0
+    }
+
+def parse_loc_clicall(trace_item):
+    return {}
+
+def build_sarif_result_code_flows_location(trace_item):
+    location = []
+    if trace_item[0] == "CliLoc":
+        location.append(parse_loc_cliloc(trace_item))
+    elif 'content' in trace_item[0]:
+        location.append(parse_loc_content(trace_item))
+    elif trace_item[0] == "CliCall":
+        # this needs to get recursive for the trace_item[1+] items
+        for item in trace_item[1]:
+            if isinstance(item, list) and not isinstance(item[-1],str) and not isinstance(item[0],str):
+                for sub_item in item:
+                    location += build_sarif_result_code_flows_location([sub_item])
+            else:
+                location += build_sarif_result_code_flows_location(item)
+    else:
+        location.append(parse_loc_no_label(trace_item))
+
+    return location
+
+def build_sarif_result_code_flows_locations(finding):
+    locations = []
+
+    trace_keys = ['taint_source', 'intermediate_vars', 'taint_sink']
+    for key in trace_keys:
+        if key in finding['extra']['dataflow_trace']:
+            locations += build_sarif_result_code_flows_location(finding['extra']['dataflow_trace'][key])
+    
+    return locations
+
+def build_sarif_result_code_flows(finding):
+    code_flows = []
+
+    if 'dataflow_trace' in finding['extra']:
+        code_flows = [{
+        "threadFlows": [{
+            "locations": build_sarif_result_code_flows_locations(finding)
+        }]
+    }]
+
+    return code_flows
+
 def finding_to_sarif_result(finding):
     return {
+        "codeFlows": build_sarif_result_code_flows(finding),
         "fingerprints": {
             "matchBasedId/v1": finding['extra']['fingerprint']
         },
@@ -211,7 +319,6 @@ def load_findings(findings_file):
         return json.load(f)
 
 def main():
-    
     # Set up argument parsing
     parser = argparse.ArgumentParser(description='Generate a SARIF report from Semgrep\'s JSON output.')
     # Add arguments for SARIF file and output file name
@@ -224,7 +331,7 @@ def main():
 
     # Load findings from the specified file
     findings = load_findings(args.json)
-    findings['results'] = filter_findings_results(findings)
+    # findings['results'] = filter_findings_results(findings)
     sarif = build_sarif_template()
     sarif['runs'] = build_sarif_runs(findings)
 
