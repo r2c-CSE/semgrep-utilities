@@ -211,6 +211,10 @@ def to_hungarian_case(input_string):
 if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO)
+    if len(sys.argv) == 1:
+        print('Usage: scaGitLabScript.py <json_file> [--lowering-unreachable true|false]')
+        sys.exit()
+    
     user_inputs = sys.argv[1:]
     lowering_unreachable = False  # Default to False unless explicitly set
 
