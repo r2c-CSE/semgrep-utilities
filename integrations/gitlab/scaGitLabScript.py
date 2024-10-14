@@ -206,8 +206,6 @@ def to_hungarian_case(input_string):
     hungarian_case_words = input_string[0].upper() + input_string[1:].lower()
     return hungarian_case_words
 
-def str_to_bool(value):
-    return value.lower() in ("true", "1", "yes", "on")
 
 
 if __name__ == "__main__":
