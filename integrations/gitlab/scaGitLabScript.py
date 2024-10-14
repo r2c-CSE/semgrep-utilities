@@ -1,9 +1,12 @@
 import json
 import sys
+import os
+import getopt
+import logging
 from datetime import datetime
 from collections import defaultdict
 
-def conversion_semgrep_to_gitlab(report_semgrep, data):
+def conversion_semgrep_to_gitlab(report_semgrep, data, lowering_unreachable):
     print("Populating Supply Chain findings data from Semgrep JSON report")
     with open(report_semgrep, 'r') as file_semgrep:
         data_semgrep = json.load(file_semgrep)
@@ -22,7 +25,7 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
                             "id": vuln.get('extra')['fingerprint'][0:63],
                             "name": package_name + " - " + cwe_title,
                             "description": vuln.get('extra')['message'],
-                            "severity": get_severity(vuln),
+                            "severity": get_severity(vuln, lowering_unreachable),
                             "solution": "Upgrade dependencies to fixed versions: "+get_solution(vuln), 
                             "location": {
                                 "file": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
@@ -98,10 +101,14 @@ def conversion_semgrep_to_gitlab(report_semgrep, data):
     with open('gl-dependency-scanning-report.json', 'w') as f:
         json.dump(data, f, indent=4)  # pretty print JSON
 
-def get_severity(vuln):
+def get_severity(vuln, lowering_unreachable):
     severity = to_hungarian_case(vuln.get('extra').get('metadata')['sca-severity'])
     if severity == "Moderate":
         severity = "Medium"
+    if lowering_unreachable == True:
+        exposure = get_exposure(vuln)
+        if exposure == "Unreachable":
+            severity = "Info"
     return severity
 
 def get_exposure(vuln):
@@ -203,15 +210,42 @@ def to_hungarian_case(input_string):
 
 if __name__ == "__main__":
 
+    logging.basicConfig(level=logging.INFO)
     if len(sys.argv) == 1:
-        print("A JSON file name argument must be provided.")
+        print('Usage: scaGitLabScript.py <json_file> [--lowering-unreachable true|false]')
         sys.exit()
+    
+    user_inputs = sys.argv[1:]
+    lowering_unreachable = False  # Default to False unless explicitly set
 
-    if sys.argv[1].endswith('.json'):
-        report_semgrep = sys.argv[1]
-    else:
-        print("Invalid file name. Your first argument must be a `*.json` file name.")
-        sys.exit()
+    try:
+        # Define options: 'h' for help, '--lowering-unreachable' which expects a value
+        opts, args = getopt.getopt(user_inputs[1:], "h", ["lowering-unreachable=", "help"])
+        
+        if sys.argv[1].endswith('.json'):
+            report_semgrep = sys.argv[1]
+        else:
+            print("Invalid file name. Your first argument must be a `*.json` file name.")
+            sys.exit()
+
+    except getopt.GetoptError as err:
+        print(str(err))
+        print('Usage: scaGitLabScript.py <json_file> [--lowering-unreachable true|false]')
+        sys.exit(2)
+
+    # Parse options
+    for opt, arg in opts:
+        if opt in ('-h', '--help'):
+            print('Usage: scaGitLabScript.py <json_file> [--lowering-unreachable true|false]')
+            sys.exit()
+        elif opt == '--lowering-unreachable':
+            if arg.lower() == 'true':
+                lowering_unreachable = True
+            elif arg.lower() == 'false':
+                lowering_unreachable = False
+            else:
+                print('Invalid value for --lowering-unreachable. Use true or false.')
+                sys.exit(2)
 
     print("Starting conversion process from Semgrep JSON to GitLab Dependency JSON")
     data = {
@@ -221,4 +255,4 @@ if __name__ == "__main__":
         "scan": {}
     }
 
-    conversion_semgrep_to_gitlab(report_semgrep, data)
+    conversion_semgrep_to_gitlab(report_semgrep, data, lowering_unreachable)
