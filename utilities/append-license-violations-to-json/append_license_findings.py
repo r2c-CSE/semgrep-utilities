@@ -5,18 +5,19 @@ import os
 from collections import OrderedDict
 
 def parse_license_info(text_block):
-    # Ensure the text contains the expected preceding line
+    # Take the Semgrep CLI text output and split into lines
     lines = text_block.strip().splitlines()
     
-    # Find the line with the required text and get the index
+    # Find the line where the license findings begin and get the index
     for i, line in enumerate(lines):
         if "Semgrep Supply Chain found the following packages with blocked licenses:" in line:
             # Start parsing from the next line onwards
             parsing_lines = lines[i + 1:]
             break
     else:
-        # Raise an error if the required line is not found
-        raise ValueError("No license violations detected.")
+        # Let the user know no license violations were found and exit the script
+        print("No license violations detected.")
+        sys.exit(0)
     
     # Join the relevant lines for regex parsing
     relevant_text = "\n".join(parsing_lines)
@@ -100,7 +101,7 @@ if __name__ == "__main__":
         # Append the parsed data to the specified JSON file
         append_to_json_file(parsed_data, json_file_path)
 
-        print(f"Parsed data written to '{json_file_path}'")
+        print(f"License violations written to '{json_file_path}'")
 
     except ValueError as e:
         print(f"Error: {e}")
