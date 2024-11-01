@@ -59,7 +59,7 @@ def append_to_json_file(data, file_path):
                 print("Error: Invalid JSON file format.")
                 sys.exit(1)
     else:
-        print("Error: File does not exist.")
+        print("Error: JSON results file does not exist.")
         sys.exit(1)
 
     # Check if the 'results' key exists
