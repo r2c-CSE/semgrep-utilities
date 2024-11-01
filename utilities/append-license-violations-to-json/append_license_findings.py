@@ -86,7 +86,7 @@ def append_to_json_file(data, file_path):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python script.py <path_to_existing_json_file>")
+        print("Usage: python append_license_findings.py <path_to_existing_json_file>")
         sys.exit(1)
 
     json_file_path = sys.argv[1]
