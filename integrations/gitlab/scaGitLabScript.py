@@ -153,7 +153,7 @@ def get_solution(vuln):
     sca_fix_versions = vuln.get('extra').get('metadata').get('sca-fix-versions', [])
     
     if not sca_fix_versions:
-        return "<p>No known fixed versions</p>"
+        return "No known fixed versions"
 
     # Use defaultdict to group versions by package name
     solutions = defaultdict(list)
@@ -163,7 +163,7 @@ def get_solution(vuln):
         for package, version in solution.items():
             solutions[package].append(version)
     
-    # Format the output as HTML list items
+    # Format the output with Markdown format
     formatted_solutions = []
     for package, versions in solutions.items():
         # Append the package and sorted versions as a Markdown list item
