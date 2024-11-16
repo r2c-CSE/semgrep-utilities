@@ -63,8 +63,8 @@ def parse_loc_no_label(trace_item):
         "nestingLevel": 0
     }
 
-def parse_loc_content(trace_item):
-    loc_data = trace_item[0]['location']
+def parse_loc_content_item(trace_item):
+    loc_data = trace_item['location']
     return {
         "location": {
             "physicalLocation": {
@@ -76,22 +76,25 @@ def parse_loc_content(trace_item):
                     "endLine": loc_data['end']['line'],
                     "startColumn": parse_loc_col(loc_data['start']),
                     "startLine": loc_data['start']['line'],
-                    "snippet": { "text": trace_item[0]['content'] }
+                    "snippet": { "text": trace_item['content'] }
                 }
             }
         },
         "nestingLevel": 0
     }
 
-def parse_loc_clicall(trace_item):
-    return {}
+def parse_loc_content(trace_items):
+    locations = []
+    for trace_item in trace_items:
+        locations.append(parse_loc_content_item(trace_item))
+    return locations
 
 def build_sarif_result_code_flows_location(trace_item):
     location = []
     if trace_item[0] == "CliLoc":
         location.append(parse_loc_cliloc(trace_item))
     elif 'content' in trace_item[0]:
-        location.append(parse_loc_content(trace_item))
+        location += parse_loc_content(trace_item)
     elif trace_item[0] == "CliCall":
         # this needs to get recursive for the trace_item[1+] items
         for item in trace_item[1]:
@@ -128,8 +131,10 @@ def build_sarif_result_code_flows(finding):
     return code_flows
 
 def finding_to_sarif_result(finding):
+    code_flows = build_sarif_result_code_flows(finding)
+
     return {
-        "codeFlows": build_sarif_result_code_flows(finding),
+        **({"codeFlows": code_flows} if code_flows else {}),
         "fingerprints": {
             "matchBasedId/v1": finding['extra']['fingerprint']
         },
@@ -143,7 +148,7 @@ def finding_to_sarif_result(finding):
 
 def finding_to_help_markdown_references(finding):
     references = ""
-    references += f"\n - [Semgrep Rule]({finding['extra']['metadata']['source']})"
+    references += f"\n - [Semgrep Rule]({finding['extra']['metadata']['source']})" if 'source' in finding['extra']['metadata'] else ""
     if 'references' in finding['extra']['metadata']:
         for ref in finding['extra']['metadata']['references']:
             references += f"\n - [{ref}]({ref})"
@@ -234,7 +239,7 @@ def finding_to_driver_rule(finding):
             "markdown": finding_to_driver_rule_help_markdown(finding),
             "text": finding['extra']['message']
         },
-        "helpUri": finding['extra']['metadata']['source'],
+        "helpUri": finding['extra']['metadata']['source'] if 'source' in finding['extra']['metadata'] else "",
         "id": finding['check_id'],
         "name": finding['check_id'],
         "properties": {
