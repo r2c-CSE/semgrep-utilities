@@ -37,13 +37,25 @@ import json
 
 def get_repos(org_name, headers):
     """Fetch all repositories for the given organization."""
-    response = requests.get(
-        f'https://api.github.com/orgs/{org_name}/repos',
-        headers=headers
-    )
-    
-    if response.status_code != 200:
-        raise ValueError(f"Error fetching repositories for organization {org_name}. Status code: {response.status_code}")
+    repos = []
+    page = 1
+    while True:
+        print(f"Retrieving Repos for organization {org_name} from page {page} of API response") 
+        response = requests.get(
+            f'https://api.github.com/orgs/{org_name}/repos?per_page=100&page={page}',
+            headers=headers
+        )
+        if response.status_code != 200:
+            break
+        repos_page = response.json()
+        if not repos_page:
+            break
+        repos.extend(repos_page)
+        page += 1
+    return repos
+
+    print("Printing response.json from 'get_repos'")
+    print(response.json())
 
     return response.json()
 
@@ -52,8 +64,9 @@ def get_organization_members(org_name, headers):
     members = []
     page = 1
     while True:
+        print(f"Retrieving Members for organization {org_name} from page {page} of API response") 
         response = requests.get(
-            f'https://api.github.com/orgs/{org_name}/members?page={page}',
+            f'https://api.github.com/orgs/{org_name}/members?per_page=100&page={page}',
             headers=headers
         )
         if response.status_code != 200:
@@ -69,6 +82,7 @@ def get_contributors(org_name, number_of_days, headers):
     # init contributor set
     unique_contributors = set()
     unique_authors = set()
+    unique_repos = set()
     
     # Fetch all repositories in the organization
     repos = get_repos(org_name, headers)
@@ -81,25 +95,39 @@ def get_contributors(org_name, number_of_days, headers):
     for repo in repos:
         owner = repo['owner']['login']
         repo_name = repo['name']
+        page = 1
+        commits = []
         
         # Fetch commits for each repository in the given date range
-        response = requests.get(
-            f'https://api.github.com/repos/{owner}/{repo_name}/commits',
-            params={'since': since_date, 'until': until_date},
-            headers=headers
-        )
-        
-        commits = response.json()
+        while True:
+            print(f"Retrieving Commits for repo {repo_name} from page {page} of API response")
+            response = requests.get(
+                f'https://api.github.com/repos/{owner}/{repo_name}/commits?per_page=100&page={page}',
+                params={'since': since_date, 'until': until_date},
+                headers=headers
+            )
+            if response.status_code != 200:
+                break
+            commits_page = response.json()
+            if not commits_page: 
+                break
+            commits.extend(commits_page)
+            page += 1
 
         if isinstance(commits, list):
             for commit in commits:
+                # print(f"Analyzing commit with node_id: {commit['node_id']}")
                 unique_contributors.add(commit['commit']['author']['name'])
                 if commit['author']:
                     unique_authors.add(commit['author']['login'])
+            print(f"Repo analyzed: {repo_name}") 
+
         else:
-            print(f"Repo: {repo_name} is empty.") 
-        
-    return unique_contributors, unique_authors
+            print(f"Repo: {repo_name} is empty.")
+        unique_repos.add(repo_name) 
+        print(f"Number of commits: {len(commits)}")
+        print("--------------------------")
+    return unique_contributors, unique_authors, unique_repos
 
 def report_contributors(org_name, number_of_days, output_file):
     # init github auth
@@ -108,8 +136,11 @@ def report_contributors(org_name, number_of_days, output_file):
         raise ValueError("Please set your GITHUB_PERSONAL_ACCESS_TOKEN as an environment variable.")
     headers = {'Authorization': f'token {token}'}
 
+    print("Invoking 'get_organization_members")
     org_members = get_organization_members(org_name, headers)
-    unique_contributors, unique_authors = get_contributors(org_name, number_of_days, headers)
+
+    print("Invoking 'get_contributors'")
+    unique_contributors, unique_authors, unique_repos = get_contributors(org_name, number_of_days, headers)
     
     if output_file:
         output_data = {
@@ -126,6 +157,7 @@ def report_contributors(org_name, number_of_days, output_file):
 
     # Print unique contributors and their total count        
     print(f"Total commit authors in the last {number_of_days} days:", len(unique_authors))
+    print(f"Total repos in {org_name}:", len(unique_repos))
     print(f"Total members in {org_name}:", len(org_members))
     print(f"Total unique contributors from {org_name} in the last {number_of_days} days:", len(unique_authors & org_members))
 
@@ -136,6 +168,5 @@ if __name__ == '__main__':
     parser.add_argument("output_filename", help="A file to log output.")
     
     args = parser.parse_args()
+    print("*** Starting script execution by invoking 'report_contributors' ***")
     report_contributors(args.org_name, args.number_of_days, args.output_filename)
-
-
