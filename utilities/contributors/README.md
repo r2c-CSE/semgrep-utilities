@@ -54,3 +54,84 @@ Example output file:
     ]
 }
 ```
+
+# gitlab_contributor_count.py
+
+## Description
+
+This Python script counts the number of unique contributors across all repositories in all groups of a GitLab Self-Managed instance. It uses the GitLab API to fetch repository and commit data for a specified time period.
+
+## Features
+
+- Retrieves all groups and their projects from a GitLab instance
+- Fetches commits for each project within a specified time frame
+- Counts unique contributors across all repositories
+- Handles API rate limiting with an exponential backoff retry mechanism
+- Provides detailed logging of the process
+- Generates a CSV file with a summary of contributors per repository and overall unique contributors
+
+## Requirements
+
+- Python 
+- `requests` library
+
+## Installation
+
+1. Clone this repository or download the script.
+2. Install the required Python package:
+
+```
+pip install requests
+```
+
+## Configuration
+
+Before running the script, you need to set up the following:
+
+1. GitLab instance URL
+2. Private token for API authentication
+3. Number of days to look back for contributions
+
+Edit the following lines at the bottom of the script:
+
+```python
+base_url = "https://your-gitlab-instance.com"  # Replace with your GitLab instance URL
+private_token = "your_private_token_here"  # Replace with your actual private token
+days = 3000  # Number of days to look back
+```
+
+## Usage
+
+Run the script using Python:
+
+```
+python gitlab_contributor_count.py
+```
+
+## Output
+
+The script generates two types of output:
+- A log file named gitlab_contributor_count.log with detailed information about the process.
+- A CSV file named contributor_summary.csv containing:
+    - A list of repositories with their contributor counts and names
+    - The total number of unique contributors across all repositories
+ 
+
+## Logging
+The script provides detailed logging at different levels:
+- DEBUG: Detailed information about groups, projects, and commits retrieved
+- INFO: Summary information about the process and results
+- WARNING: Any issues encountered during execution (e.g., rate limiting)
+- ERROR: Any errors that occur during the process
+
+Logs are written to both the console and the gitlab_contributor_count.log file.
+
+## Troubleshooting
+If you encounter any issues:
+- Check the gitlab_contributor_count.log file for error messages.
+- Ensure your GitLab instance URL and private token are correct.
+- Verify that your GitLab account has the necessary permissions to access the groups and projects.
+- If you're hitting rate limits frequently, try increasing the backoff time in the make_request method.
+
+## Contributing
+Contributions to improve the script are welcome. Please feel free to submit a Pull Request.
