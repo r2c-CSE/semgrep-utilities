@@ -15,3 +15,6 @@ For diff scans, we need to set a few additional variables as well. These values 
 * `env.SEMGREP_BRANCH` -- The name of the branch we're scanning. See our documentation [here.](https://semgrep.dev/docs/semgrep-ci/ci-environment-variables#semgrep_branch) This can be set dynamically to `%teamcity.pullRequest.source.branch%`.
 * `env.SEMGREP_PR_ID` -- Used to enable MR comments. See our documentation [here.](https://semgrep.dev/docs/semgrep-ci/ci-environment-variables#semgrep_pr_id) This value can be set dynamically to `%teamcity.pullRequest.number%`
 * `teamcity.git.fetchAllHeads` -- Set to `true` which allows Semgrep to calculate the diff between the baseline ref and current branch.
+
+**_NOTE:_** This configuration provides daily scans to ensure regular full repository analysis for vulnerabilities and issues.
+**_NOTE:_** This configuration provides performance monitoring to track and log performance metrics for the build process.
