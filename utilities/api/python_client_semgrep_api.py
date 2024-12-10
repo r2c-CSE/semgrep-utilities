@@ -5,6 +5,7 @@ import requests
 import sys
 
 BASE_URL = 'https://semgrep.dev/api/v1/deployments'
+USE_PRIMARY_BRANCH_PARAM = True
 
 def retrieve_paginated_data(endpoint, kind, page_size, headers):
     """
@@ -63,16 +64,20 @@ def get_all_findings(projects, headers):
     """
     for project in projects['projects']:
         project_name = project['name']
+        primary_branch = project['default_branch']
         print("Getting findings for: " + project_name)
-        get_findings_per_project(deployment_slug, project_name, headers)
-    
+        get_findings_per_project(deployment_slug, project_name, primary_branch, headers)    
 
-def get_findings_per_project(deployment_slug, project, headers):
+def get_findings_per_project(deployment_slug, project, primary_branch, headers):
     """
     Gets all findings for a project, and writes them to a file.
     The file format is equivalent to what the API would return if it weren't paginated.
     """
-    project_findings = retrieve_paginated_data(f"{BASE_URL}/{deployment_slug}/findings?repos={project}&dedup=false", "findings", 3000, headers=headers)
+    findings_url = f"{BASE_URL}/{deployment_slug}/findings?repos={project}&dedup=true"
+    if USE_PRIMARY_BRANCH_PARAM:
+        findings_url = f"{findings_url}&ref={primary_branch}"
+
+    project_findings = retrieve_paginated_data(findings_url, "findings", 3000, headers=headers)
     file_path = re.sub(r"[^\w\s]", "-", project) + ".json"
     with open(file_path, "w") as file:
          file.write(project_findings)
