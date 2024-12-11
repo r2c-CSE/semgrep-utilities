@@ -1,40 +1,28 @@
-package _Self.buildTypes
-
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.pullRequests
+import jetbrains.buildServer.configs.kotlin.buildFeatures.perfmon
 import jetbrains.buildServer.configs.kotlin.buildSteps.ScriptBuildStep
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.triggers.schedule
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
+import jetbrains.buildServer.configs.kotlin.buildSteps.python
 
-object Security : BuildType({
-    name = "Security"
+version = "2024.03"
 
-    params {
-        password("env.SEMGREP_APP_TOKEN", "", display = ParameterDisplay.HIDDEN)
-        param("env.SEMGREP_REPO_URL", "%vcsroot.url%")
-        param("env.SEMGREP_REPO_NAME", "stuartcmehrens1/js-app-gitlab")
-        password("env.GITLAB_TOKEN", "", display = ParameterDisplay.HIDDEN)
-    }
+project {
+    buildType(SemgrepFullScans)
+    buildType(SemgrepDiffScans)
+}
+
+object SemgrepFullScans : BuildType({
+
+    name = "Semgrep-Full-Scans"
 
     vcs {
-        root(HttpsGitlabComStuartcmehrens1jsAppGitlabGitRefsHeadsMain)
+        root(DslContext.settingsRoot)
     }
 
     steps {
-        script {
-            name = "semgrep-diff-scan"
-            id = "semgrep"
-            executionMode = BuildStep.ExecutionMode.ALWAYS
-
-            conditions {
-                exists("teamcity.pullRequest.number")
-            }
-            scriptContent = "semgrep ci"
-            dockerImage = "semgrep/semgrep"
-            dockerImagePlatform = ScriptBuildStep.ImagePlatform.Linux
-            dockerPull = true
-        }
         script {
             name = "semgrep-full-scan"
             id = "semgrep_full_scan"
@@ -42,24 +30,22 @@ object Security : BuildType({
 
             conditions {
                 doesNotExist("teamcity.pullRequest.number")
+                equals("teamcity.build.branch.is_default", "true") 
             }
             scriptContent = "semgrep ci"
-            dockerImage = "semgrep/semgrep"
-            dockerImagePlatform = ScriptBuildStep.ImagePlatform.Linux
-            dockerPull = true
         }
     }
 
     triggers {
-        vcs {
 
+        vcs {
             buildParams {
-                param("env.SEMGREP_BASELINE_REF", "origin/%teamcity.pullRequest.target.branch%")
-                param("env.SEMGREP_BRANCH", "%teamcity.pullRequest.source.branch%")
-                param("env.SEMGREP_PR_ID", "%teamcity.pullRequest.number%")
-                param("teamcity.git.fetchAllHeads", "true")
+                password("env.SEMGREP_APP_TOKEN", "", display = ParameterDisplay.HIDDEN)
+                param("env.SEMGREP_REPO_URL", "%vcsroot.url%")
+                param("env.SEMGREP_REPO_NAME", "%teamcity.project.id%") // teamcity.project.id should retrieve the repository name, please, change it if you needed
             }
         }
+        
         schedule {
             schedulingPolicy = daily {
                 hour = 0
@@ -72,15 +58,57 @@ object Security : BuildType({
     }
 
     features {
-        pullRequests {
-            vcsRootExtId = "${HttpsGitlabComStuartcmehrens1jsAppGitlabGitRefsHeadsMain.id}"
-            provider = gitlab {
-                authType = vcsRoot()
+        perfmon {
+        }
+    }
+})
+
+object SemgrepDiffScans : BuildType({
+    
+    name = "Semgrep-Diff-Scans"
+
+    vcs {
+        root(DslContext.settingsRoot)
+    }
+
+    steps {
+        script {
+            name = "semgrep-diff-scan"
+            id = "semgrep_diff_scan"
+            executionMode = BuildStep.ExecutionMode.ALWAYS
+
+            conditions {
+                exists("teamcity.pullRequest.number")
+                equals("teamcity.build.branch.is_default", "false") 
+            }
+            scriptContent = "semgrep ci"
+        }
+    }
+
+    triggers {
+        vcs {
+            buildParams {
+                password("env.SEMGREP_APP_TOKEN", "", display = ParameterDisplay.HIDDEN)
+                param("env.SEMGREP_REPO_URL", "%vcsroot.url%")
+                param("env.SEMGREP_REPO_NAME", "%teamcity.project.id%")
+                param("env.SEMGREP_BASELINE_REF", "%vcsroot.branch%")
+                param("env.SEMGREP_BRANCH", "%teamcity.pullRequest.source.branch%")
+                param("env.SEMGREP_PR_ID", "%teamcity.pullRequest.number%")
+                param("teamcity.git.fetchAllHeads", "true")
             }
         }
     }
 
-    requirements {
-        matches("teamcity.agent.jvm.os.family", "Linux")
+    features {
+
+        pullRequests {
+            vcsRootExtId = "${DslContext.settingsRoot.id}"
+            provider = gitlab {
+                authType = vcsRoot()
+            }
+        }
+
+        perfmon {
+        }
     }
 })
