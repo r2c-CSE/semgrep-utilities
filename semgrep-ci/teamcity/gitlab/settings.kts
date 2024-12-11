@@ -42,8 +42,7 @@ object SemgrepFullScans : BuildType({
             buildParams {
                 password("env.SEMGREP_APP_TOKEN", "", display = ParameterDisplay.HIDDEN)
                 param("env.SEMGREP_REPO_URL", "%vcsroot.url%")
-                param("env.SEMGREP_REPO_NAME", "%teamcity.project.id%")
-                param("teamcity.git.fetchAllHeads", "true")
+                param("env.SEMGREP_REPO_NAME", "%teamcity.project.id%") // teamcity.project.id should retrieve the repository name, please, change it if you needed
             }
         }
         
@@ -59,14 +58,6 @@ object SemgrepFullScans : BuildType({
     }
 
     features {
-
-        pullRequests {
-            vcsRootExtId = "${DslContext.settingsRoot.id}"
-            provider = gitlab {
-                authType = vcsRoot()
-            }
-        }
-
         perfmon {
         }
     }
@@ -100,7 +91,7 @@ object SemgrepDiffScans : BuildType({
                 password("env.SEMGREP_APP_TOKEN", "", display = ParameterDisplay.HIDDEN)
                 param("env.SEMGREP_REPO_URL", "%vcsroot.url%")
                 param("env.SEMGREP_REPO_NAME", "%teamcity.project.id%")
-                param("env.SEMGREP_BASELINE_REF", "refs/heads/main")
+                param("env.SEMGREP_BASELINE_REF", "%vcsroot.branch%")
                 param("env.SEMGREP_BRANCH", "%teamcity.pullRequest.source.branch%")
                 param("env.SEMGREP_PR_ID", "%teamcity.pullRequest.number%")
                 param("teamcity.git.fetchAllHeads", "true")
