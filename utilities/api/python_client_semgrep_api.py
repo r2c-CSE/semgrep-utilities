@@ -64,7 +64,7 @@ def get_all_findings(projects, headers):
     """
     for project in projects['projects']:
         project_name = project['name']
-        primary_branch = project['default_branch']
+        primary_branch = project['primary_branch']
         print("Getting findings for: " + project_name)
         get_findings_per_project(deployment_slug, project_name, primary_branch, headers)    
 
@@ -73,7 +73,7 @@ def get_findings_per_project(deployment_slug, project, primary_branch, headers):
     Gets all findings for a project, and writes them to a file.
     The file format is equivalent to what the API would return if it weren't paginated.
     """
-    findings_url = f"{BASE_URL}/{deployment_slug}/findings?repos={project}&dedup=true"
+    findings_url = f"{BASE_URL}/{deployment_slug}/findings?repos={project}&dedup=false"
     if USE_PRIMARY_BRANCH_PARAM:
         findings_url = f"{findings_url}&ref={primary_branch}"
 
