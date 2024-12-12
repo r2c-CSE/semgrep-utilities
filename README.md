@@ -74,18 +74,22 @@ It is the category for general utilities.
 ### Semgrep API with Python
  
 How to run:
-* Edit file: utilities/api/python_client_semgrep_api.py adding a valid Semgrep token.
-* Execute:
+* Set the environment variable: `SEMGREP_APP_TOKEN`
+* Run the script
 
+* Execute:
 ```
-python3 utilities/api/python_client_semgrep_api.py 
+export SEMGREP_APP_TOKEN=<YOUR_SEMGREP_TOKEN>
+python3 utilities/api/python_client_semgrep_api.py
 ```
+
 The script does the following:
-* Get your current deployment
-* Get your projects
-* Dump a Json report for each project filtering by High Severity and High-Medium Confidence.
+* Get your current deployment (example 'acme')
+* Iterate through all the projects to get the findings
+* Dump a JSON report for each project.
   
 **_NOTE:_** Take into account the `SEMGREP_APP_TOKEN` must have API permissions.
+**_NOTE:_** The variable `USE_PRIMARY_BRANCH_PARAM` could be set to True or False. True to get findings for the primary (main) branch.
 
 ### Kubernetes pod example
 It is a Kubernetes pod that can launch semgrep scans.
