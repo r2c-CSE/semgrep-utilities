@@ -65,8 +65,8 @@ steps:
               self.PULLREQUESTID = 0
               temp = os.getenv('SYSTEM_PULLREQUEST_SOURCEBRANCH')
               self.BUILD_SOURCEBRANCHNAME = temp[temp.rindex('refs/heads')+11:]
-              self.DEFAULT_AREA = self.SYSTEM_TEAMPROJECT + "\\" + os.getenv('AREA', 'DefaultArea')
-              self.DEFAULT_ITERATION = self.SYSTEM_TEAMPROJECT + "\\" + os.getenv('ITERATION', 'DefaultIteration')
+              self.DEFAULT_AREA = self.SYSTEM_TEAMPROJECT + "\\\\" + os.getenv('AREA', 'DefaultArea')
+              self.DEFAULT_ITERATION = self.SYSTEM_TEAMPROJECT + "\\\\" + os.getenv('ITERATION', 'DefaultIteration')
 
               self.url_to_work_items = f"{self.SYSTEM_COLLECTIONURI}{self.SYSTEM_TEAMPROJECTID}/_apis/wit/workitems/%24task"
               self.url_link_to_repo = f"{self.BUILD_REPOSITORY_URI}"
