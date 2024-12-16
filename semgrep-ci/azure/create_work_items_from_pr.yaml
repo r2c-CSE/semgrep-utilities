@@ -125,7 +125,7 @@ steps:
           def create_work_items(self):
               try:
                   path = '/home/vsts/work/1/a/findings_api.json'
-                  project_name = workitem.REPO_NAME
+                  project_name = os.path.join(workitem.SYSTEM_TEAMPROJECT, workitem.REPO_NAME)
                   org_name = workitem.get_deployment()
                   branch_name = workitem.BUILD_SOURCEBRANCHNAME
                   workitem.get_findings_per_repo(org_name, project_name, path)
