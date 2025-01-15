@@ -36,7 +36,7 @@ def transform_lines_with_space(original):
         # Skip "evicted" dependencies as they are superseded by a different version
         # This regex is short and simple because "evicted" is sometimes truncated
         # When revising, recommended to check behavior and performance with a regex tester
-        if re.match(r'\(evi.+', line):
+        if re.search(r'\(evi.+', line):
             continue
         parts = line.split(':')
         if len(parts) > 2:
