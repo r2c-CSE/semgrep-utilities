@@ -41,7 +41,9 @@ def transform_lines_with_space(original):
         if re.match('^[ |]+$', line) or line == "":
             continue
         # Skip "evicted" dependencies as they are superseded by a different version
-        if re.match(r'\(evi.+', line):
+        # This regex is short and simple because "evicted" is sometimes truncated
+        # When revising, recommended to check behavior and performance with a regex tester
+        if re.search(r'\(evi.+', line):
             continue
         parts = line.split(':')
         if len(parts) > 2:
@@ -56,8 +58,6 @@ def transform_lines_with_space(original):
             transformed_lines.append(line)
     
     return "\n".join(transformed_lines)
-
-
 
 # Print the transformed output with correct spacing
 final_transformed_output = extract_and_transform_lines(actual_lines)
