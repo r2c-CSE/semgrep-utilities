@@ -41,7 +41,7 @@ def transform_lines_with_space(original):
         if re.match('^[ |]+$', line) or line == "":
             continue
         # Skip "evicted" dependencies as they are superseded by a different version
-        if re.match('.+evicted by: .+', line):
+        if re.match(r'\(evi.+', line):
             continue
         parts = line.split(':')
         if len(parts) > 2:
