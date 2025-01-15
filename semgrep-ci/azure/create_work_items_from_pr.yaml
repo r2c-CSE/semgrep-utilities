@@ -4,59 +4,38 @@ variables:
 steps:
 - checkout: self
   clean: true
-  fetchDepth: 100000
+  fetchDepth: 20
   persistCredentials: true
 - script: |
-    dotnet restore -p:RestorePackagesWithLockFile=True
     python -m pip install --upgrade pip
     pip install semgrep
     if [ $(Build.SourceBranchName) = "master" ]; then
         echo "Semgrep full scan"
-        semgrep ci --json --output /home/vsts/work/1/a/findings.json
+        semgrep ci
     elif [ $(System.PullRequest.PullRequestId) -ge 0 ]; then
         echo "Semgrep diff scan"
         export SEMGREP_PR_ID=$(System.PullRequest.PullRequestId)
         export SEMGREP_BASELINE_REF='origin/master'
-        echo "Pull Request Scan from branch: $(Build.SourceBranchName)"
+        echo "Pull Request Scan from branch: $(System.PullRequest.SourceBranch)"
         echo "Pull Request Id: $(System.PullRequest.PullRequestId)"
         git fetch origin master:origin/master
-        semgrep ci --json --output /home/vsts/work/1/a/findings.json
+        semgrep ci
     fi
 
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: |
-      # this is inline code
-      env | sort
-
-
-##################################################################################################################
-######## WORK ITEM CREATION ######################################################################################
-##################################################################################################################
 - task: PythonScript@0
   inputs:
     scriptSource: 'inline'
     script: |
       import requests
-      import csv
       import os
-      import pprint
       import json
       import logging
-      import base64
-      import urllib.parse
       from datetime import datetime
 
-      # qq: import logging level from environment variable, default to INFO
       loglevel = os.getenv('LOG_LEVEL', 'INFO')
-      semgrep_org = os.getenv('SEMGREP_ORG', 'xxxxx')
       logging.basicConfig(level=loglevel)
-      logging.debug (loglevel)
 
       class WorkItemPerRule():
-          
-          '''Creating an Instance of Work Item Per Rule'''
 
           def __init__(self, rule_name, message, file_info, 
                       vuln_code_url, severity, url_to_semgrep, 
@@ -73,12 +52,9 @@ steps:
               self.relevant_since = relevant_since
 
       class WorkItem():
-          
-          '''Creating an Instance of Work Item'''
-          
+
           def __init__(self):
-              # Get the environment variables from the pipeline
-              self.PROJECT_NAME = os.getenv('BUILD_REPOSITORY_NAME')
+              self.REPO_NAME = os.getenv('BUILD_REPOSITORY_NAME')
               self.SYSTEM_COLLECTIONURI = os.getenv('SYSTEM_COLLECTIONURI')
               self.SYSTEM_TEAMPROJECT = os.getenv('SYSTEM_TEAMPROJECT')
               self.SYSTEM_TEAMPROJECTID = os.getenv('SYSTEM_TEAMPROJECTID')
@@ -89,8 +65,9 @@ steps:
               self.PULLREQUESTID = 0
               temp = os.getenv('SYSTEM_PULLREQUEST_SOURCEBRANCH')
               self.BUILD_SOURCEBRANCHNAME = temp[temp.rindex('refs/heads')+11:]
+              self.DEFAULT_AREA = self.SYSTEM_TEAMPROJECT + "\\\\" + os.getenv('AREA', 'DefaultArea')
+              self.DEFAULT_ITERATION = self.SYSTEM_TEAMPROJECT + "\\\\" + os.getenv('ITERATION', 'DefaultIteration')
 
-              # create the URL for Work Items
               self.url_to_work_items = f"{self.SYSTEM_COLLECTIONURI}{self.SYSTEM_TEAMPROJECTID}/_apis/wit/workitems/%24task"
               self.url_link_to_repo = f"{self.BUILD_REPOSITORY_URI}"
               self.headers_work_items = {
@@ -98,9 +75,7 @@ steps:
               }
 
           def find_pr_id(self): 
-              # find the Pull Request ID
               self.PULLREQUESTID = $(System.PullRequest.PullRequestId)
-              logging.debug (f"Pull Request ID is {self.PULLREQUESTID}")
 
           def get_deployment(self) -> str:
               token_api = os.getenv('SEMGREP_APP_TOKEN')  
@@ -111,43 +86,23 @@ steps:
                   logging.error(f"Sending message failed with comment: {r.text}")
               data = json.loads(r.text)
               slug_name = data['deployments'][0].get('slug')
-              logging.debug(f"Accessing org: {slug_name}")
               return slug_name
-          
+
           def get_findings_per_repo(self, slug_name: str, repo: str, file_path: str):      
-              logging.debug (f"Getting findings!")
               token_api = os.getenv('SEMGREP_APP_TOKEN')  
               headers = {"Accept": "application/json", "Authorization": "Bearer " + token_api}
               r = requests.get('https://semgrep.dev/api/v1/deployments/' + slug_name + '/findings?dedup=true&repos='+repo,headers=headers)
               if r.status_code != 200:
                 logging.error(f"Sending message failed with comment: {r.text}")
               data = json.loads(r.text)
-              logging.debug (f"Dumping SCA findings to: {file_path}")
               with open(file_path, "w") as file:
                 json.dump(data, file)
-
-
-          def get_sca_findings_per_repo(self, slug_name: str, repo: str, file_path: str):      
-              logging.debug (f"Getting SCA findings!")
-              token_api = os.getenv('SEMGREP_APP_TOKEN')  
-              headers = {"Accept": "application/json", "Authorization": "Bearer " + token_api}
-              r = requests.get('https://semgrep.dev/api/v1/deployments/' + slug_name + '/findings?dedup=true&issue_type=sca&exposures=reachable,always_reachable&repos='+repo,headers=headers)
-              if r.status_code != 200:
-                logging.error(f"Sending message failed with comment: {r.text}")
-              data = json.loads(r.text)
-              logging.debug (f"Dumping findings to: {file_path}")
-              with open(file_path, "w") as file:
-                json.dump(data, file)
-
 
           def add_work_items(self, title: str, summary: str, file_info: str, vuln_code_url: str, severity:str, url_to_semgrep: str, area: str, iteration: str, tags: str) -> bool:
-              ''' Add work items to Azure DevOps Pull Request'''
-              logging.info (f"Added workitem")
               link_to_pr = '{ "op": "add", "path": "/relations/-", "value": { "rel": "ArtifactLink", "url": "vstfs:///Git/PullRequestId/'+ str(self.SYSTEM_TEAMPROJECTID) +'/'+ str(self.BUILD_REPOSITORY_ID) +'/'+ str(self.PULLREQUESTID) +'", "attributes": { "name": "pull request" } } }'
               list_link_to_code = "<p><strong>Link to code: </strong>" + file_info + "</p>"
               html_description = "<!DOCTYPE html> <html> <body> <p> <strong>Summary: </strong>" + summary + "</p> <p></p>" + list_link_to_code + "<p></p><p><strong>Link to project findings in Semgrep: </strong><a href=" + url_to_semgrep + ">" + url_to_semgrep + "</a></p><p></p><p><strong>Severity: " + severity + "</strong></p></body></html> "
               data = '[ { "op": "add", "path": "/fields/System.Title", "from": null, "value": "' + title + '" }, { "op": "add", "path": "/fields/System.AssignedTo", "value": "'+ self.BUILD_REQUESTEDFOREMAIL + '" },' + link_to_pr + ', { "op": "add", "path": "/fields/System.Tags", "value":  "'+ tags + '" },{ "op": "add", "path": "/fields/System.AreaPath", "value":  "'+ area + '" },{ "op": "add", "path": "/fields/System.IterationPath", "value":  "' + iteration + '" } ,{ "op": "add", "path": "/fields/System.Description", "value": "' + html_description + '" }]'
-              logging.debug(f"{data}")
               params = {
                   'api-version': '7.0',
               }
@@ -160,53 +115,17 @@ steps:
                               )
 
               if r.status_code == 200:
-                  logging.info (f"Added workitem successfully")
                   return True
-                  
               else:
-                  logging.error (f"Error in adding workitem, status_code : {r.status_code}")
-                  logging.error (f"Error in adding workitem, headers : {r.headers}")
-                  logging.error (f"Error in adding workitem, text : {r.text}")
+                  logging.error(f"Error in adding workitem, status_code : {r.status_code}")
+                  logging.error(f"Error in adding workitem, headers : {r.headers}")
+                  logging.error(f"Error in adding workitem, text : {r.text}")
                   return False
 
-          def read_csv_file(self, file_path: str):
-              # Your Azure DevOps details
-              organization = os.getenv('CONTRIBUTOR_ORGANIZATION')
-              project = os.getenv('CONTRIBUTOR_PROJECT')
-              repository = os.getenv('CONTRIBUTOR_REPOSITORY')
-              path_to_file = os.getenv('CONTRIBUTOR_PATH_TO_FILE')
-              pat=os.getenv('SYSTEM_ACCESSTOKEN')
-              # Construct the URL
-              url = f"https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repository}/items?path={path_to_file}&api-version=6.0&download=true"
-              #url = f"https://dev.azure.com/sebasrevuelta/CSV/_apis/git/repositories/CSV/items?path=area.csv&api-version=6.0&download=true"
-              
-
-              # Make the request
-              response = requests.get(url=url,auth=('', pat),)
-
-              # Ensure the request succeeded
-              if response.status_code == 200:
-                  csv_file = response.content
-                  with open(file_path, 'wb') as file:
-                      file.write(response.content)
-                  logging.debug(csv_file)
-              else:
-                  logging.error(f"Failed to retrieve file: {response.status_code}")
-
-          def get_area_path(self, file_path: str, email: str, default_value: str):
-              with open(file_path, mode='r', encoding='utf-8') as csvfile:
-                  reader = csv.DictReader(csvfile)
-                  for row in reader:
-                      if row['email_contributor'] == email:
-                          return row['area_path']
-              logging.error(f"No area_path found for this email: {email}")
-              return default_value
-
-          def create_work_items_for_sast(self):
-              # Getting findings
+          def create_work_items(self):
               try:
                   path = '/home/vsts/work/1/a/findings_api.json'
-                  project_name = workitem.PROJECT_NAME
+                  project_name = os.path.join(workitem.SYSTEM_TEAMPROJECT, workitem.REPO_NAME)
                   org_name = workitem.get_deployment()
                   branch_name = workitem.BUILD_SOURCEBRANCHNAME
                   workitem.get_findings_per_repo(org_name, project_name, path)
@@ -218,44 +137,18 @@ steps:
                   logging.error(f"Unknown error: {e}")
               finally:
                   f.close()
-                
-              # Getting the CSV match list with AreaPath and email contributor.
-              workitem.read_csv_file("temp.csv")
-              default_area = "WebGoat\\\Review"
-              default_iteration = "WebGoat\\\SebasIteration"
-              email_to_search = workitem.BUILD_REQUESTEDFOREMAIL
-              logging.info(f"Email to search: {email_to_search}")
-              work_item_area = workitem.get_area_path("temp.csv", email_to_search, default_area)
-              logging.info(f"work_item_area: {work_item_area}")
 
-              # Create an empty hash table (dictionary)
               group_work_item_per_rule = {}
 
-              # Iterating through the findings in findings.json file
               for i in findings['findings']:
-                  logging.debug (f"finding is {i}")
 
                   work_item_finding_id = i['id']
-                  logging.debug (f"work_item_finding_id is {work_item_finding_id}")
-
                   work_item_summary = i['rule_name']
-                  logging.debug (f"work_item_summary is {work_item_summary}")
-
-                  work_item_message = i['rule_message']
-                  logging.debug (f"work_item_message is {work_item_message}") 
-
-                  work_item_severity = i['severity']
-                  logging.debug (f"work_item_severity is {work_item_severity}") 
-                    
-                  work_item_relevant_since = i['relevant_since']
-                  logging.debug (f"work_item_relevant_since is {work_item_relevant_since}") 
-
-                  work_item_policy = i['sourcing_policy']['slug']
-                  logging.debug (f"work_item_policy is {work_item_policy}") 
-
-                  work_item_file_info = i['location']['file_path'] + ":" + str(i['location']['line'])
-                  logging.debug (f"work_item_file_info is {work_item_file_info}") 
-
+                  work_item_message = i['rule_message'] 
+                  work_item_severity = i['severity'] 
+                  work_item_relevant_since = i['relevant_since'] 
+                  work_item_policy = i['sourcing_policy']['slug'] 
+                  work_item_file_info = i['location']['file_path'] + ":" + str(i['location']['line']) 
                   work_item_vuln_code_url = f"{workitem.url_link_to_repo }" \
                                         f"?path=/{i['location']['file_path']}&" \
                                         f"version=GB{workitem.BUILD_SOURCEBRANCHNAME}&" \
@@ -264,160 +157,37 @@ steps:
                                         f"lineStartColumn={i['location']['column']}&" \
                                         f"lineEndColumn={i['location']['end_column']}&" \
                                         f"lineStyle=plain&_a=contents"
-                    
-                  ## 2023-09-15T15:34:38.059101Z
+
                   work_item_relevant_since = work_item_relevant_since[0:19]
                   time_relevante_since = datetime.strptime(work_item_relevant_since, '%Y-%m-%dT%H:%M:%S')
-                    
 
                   url_to_semgrep = f"https://semgrep.dev/orgs/{org_name}/findings?repo={project_name}&ref={branch_name}"
 
-                  logging.debug(f"Creating object work_item_per_rule")
                   work_item_per_rule = WorkItemPerRule(work_item_summary, work_item_message, work_item_file_info, 
-                  work_item_vuln_code_url, work_item_severity, url_to_semgrep, work_item_area, default_iteration, 
+                  work_item_vuln_code_url, work_item_severity, url_to_semgrep, workitem.DEFAULT_AREA, workitem.DEFAULT_ITERATION, 
                   work_item_policy, time_relevante_since)
 
-                  ## format: 2023-09-18 07:49:42+00:00
                   time_pipeline = workitem.PIPELINESTARTTIME[0:19]
                   time_pipeline = datetime.strptime(time_pipeline, '%Y-%m-%d %H:%M:%S')
-                  logging.debug(time_pipeline)
-                  logging.debug(f"Time pipeline: {time_pipeline}")
-                  logging.debug(f"Time relevant since: {time_relevante_since}")
+
                   if (time_relevante_since > time_pipeline and work_item_policy != 'rule-board-audit'):
-                      logging.info (f"New SAST finding in the pipeline for the rule: {work_item_summary}")
                       if work_item_summary in group_work_item_per_rule:
                           work_item_per_rule_to_update = group_work_item_per_rule[work_item_summary]
                           work_item_per_rule_to_update.file_info = work_item_per_rule_to_update.file_info + "<p></p>" + "<a href=" + work_item_vuln_code_url + ">" + work_item_file_info + "</a>"
-                            
                           group_work_item_per_rule[work_item_summary] = work_item_per_rule_to_update
-                          logging.debug (f"Updating the work item!!")
                       else:
                           work_item_per_rule.file_info = "<p></p><a href=" + work_item_vuln_code_url + ">" + work_item_file_info + "</a>"
                           group_work_item_per_rule[work_item_summary] = work_item_per_rule
-                          logging.debug (f"Adding a new work item!!")
-                        
-                    
-              # Closing file
+
               f.close()        
 
-              # Iterating through the work items 
-              for rule in group_work_item_per_rule:
-                  logging.info (f"Creating work item for rule: {rule}")
-                  wi = group_work_item_per_rule[rule]
-                  logging.debug(f"Addding new work item for finding: {wi.file_info}")
-                  workitem.add_work_items(wi.rule_name, wi.message, wi.file_info, wi.vuln_code_url, wi.severity, wi.url_to_semgrep, wi.area, wi.iteration, "semgrep")
-
-
-          def create_work_items_for_sca(self):
-              # Getting findings
-              try:
-                  path = '/home/vsts/work/1/a/findings_api.json'
-                  project_name = workitem.PROJECT_NAME
-                  org_name = workitem.get_deployment()
-                  branch_name = workitem.BUILD_SOURCEBRANCHNAME
-                  workitem.get_sca_findings_per_repo(org_name, project_name, path)
-                  f = open(path)
-                  findings = json.load(f)
-              except FileNotFoundError:
-                  logging.error("File findings.json not found at /home/vsts/work/1/a/findings_api.json")
-              except Exception as e:
-                  logging.error(f"Unknown error: {e}")
-              finally:
-                  f.close()
-                
-              # Getting the CSV match list with AreaPath and email contributor.
-              workitem.read_csv_file("temp.csv")
-              default_area = "WebGoat\\\Review"
-              default_iteration = "WebGoat\\\SebasIteration"
-              email_to_search = workitem.BUILD_REQUESTEDFOREMAIL
-              logging.info(f"Email to search: {email_to_search}")
-              work_item_area = workitem.get_area_path("temp.csv", email_to_search, default_area)
-              logging.info(f"work_item_area: {work_item_area}")
-
-              # Create an empty hash table (dictionary)
-              group_work_item_per_rule = {}
-
-              # Iterating through the findings in findings.json file
-              for i in findings['findings']:
-                  logging.debug (f"finding is {i}")
-
-                  work_item_finding_id = i['id']
-                  logging.debug (f"work_item_finding_id is {work_item_finding_id}")
-
-                  work_item_summary = i['rule_name']
-                  logging.debug (f"work_item_summary is {work_item_summary}")
-
-                  work_item_message = i['rule_message']
-                  logging.debug (f"work_item_message is {work_item_message}") 
-
-                  work_item_severity = i['severity']
-                  logging.info (f"work_item_severity is {work_item_severity}") 
-                    
-                  work_item_relevant_since = i['relevant_since']
-                  logging.debug (f"work_item_relevant_since is {work_item_relevant_since}") 
-
-                  work_item_file_info = i['location']['file_path'] + ":" + str(i['location']['line'])
-                  logging.debug (f"work_item_file_info is {work_item_file_info}") 
-
-                  work_item_vuln_code_url = f"{workitem.url_link_to_repo }" \
-                                        f"?path=/{i['location']['file_path']}&" \
-                                        f"version=GB{workitem.BUILD_SOURCEBRANCHNAME}&" \
-                                        f"line={i['location']['line']}&" \
-                                        f"lineEnd={i['location']['end_line']}&" \
-                                        f"lineStartColumn={i['location']['column']}&" \
-                                        f"lineEndColumn={i['location']['end_column']}&" \
-                                        f"lineStyle=plain&_a=contents"
-                    
-                  ## 2023-09-15T15:34:38.059101Z
-                  work_item_relevant_since = work_item_relevant_since[0:19]
-                  time_relevante_since = datetime.strptime(work_item_relevant_since, '%Y-%m-%dT%H:%M:%S')
-                    
-
-                  url_to_semgrep = f"https://semgrep.dev/orgs/{org_name}/supply-chain/vulnerabilities?repo={project_name}&ref={branch_name}"
-
-                  logging.info(f"Creating object work_item_per_rule")
-                  work_item_per_rule = WorkItemPerRule(work_item_summary, work_item_message, work_item_file_info, 
-                  work_item_vuln_code_url, work_item_severity, url_to_semgrep, work_item_area, default_iteration, 
-                  None, time_relevante_since)
-
-                  ## format: 2023-09-18 07:49:42+00:00
-                  time_pipeline = workitem.PIPELINESTARTTIME[0:19]
-                  time_pipeline = datetime.strptime(time_pipeline, '%Y-%m-%d %H:%M:%S')
-                  logging.debug(time_pipeline)
-                  logging.info(f"Time pipeline: {time_pipeline}")
-                  logging.info(f"Time relevant since: {time_relevante_since}")
-                  if (time_relevante_since > time_pipeline and (work_item_severity == "critical" or work_item_severity == "high")):
-                  #if (work_item_severity == "critical" or work_item_severity == "high"):
-                      logging.info (f"New SCA finding in the pipeline: {work_item_summary}")
-                      if work_item_summary in group_work_item_per_rule:
-                          work_item_per_rule_to_update = group_work_item_per_rule[work_item_summary]
-                          work_item_per_rule_to_update.file_info = work_item_per_rule_to_update.file_info + "<p></p>" + "<a href=" + work_item_vuln_code_url + ">" + work_item_file_info + "</a>"
-                            
-                          group_work_item_per_rule[work_item_summary] = work_item_per_rule_to_update
-                          logging.debug (f"Updating the work item!!")
-                      else:
-                          work_item_per_rule.file_info = "<p></p><a href=" + work_item_vuln_code_url + ">" + work_item_file_info + "</a>"
-                          group_work_item_per_rule[work_item_summary] = work_item_per_rule
-                          logging.debug (f"Adding a new work item!!")
-                        
-                    
-              # Closing file
-              f.close()        
-
-              # Iterating through the work items 
               for rule in group_work_item_per_rule:
                   wi = group_work_item_per_rule[rule]
-                  logging.info (f"Creating work item for rule: {wi.rule_name}")
-                  logging.debug(f"Addding new work item for finding: {wi.file_info}")
                   workitem.add_work_items(wi.rule_name, wi.message, wi.file_info, wi.vuln_code_url, wi.severity, wi.url_to_semgrep, wi.area, wi.iteration, "semgrep")
-
-
-
 
       workitem = WorkItem()
       workitem.find_pr_id()
-      workitem.create_work_items_for_sast()
-      workitem.create_work_items_for_sca()
+      workitem.create_work_items()
 
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
