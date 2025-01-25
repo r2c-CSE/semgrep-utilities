@@ -293,7 +293,14 @@ def build_sarif_runs(findings):
     return [{
         'invocations': build_sarif_runs_invocations(findings),
         'results': build_sarif_runs_results(findings),
-        'tool': build_sarif_runs_tool(findings)
+        'tool': build_sarif_runs_tool(findings),
+        'properties': {},
+        'versionControlProvenance': [
+            {
+                "repositoryUri": "",
+                "revisionId": ""
+            }
+        ]
     }]
 
 def build_sarif_template():
