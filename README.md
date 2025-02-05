@@ -85,9 +85,10 @@ python3 utilities/api/python_client_semgrep_api.py
 
 The script does the following:
 * Get your current deployment (example 'acme')
-* Iterate through all the projects to get the findings
+* Iterate through all the projects to get the (by default) open findings
 * Dump a JSON report for each project.
-  
+
+**_NOTE:_** You can get fixed (ignored) findings by setting the status array to statuses = ["fixed"] (statuses = ["ignored"])
 **_NOTE:_** Take into account the `SEMGREP_APP_TOKEN` must have API permissions.
 **_NOTE:_** The variable `USE_PRIMARY_BRANCH_PARAM` could be set to True or False. True to get findings for the primary (main) branch.
 
