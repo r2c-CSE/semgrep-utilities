@@ -57,7 +57,12 @@ def main():
         semgrep_data = fetch_semgrep_findings()
         formatted_data = format_findings_for_dd(semgrep_data)
         save_to_file(formatted_data, OUTPUT_FILE)
-        uploadToDefectDojo("true", "c161ed6ca2152aa4f19490cd8b9f171e5b2e37c7", "http://localhost:8080", "Semgrep SAST", "Semgrep Scans", "semgrep_findings_formatted.json")
+        dd_token = os.getenv("DEFECT_DOJO_API_TOKEN")
+        dd_url= "http://localhost:8080"
+        product_name = "Semgrep SAST"
+        engagement_name = "Semgrep Scans"
+        report = "semgrep_findings_formatted.json"
+        uploadToDefectDojo("true", dd_token,dd_url, product_name, engagement_name, report)
     except Exception as e:
         print(f"Error: {e}")
 
