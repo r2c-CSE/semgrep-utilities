@@ -12,7 +12,7 @@ OUTPUT_FILE = "semgrep_findings_formatted.json"
 dd_url= "http://localhost:8080"
 product_name = "Semgrep SAST"
 engagement_name = "Semgrep Scans"
-
+dd_token = os.getenv("DEFECT_DOJO_API_TOKEN")
 def retrieve_paginated_data(endpoint):
     all_findings = []
     page = 0
@@ -84,7 +84,6 @@ def main():
         semgrep_data = fetch_semgrep_findings()
         formatted_data = format_findings_for_dd(semgrep_data)
         save_to_file(formatted_data, OUTPUT_FILE)
-        dd_token = os.getenv("DEFECT_DOJO_API_TOKEN")
         report = OUTPUT_FILE
         uploadToDefectDojo("true", dd_token,dd_url, product_name, engagement_name, report)
     except Exception as e:
