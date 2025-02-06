@@ -65,6 +65,7 @@ def get_all_findings(projects, headers):
     for project in projects['projects']:
         project_name = project['name']
         primary_branch = project['primary_branch']
+        primary_branch = primary_branch.replace("refs/heads/", "") # To get master (main) instead of refs/heads/master (refs/heads/main)
         print("Getting findings for: " + project_name)
         get_findings_per_project(deployment_slug, project_name, primary_branch, headers)    
 
@@ -72,15 +73,26 @@ def get_findings_per_project(deployment_slug, project, primary_branch, headers):
     """
     Gets all findings for a project, and writes them to a file.
     The file format is equivalent to what the API would return if it weren't paginated.
+    By default, all the statutes are retrieved, but you can remove the unneeded statutes. 
+    For example, if you want to retrieve open findings, then "open", "fixing", and "reviewing" statutes should be used.
+    Note: &status=open,fixing or &status=open|fixing or doesn't work. 
     """
+    ## all_statutes = ["open", "fixing", "reviewing", "fixed", "ignored"]
+    open_statuses = ["open", "fixing", "reviewing"]
+    merged_findings = {"findings": []}
     findings_url = f"{BASE_URL}/{deployment_slug}/findings?repos={project}&dedup=false"
-    if USE_PRIMARY_BRANCH_PARAM:
-        findings_url = f"{findings_url}&ref={primary_branch}"
+    for status in open_statuses:
+        findings_url = f"{findings_url}&status={status}"
+        if USE_PRIMARY_BRANCH_PARAM:
+            findings_url = f"{findings_url}&ref={primary_branch}"
+        project_findings = retrieve_paginated_data(findings_url, "findings", 3000, headers=headers)
+        merged_results = json.loads(project_findings)
+        merged_findings["findings"].extend(merged_results.get("findings", []))
 
-    project_findings = retrieve_paginated_data(findings_url, "findings", 3000, headers=headers)
+    json_merged_findings = json.dumps(merged_findings)
     file_path = re.sub(r"[^\w\s]", "-", project) + ".json"
     with open(file_path, "w") as file:
-         file.write(project_findings)
+         file.write(json_merged_findings)
 
 
 if __name__ == "__main__":
