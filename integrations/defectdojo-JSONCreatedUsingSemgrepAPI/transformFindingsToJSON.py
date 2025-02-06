@@ -2,43 +2,47 @@ import requests
 import json
 import os
 from uploadSemgrepJSONToDefectDojo import uploadToDefectDojo
+import sys
 # Configuration
 deployment_slug = "swati"
 BASE_URL = "https://semgrep.dev"
-findings_url = f"{BASE_URL}/api/v1/deployments/"+deployment_slug+"/findings&dedup=true
-token = os.environ["SEMGREP_API_TOKEN"]
+findings_url = BASE_URL+"/api/v1/deployments/"+deployment_slug+"/findings"
+SEMGREP_APP_TOKEN = os.environ["SEMGREP_API_TOKEN"]
 OUTPUT_FILE = "semgrep_findings_formatted.json"
+dd_url= "http://localhost:8080"
+product_name = "Semgrep SAST"
+engagement_name = "Semgrep Scans"
 
-def retrieve_paginated_data(endpoint, kind, page_size, headers):
-    """
-    Generalized function to retrieve multiple pages of data.
-    Returns all data as a JSON string (not a Python dict!) in the same format 
-    as the API would if it weren't paginated.
-    """
-    # Initialize values
-    data_list = []
-    hasMore = True
-    page = -1
-    while (hasMore == True):
-        page = page + 1
-        page_string = ""
-        if (kind == 'projects'):
-            page_string = f"?page_size={page_size}&page={page}"
-        else:
-            page_string = f"&page_size={page_size}&page={page}"
-        r = requests.get(f"{endpoint}{page_string}", headers=headers)
-        if r.status_code != 200:
-            sys.exit(f'Get failed: {r.text}')
-        data = r.json()
-        if not data.get(kind):
-            print(f"At page {page} there is no more data of {kind}")
-            hasMore = False
-        data_list.extend(data.get(kind))
-    return json.dumps({ f"{kind}": data_list})
+def retrieve_paginated_data(endpoint):
+    all_findings = []
+    page = 0
+    page_size = 100  # Adjust as needed
+    headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
+    while True:
+        response = requests.get(endpoint+"?&page_size="+str(page_size)+"&page="+str(page), headers=headers)
+        
+        if response.status_code != 200:
+            print(f"Error: {response.status_code}, {response.text}")
+            break  # Stop on failure
+        try:
+            data = response.json()
+        except json.JSONDecodeError:
+            print(f"Failed to parse JSON: {response.text}")
+            break
+
+        findings = data["findings"]
+         # If findings list is empty, stop fetching more pages
+        if not findings:
+            print("No findings available.")
+            break 
+
+        all_findings.extend(findings)
+        page += 1  # Go to the next page
+
+    return  {"findings": all_findings}
 
 def fetch_semgrep_findings():
-    response = retrieve_paginated_data(findings_url, "findings", 3000, headers=headers)
-
+    return retrieve_paginated_data(findings_url)
 
 def format_findings_for_dd(semgrep_data):
     formatted_findings = []
@@ -81,9 +85,6 @@ def main():
         formatted_data = format_findings_for_dd(semgrep_data)
         save_to_file(formatted_data, OUTPUT_FILE)
         dd_token = os.getenv("DEFECT_DOJO_API_TOKEN")
-        dd_url= "http://localhost:8080"
-        product_name = "Semgrep SAST"
-        engagement_name = "Semgrep Scans"
         report = OUTPUT_FILE
         uploadToDefectDojo("true", dd_token,dd_url, product_name, engagement_name, report)
     except Exception as e:
