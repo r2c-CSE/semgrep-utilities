@@ -3,19 +3,42 @@ import json
 import os
 from uploadSemgrepJSONToDefectDojo import uploadToDefectDojo
 # Configuration
-SEM_GREP_API_URL = "https://semgrep.dev/api/v1/deployments/swati/findings"
+deployment_slug = "swati"
+BASE_URL = "https://semgrep.dev"
+findings_url = f"{BASE_URL}/api/v1/deployments/"+deployment_slug+"/findings&dedup=true
 token = os.environ["SEMGREP_API_TOKEN"]
-
 OUTPUT_FILE = "semgrep_findings_formatted.json"
 
-def fetch_semgrep_findings():
-    headers = {
-       "Authorization": "Bearer " + token,
-    }
+def retrieve_paginated_data(endpoint, kind, page_size, headers):
+    """
+    Generalized function to retrieve multiple pages of data.
+    Returns all data as a JSON string (not a Python dict!) in the same format 
+    as the API would if it weren't paginated.
+    """
+    # Initialize values
+    data_list = []
+    hasMore = True
+    page = -1
+    while (hasMore == True):
+        page = page + 1
+        page_string = ""
+        if (kind == 'projects'):
+            page_string = f"?page_size={page_size}&page={page}"
+        else:
+            page_string = f"&page_size={page_size}&page={page}"
+        r = requests.get(f"{endpoint}{page_string}", headers=headers)
+        if r.status_code != 200:
+            sys.exit(f'Get failed: {r.text}')
+        data = r.json()
+        if not data.get(kind):
+            print(f"At page {page} there is no more data of {kind}")
+            hasMore = False
+        data_list.extend(data.get(kind))
+    return json.dumps({ f"{kind}": data_list})
 
-    response = requests.get(SEM_GREP_API_URL, headers=headers)
-    response.raise_for_status()
-    return response.json()
+def fetch_semgrep_findings():
+    response = retrieve_paginated_data(findings_url, "findings", 3000, headers=headers)
+
 
 def format_findings_for_dd(semgrep_data):
     formatted_findings = []
@@ -61,7 +84,7 @@ def main():
         dd_url= "http://localhost:8080"
         product_name = "Semgrep SAST"
         engagement_name = "Semgrep Scans"
-        report = "semgrep_findings_formatted.json"
+        report = OUTPUT_FILE
         uploadToDefectDojo("true", dd_token,dd_url, product_name, engagement_name, report)
     except Exception as e:
         print(f"Error: {e}")
