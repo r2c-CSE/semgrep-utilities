@@ -29,6 +29,7 @@ def retrieve_paginated_data(endpoint, kind, page_size, headers):
             sys.exit(f'Get failed: {r.text}')
         data = r.json()
         if not data.get(kind):
+            print(f"At page {page} there is no more data of {kind}")
             hasMore = False
         data_list.extend(data.get(kind))
     return json.dumps({ f"{kind}": data_list})
@@ -79,8 +80,9 @@ def get_findings_per_project(deployment_slug, project, primary_branch, headers):
     ## all_statutes = ["open", "fixing", "reviewing", "fixed", "ignored"]
     open_statuses = ["open", "fixing", "reviewing"]
     merged_findings = {"findings": []}
+    findings_url = f"{BASE_URL}/{deployment_slug}/findings?repos={project}&dedup=false"
     for status in open_statuses:
-        findings_url = f"{BASE_URL}/{deployment_slug}/findings?repos={project}&dedup=false&status={status}"
+        findings_url = f"{findings_url}&status={status}"
         if USE_PRIMARY_BRANCH_PARAM:
             findings_url = f"{findings_url}&ref={primary_branch}"
         project_findings = retrieve_paginated_data(findings_url, "findings", 3000, headers=headers)
