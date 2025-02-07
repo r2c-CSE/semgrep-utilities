@@ -37,15 +37,23 @@ import json
 
 def get_repos(org_name, headers):
     """Fetch all repositories for the given organization."""
-    response = requests.get(
-        f'https://api.github.com/orgs/{org_name}/repos',
-        headers=headers
-    )
-    
-    if response.status_code != 200:
-        raise ValueError(f"Error fetching repositories for organization {org_name}. Status code: {response.status_code}")
 
-    return response.json()
+    repos = []
+    page = 1
+    while True:
+        response = requests.get(
+            f'https://api.github.com/orgs/{org_name}/repos?page={page}',
+            headers=headers
+        )
+        if response.status_code != 200:
+            break
+        repos_page = response.json()
+        if not repos_page:
+            break
+        repos.extend(repos_page)
+        page += 1
+    
+    return repos
 
 def get_organization_members(org_name, headers):
     """Fetch all members of the organization."""
