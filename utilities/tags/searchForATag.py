@@ -8,7 +8,7 @@ BASE_URL = "https://semgrep.dev/api/v1/deployments/{deployment-slug}"
 def get_projects_with_tag(tag):
     url = f"{BASE_URL}/projects"
     headers = {
-        "Authorization": f"Bearer {API_KEY}",
+        "Authorization": f"Bearer {SEMGREP_API_KEY}",
         "Content-Type": "application/json"
     }
 
