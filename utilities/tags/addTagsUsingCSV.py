@@ -30,14 +30,14 @@ def main():
     with open(CSV_FILE, newline='') as csvfile:
         reader = csv.DictReader(csvfile, delimiter=',')  # Assuming comma-delimited file
         for row in reader:
-            repository = row["repository"].strip()
+            repository = row["project"].strip()
             tag = row["tag"].strip()
             
             project_name = repository
             if project_name:
                 add_tag_to_project(project_name, tag)
             else:
-                print(f"Project '{repository}' not found.")
+                print(f"Project '{project}' not found.")
 
 if __name__ == "__main__":
     main()
