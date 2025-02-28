@@ -8,7 +8,7 @@ Directions:
 1. Save this script as `github_recent_contributors.py` in a directory of your choice.
 2. Open a terminal and navigate to the directory where this script is saved.
 3. Install the required Python library: `pip3 install requests`
-4. Run the script with: `python3 github_recent_contributors.py`
+4. Run the script with: `usage: python3 github_recent_contributors.py ORG_NAME NUMBER_OF_DAYS OUTPUT_FILENAME [--repos REPO1 REPO2 ...]`
 
 Requirements:
 - Python 3.x
@@ -30,22 +30,35 @@ Note:
 """
 import requests
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone, UTC
 import argparse
 import json
 
 
 def get_repos(org_name, headers):
     """Fetch all repositories for the given organization."""
-    response = requests.get(
-        f'https://api.github.com/orgs/{org_name}/repos',
-        headers=headers
-    )
-    
-    if response.status_code != 200:
-        raise ValueError(f"Error fetching repositories for organization {org_name}. Status code: {response.status_code}")
+    repos = []
+    page = 1  # Start from page 1
 
-    return response.json()
+    while True:
+        response = requests.get(
+            f'https://api.github.com/orgs/{org_name}/repos',
+            headers=headers,
+            params={'per_page': 100, 'page': page}  # Fetch 100 repos per page
+        )
+
+        if response.status_code != 200:
+            raise ValueError(f"Error fetching repositories for organization {org_name}. Status code: {response.status_code}")
+
+        data = response.json()
+        
+        if not data:  # If no more repositories, break the loop
+            break
+        repos.extend(data)  # Add fetched repos to the list
+        page += 1  # Move to the next page
+
+    return repos
+
 
 def get_organization_members(org_name, headers):
     """Fetch all members of the organization."""
@@ -69,18 +82,29 @@ def get_contributors(org_name, number_of_days, headers):
     # init contributor set
     unique_contributors = set()
     unique_authors = set()
-    
+
+    if not repo_list:
+        print("No repo names provided. Will count contributors to all repos in the org [" + org_name + "]")
+
     # Fetch all repositories in the organization
     repos = get_repos(org_name, headers)
+    print(f"Number of repos = {len(repos)}")
 
     # Date range calculation
-    since_date = (datetime.utcnow() - timedelta(days=number_of_days)).isoformat() + "Z"
-    until_date = datetime.utcnow().isoformat() + "Z"
+    since_date = (datetime.now(timezone.utc) - timedelta(days=number_of_days)).isoformat()
+    until_date = datetime.now(UTC).isoformat()
 
     # Loop through each repository in the organization
     for repo in repos:
         owner = repo['owner']['login']
         repo_name = repo['name']
+
+        if repo_list:
+            if repo_name in repo_list:
+                print(f"Processing repo: {repo_name}")
+            else:
+                #print(f"skipping: {repo_name}")
+                continue
         
         # Fetch commits for each repository in the given date range
         response = requests.get(
@@ -130,12 +154,17 @@ def report_contributors(org_name, number_of_days, output_file):
     print(f"Total unique contributors from {org_name} in the last {number_of_days} days:", len(unique_authors & org_members))
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Get unique contributors from a GitHub organization.")
+    parser = argparse.ArgumentParser(
+        description="Get unique contributors from a GitHub organization.",
+        usage="%(prog)s ORG_NAME NUMBER_OF_DAYS OUTPUT_FILENAME [--repos REPO1 REPO2 ...]"
+    )
     parser.add_argument("org_name", help="The name of the GitHub organization.")
     parser.add_argument("number_of_days", type=int, help="Number of days to look over.")
     parser.add_argument("output_filename", help="A file to log output.")
-    
+    parser.add_argument("--repos", nargs="+", help="List of repo names (optional). If omitted, all repos will be considered.")
     args = parser.parse_args()
+
+    repo_list = args.repos if args.repos else []
+    if repo_list:
+        print(f"repo_list: {repo_list}")
     report_contributors(args.org_name, args.number_of_days, args.output_filename)
-
-
