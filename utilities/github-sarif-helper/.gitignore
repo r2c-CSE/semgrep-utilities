@@ -2,3 +2,4 @@
 node_modules
 !tests/data/example*
 tests/data/*
+venv/

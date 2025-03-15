@@ -23,10 +23,22 @@ def build_sarif_result_locations(finding):
 def parse_loc_col(loc):
     return loc['col'] if (loc['col'] > 0) else 1
 
-def parse_loc_cliloc(trace_item):
+def get_location_message_prefix(trace_key):
+    if trace_key == 'taint_source':
+        return 'Source:'
+    elif trace_key == 'taint_sink':
+        return 'Sink:'
+    else:
+        return 'Propagator:'
+
+def parse_loc_cliloc(trace_item, trace_key):
     loc_data = trace_item[1][0]
-    return {
+    message_text = f"{get_location_message_prefix(trace_key)} '{trace_item[1][1]}' @ '{loc_data['path']}:{loc_data['start']['line']}'"
+    location = {
         "location": {
+            "message": {
+                "text": message_text
+            },
             "physicalLocation": {
                 "artifactLocation": {
                     "uri": loc_data['path'],
@@ -34,6 +46,9 @@ def parse_loc_cliloc(trace_item):
                 "region": {
                     "endColumn": parse_loc_col(loc_data['end']),
                     "endLine": loc_data['end']['line'],
+                    "message": {
+                        "text": message_text
+                    },
                     "startColumn": parse_loc_col(loc_data['start']),
                     "startLine": loc_data['start']['line'],
                     "snippet": { "text": trace_item[1][1] }
@@ -42,11 +57,18 @@ def parse_loc_cliloc(trace_item):
         },
         "nestingLevel": 0
     }
+    
+    
+    return location
 
-def parse_loc_no_label(trace_item):
+def parse_loc_no_label(trace_item, trace_key):
     loc_data = trace_item[0]
+    message_text = f"{get_location_message_prefix(trace_key)} '{trace_item[1]}' @ '{loc_data['path']}:{loc_data['start']['line']}'"
     return {
         "location": {
+            "message": {
+                "text": message_text
+            },
             "physicalLocation": {
                 "artifactLocation": {
                     "uri": loc_data['path'],
@@ -54,6 +76,9 @@ def parse_loc_no_label(trace_item):
                 "region": {
                     "endColumn": parse_loc_col(loc_data['end']),
                     "endLine": loc_data['end']['line'],
+                    "message": {
+                        "text": message_text
+                    },
                     "startColumn": parse_loc_col(loc_data['start']),
                     "startLine": loc_data['start']['line'],
                     "snippet": { "text": trace_item[1] }
@@ -63,10 +88,14 @@ def parse_loc_no_label(trace_item):
         "nestingLevel": 0
     }
 
-def parse_loc_content_item(trace_item):
+def parse_loc_content_item(trace_item, trace_key):
     loc_data = trace_item['location']
+    message_text = f"{get_location_message_prefix(trace_key)} '{trace_item['content']}' @ '{loc_data['path']}:{loc_data['start']['line']}'"
     return {
         "location": {
+            "message": {
+                "text": message_text
+            },
             "physicalLocation": {
                 "artifactLocation": {
                     "uri": loc_data['path'],
@@ -74,6 +103,9 @@ def parse_loc_content_item(trace_item):
                 "region": {
                     "endColumn": parse_loc_col(loc_data['end']),
                     "endLine": loc_data['end']['line'],
+                    "message": {
+                        "text": message_text
+                    },
                     "startColumn": parse_loc_col(loc_data['start']),
                     "startLine": loc_data['start']['line'],
                     "snippet": { "text": trace_item['content'] }
@@ -83,28 +115,28 @@ def parse_loc_content_item(trace_item):
         "nestingLevel": 0
     }
 
-def parse_loc_content(trace_items):
+def parse_loc_content(trace_items, trace_key):
     locations = []
     for trace_item in trace_items:
-        locations.append(parse_loc_content_item(trace_item))
+        locations.append(parse_loc_content_item(trace_item, trace_key))
     return locations
 
-def build_sarif_result_code_flows_location(trace_item):
+def build_sarif_result_code_flows_location(trace_item, trace_key):
     location = []
     if trace_item[0] == "CliLoc":
-        location.append(parse_loc_cliloc(trace_item))
+        location.append(parse_loc_cliloc(trace_item, trace_key))
     elif 'content' in trace_item[0]:
-        location += parse_loc_content(trace_item)
+        location += parse_loc_content(trace_item, trace_key)
     elif trace_item[0] == "CliCall":
         # this needs to get recursive for the trace_item[1+] items
         for item in trace_item[1]:
             if isinstance(item, list) and not isinstance(item[-1],str) and not isinstance(item[0],str):
                 for sub_item in item:
-                    location += build_sarif_result_code_flows_location([sub_item])
+                    location += build_sarif_result_code_flows_location([sub_item], trace_key)
             else:
-                location += build_sarif_result_code_flows_location(item)
+                location += build_sarif_result_code_flows_location(item, trace_key)
     else:
-        location.append(parse_loc_no_label(trace_item))
+        location.append(parse_loc_no_label(trace_item, trace_key))
 
     return location
 
@@ -112,21 +144,32 @@ def build_sarif_result_code_flows_locations(finding):
     locations = []
 
     trace_keys = ['taint_source', 'intermediate_vars', 'taint_sink']
-    for key in trace_keys:
-        if key in finding['extra']['dataflow_trace']:
-            locations += build_sarif_result_code_flows_location(finding['extra']['dataflow_trace'][key])
+    for trace_key in trace_keys:
+        if trace_key in finding['extra']['dataflow_trace']:
+            locations += build_sarif_result_code_flows_location(finding['extra']['dataflow_trace'][trace_key], trace_key)
     
     return locations
+
+def build_code_flows_message(finding):
+    source_path = finding['extra']['dataflow_trace']['taint_source'][1][0]['path']
+    source_start_line = finding['extra']['dataflow_trace']['taint_source'][1][0]['start']['line']
+    sink_path = finding['extra']['dataflow_trace']['taint_sink'][1][0]['path']
+    sink_start_line = finding['extra']['dataflow_trace']['taint_sink'][1][0]['start']['line']
+
+    message_text = f"Untrusted dataflow from {source_path}:{source_start_line} to {sink_path}:{sink_start_line}"
+    return { "message": {"text": message_text}}
 
 def build_sarif_result_code_flows(finding):
     code_flows = []
 
     if 'dataflow_trace' in finding['extra']:
+        code_flows_message = build_code_flows_message(finding)
         code_flows = [{
-        "threadFlows": [{
-            "locations": build_sarif_result_code_flows_locations(finding)
+            "message": code_flows_message,
+            "threadFlows": [{
+                "locations": build_sarif_result_code_flows_locations(finding)
+            }]
         }]
-    }]
 
     return code_flows
 
