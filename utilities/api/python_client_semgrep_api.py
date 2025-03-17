@@ -77,8 +77,8 @@ def get_findings_per_project(deployment_slug, project, primary_branch, headers):
     For example, if you want to retrieve open findings, then "open", "fixing", and "reviewing" statutes should be used.
     Note: &status=open,fixing or &status=open|fixing or doesn't work. 
     """
-    ## all_statutes = ["open", "fixing", "reviewing", "fixed", "ignored"]
-    open_statuses = ["open", "fixing", "reviewing"]
+    all_statutes = ["open", "fixing", "reviewing", "fixed", "ignored"]
+    # open_statuses = ["open", "fixing", "reviewing"]
     merged_findings = {"findings": []}
     findings_url = f"{BASE_URL}/{deployment_slug}/findings?repos={project}&dedup=false"
     for status in open_statuses:
