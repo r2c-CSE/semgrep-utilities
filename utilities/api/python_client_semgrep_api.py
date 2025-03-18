@@ -73,15 +73,14 @@ def get_findings_per_project(deployment_slug, project, primary_branch, headers):
     """
     Gets all findings for a project, and writes them to a file.
     The file format is equivalent to what the API would return if it weren't paginated.
-    By default, all the statutes are retrieved, but you can remove the unneeded statutes. 
+    By default, all the statutes are retrieved, but you can remove the unneeded statuses. 
     For example, if you want to retrieve open findings, then "open", "fixing", and "reviewing" statutes should be used.
-    Note: &status=open,fixing or &status=open|fixing or doesn't work. 
+    Note: You must retrieve all statuses or one status at a time. &status=open,fixing or &status=open|fixing or doesn't work. 
     """
-    ## all_statutes = ["open", "fixing", "reviewing", "fixed", "ignored"]
-    open_statuses = ["open", "fixing", "reviewing"]
+    desired_statuses = ["open", "fixing", "reviewing", "fixed", "ignored"]
     merged_findings = {"findings": []}
     findings_url = f"{BASE_URL}/{deployment_slug}/findings?repos={project}&dedup=false"
-    for status in open_statuses:
+    for status in desired_statuses:
         findings_url = f"{findings_url}&status={status}"
         if USE_PRIMARY_BRANCH_PARAM:
             findings_url = f"{findings_url}&ref={primary_branch}"
