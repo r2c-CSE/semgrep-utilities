@@ -133,5 +133,85 @@ If you encounter any issues:
 - Verify that your GitLab account has the necessary permissions to access the groups and projects.
 - If you're hitting rate limits frequently, try increasing the backoff time in the make_request method.
 
+# Bitbucket Contributor Count
+
+A Python script to count unique contributors across repositories in a Bitbucket workspace over a specified time period.
+
+## Features
+
+- Fetches all repositories in a specified Bitbucket workspace
+- Counts unique contributors across all repositories
+- Handles Bitbucket API rate limiting with exponential backoff
+- Configurable time period for contributor analysis
+- Detailed logging of API requests and responses
+
+## Prerequisites
+
+- Python 3.x
+- `requests` library
+- Bitbucket API access token with appropriate permissions
+
+## Installation
+
+1. Clone this repository
+2. Install the required dependencies:
+   ```bash
+   pip install requests
+   ```
+
+## Configuration
+
+Before running the script, you need to configure the following constants in the script:
+
+- `BASE_URL`: The Bitbucket API base URL (default: "https://api.bitbucket.org/2.0")
+- `WORKSPACE`: Your Bitbucket workspace name
+- `ACCESS_TOKEN`: Your Bitbucket API access token
+
+## Usage
+
+Run the script using Python:
+
+```bash
+python bitbucket_contributor_count_retry.py
+```
+
+The script will:
+1. Fetch all repositories in the specified workspace
+2. Get commits from the last 30 days for each repository
+3. Extract unique contributors from these commits
+4. Print the total number of unique contributors and their names
+
+## Output
+
+The script provides the following information:
+- List of all repositories in the workspace
+- Number of commits found in each repository
+- Number of unique contributors per repository
+- Total number of unique contributors across all repositories
+- Names of all unique contributors
+
+## Error Handling
+
+The script includes robust error handling:
+- Automatic retry mechanism for rate-limited API requests
+- Exponential backoff for retry attempts
+- Detailed error logging for failed requests
+
+## API Limitations
+
+⚠️ **Important Note**: The Bitbucket API has a significant limitation regarding commit filtering:
+- The commits endpoint does not support filtering by date at the API level
+- As a workaround, the script fetches all commits and filters them locally based on the date
+- This means the script might need to process more data than necessary, especially for repositories with a long history
+- Consider this limitation when working with large repositories or when performance is critical
+
+## Security Note
+
+⚠️ **Important**: The script contains an access token. In a production environment, you should:
+- Store the access token in a secure environment variable
+- Never commit the access token to version control
+- Use appropriate access controls for the token
+
+
 ## Contributing
 Contributions to improve the script are welcome. Please feel free to submit a Pull Request.
