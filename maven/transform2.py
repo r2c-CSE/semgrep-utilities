@@ -47,6 +47,13 @@ def transform_lines_with_space(original):
             continue
         parts = line.split(':')
         if len(parts) > 2:
+            # Check if parts[2] matches the pattern: whitespace + bracket + (e|ev|.)
+            # Example, the line: com.fasterxml.jackson.core:jackson-databind:2.12.7.1 (..
+            # will be discarded
+            # before it was transformed to: com.fasterxml.jackson.core:jackson-databind:jar:2.12.7.1 (..:compile
+            # See: CSE-1676 for more details
+            if re.search(r'\s[\(](e|ev|\.)', parts[2]):
+                continue  # Discard this line
             parts.insert(2, 'jar')
             parts.append('compile')
             line = ':'.join(parts)
