@@ -28,9 +28,10 @@ def conversion_semgrep_to_gitlab(report_semgrep, data, lowering_unreachable):
                             "severity": get_severity(vuln, lowering_unreachable),
                             "solution": "Upgrade dependencies to fixed versions: "+get_solution(vuln), 
                             "location": {
-                                "file": vuln.get('extra').get('sca_info').get('dependency_match')['lockfile'],
-                                "start_line": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency').get('line_number'),
-                                "end_line": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency').get('line_number'),
+                                # It gets the file path. It can be source code for reachable findings or the lockfile (manifest file) for other cases.
+                                "file": vuln.get('path'),
+                                "start_line": vuln.get('start').get('line'),
+                                "end_line": vuln.get('end').get('line'),
                                 "dependency": {
                                     "package": {
                                         "name": vuln.get('extra').get('sca_info').get('dependency_match').get('found_dependency')['package']
