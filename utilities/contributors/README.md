@@ -133,85 +133,118 @@ If you encounter any issues:
 - Verify that your GitLab account has the necessary permissions to access the groups and projects.
 - If you're hitting rate limits frequently, try increasing the backoff time in the make_request method.
 
-# Bitbucket Contributor Count
 
-A Python script to count unique contributors across repositories in a Bitbucket workspace over a specified time period.
+# Bitbucket Contributor Counter
+
+This script counts unique contributors across all repositories in a Bitbucket workspace for a specified time period.
 
 ## Features
 
-- Fetches all repositories in a specified Bitbucket workspace
-- Counts unique contributors across all repositories
-- Handles Bitbucket API rate limiting with exponential backoff
-- Configurable time period for contributor analysis
+- Counts unique contributors across all repositories in a workspace
+- Configurable time period for analysis
+- Handles rate limiting with exponential backoff
+- Outputs results to both console and JSON file
+- Uses environment variables for secure token management
+- Automatic pagination handling for both repositories and commits
 - Detailed logging of API requests and responses
 
 ## Prerequisites
 
 - Python 3.x
 - `requests` library
-- Bitbucket API access token with appropriate permissions: `read` permission for `Projects` and `Repositories` is enough
+- Bitbucket access token with appropriate permissions
 
-## Installation
+## Setup
 
-1. Clone this repository
-2. Install the required dependencies:
-   ```bash
-   pip install requests
-   ```
+1. Install the required Python package:
+```bash
+pip install requests
+```
+
+2. Set up your Bitbucket access token as an environment variable:
+```bash
+export BITBUCKET_ACCESS_TOKEN="your_token_here"
+```
 
 ## Configuration
 
-Before running the script, you need to configure the following constants in the script:
+The script has the following configurable constants at the top of the file:
 
-- `BASE_URL`: The Bitbucket API base URL (default: "https://api.bitbucket.org/2.0")
 - `WORKSPACE`: Your Bitbucket workspace name
-- `ACCESS_TOKEN`: Your Bitbucket API access token
+- `COMMITS_FROM_DAYS`: Number of days to look back for commits (default: 1000)
 
 ## Usage
 
-Run the script using Python:
-
+Run the script:
 ```bash
 python bitbucket_contributor_count_retry.py
 ```
 
 The script will:
-1. Fetch all repositories in the specified workspace
-2. Get commits from the last 30 days for each repository
-3. Extract unique contributors from these commits
-4. Print the total number of unique contributors and their names
+1. Fetch all repositories in the specified workspace (with pagination)
+2. For each repository, fetch commits within the specified time period (with pagination)
+3. Extract unique contributors from the commits
+4. Output the results to the console
+5. Save the results to a JSON file with timestamp
+
+## Pagination
+
+The script automatically handles pagination for:
+- Repository listing: Fetches all repositories across multiple pages
+- Commit history: Fetches all commits within the specified time period across multiple pages
+
+Debug logging will show:
+- Number of repositories found per page
+- Total number of repositories and pages
+- Number of commits found per page for each repository
+- Total number of commits and pages per repository
 
 ## Output
 
-The script provides the following information:
-- List of all repositories in the workspace
-- Number of commits found in each repository
-- Number of unique contributors per repository
-- Total number of unique contributors across all repositories
-- Names of all unique contributors
+The script generates two types of output:
+
+1. Console output with logging information about:
+   - Repository processing progress
+   - Number of commits and pages per repository
+   - Number of unique contributors per repository
+   - Total unique contributors across all repositories
+   - API request/response details (in DEBUG mode)
+
+2. JSON file (`contributors_YYYYMMDD_HHMMSS.json`) containing:
+   - Workspace name
+   - Analysis period in days
+   - Total number of contributors
+   - Sorted list of all contributors
+
+## Logging
+
+The script uses Python's logging module with the following levels:
+- DEBUG (default): Detailed API request/response information, pagination details
+- INFO: Repository progress, counts, and results
+- WARNING: Rate limit notifications
+
+To change the logging level, modify the `level` parameter in `logging.basicConfig()`:
+```python
+logging.basicConfig(
+    level=logging.INFO,  # Change to INFO to see less detail
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+```
 
 ## Error Handling
 
-The script includes robust error handling:
-- Automatic retry mechanism for rate-limited API requests
-- Exponential backoff for retry attempts
-- Detailed error logging for failed requests
+The script includes error handling for:
+- Missing access token
+- API rate limiting (with automatic retry)
+- Failed API requests
+- Pagination issues
 
-## API Limitations
+## Security
 
-⚠️ **Important Note**: The Bitbucket API has a significant limitation regarding commit filtering:
-- The commits endpoint does not support filtering by date at the API level
-- As a workaround, the script fetches all commits and filters them locally based on the date
-- This means the script might need to process more data than necessary, especially for repositories with a long history
-- Consider this limitation when working with large repositories or when performance is critical
-
-## Security Note
-
-⚠️ **Important**: The script contains an access token. In a production environment, you should:
-- Store the access token in a secure environment variable
-- Never commit the access token to version control
-- Use appropriate access controls for the token
-
+- Access token is stored in environment variables, not in the code
+- API requests use secure HTTPS
+- Token is passed securely in request headers 
 
 ## Contributing
 Contributions to improve the script are welcome. Please feel free to submit a Pull Request.
