@@ -12,9 +12,6 @@ Azure DevOps Permissions Needed: or just use Full scope PAT
 - Read access to Code
 - Read access to Graph
 - Read access to Git
-- Read access to Project and Team
-
-
 
 Before Running:
 - Export your Azure Personal Access Token to the environment variable 'AZURE_PERSONAL_ACCESS_TOKEN'
