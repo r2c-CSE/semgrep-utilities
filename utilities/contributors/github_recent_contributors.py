@@ -1,3 +1,4 @@
+
 """
 GitHub Recent Contributors Script
 ---------------------------------
@@ -27,6 +28,7 @@ Before Running:
 
 Note:
 - Keep your tokens secure and never expose them in client-side code or public repositories.
+
 """
 import requests
 import os
@@ -35,17 +37,33 @@ import argparse
 import json
 
 
-def get_repos(org_name, headers):
+def get_repos(org_name, headers, repo_type='all', only_non_archived='true'):
     """Fetch all repositories for the given organization."""
-    response = requests.get(
-        f'https://api.github.com/orgs/{org_name}/repos',
-        headers=headers
-    )
-    
-    if response.status_code != 200:
-        raise ValueError(f"Error fetching repositories for organization {org_name}. Status code: {response.status_code}")
 
-    return response.json()
+    repos = []
+    page = 1
+    while True:
+        filtered_repos = []
+        response = requests.get(
+            f'https://api.github.com/orgs/{org_name}/repos?page={page}&type={repo_type}',
+            headers=headers
+        )
+        if response.status_code != 200:
+            break
+        repos_page = response.json()
+        if not repos_page:
+            break
+        if isinstance(repos_page, list):
+            for repo in repos_page:
+                if only_non_archived == "true" and not repo['archived']:
+                    filtered_repos.append(repo)
+                elif not only_non_archived == "true":
+                    filtered_repos.append(repo)
+
+        repos.extend(filtered_repos)
+        page += 1
+    
+    return repos
 
 def get_organization_members(org_name, headers):
     """Fetch all members of the organization."""
@@ -65,13 +83,15 @@ def get_organization_members(org_name, headers):
         page += 1
     return {member['login'] for member in members}
 
-def get_contributors(org_name, number_of_days, headers):
+def get_contributors(org_name, number_of_days, headers, repo_type, only_non_archived):
     # init contributor set
     unique_contributors = set()
     unique_authors = set()
+    num_repos = 0
     
     # Fetch all repositories in the organization
-    repos = get_repos(org_name, headers)
+    repos = get_repos(org_name, headers, repo_type, only_non_archived)
+    num_repos = len(repos)
 
     # Date range calculation
     since_date = (datetime.utcnow() - timedelta(days=number_of_days)).isoformat() + "Z"
@@ -99,9 +119,9 @@ def get_contributors(org_name, number_of_days, headers):
         else:
             print(f"Repo: {repo_name} is empty.") 
         
-    return unique_contributors, unique_authors
+    return unique_contributors, unique_authors, num_repos
 
-def report_contributors(org_name, number_of_days, output_file):
+def report_contributors(org_name, number_of_days, output_file, repo_type, only_non_archived):
     # init github auth
     token = os.environ.get("GITHUB_PERSONAL_ACCESS_TOKEN")
     if not token:
@@ -109,7 +129,7 @@ def report_contributors(org_name, number_of_days, output_file):
     headers = {'Authorization': f'token {token}'}
 
     org_members = get_organization_members(org_name, headers)
-    unique_contributors, unique_authors = get_contributors(org_name, number_of_days, headers)
+    unique_contributors, unique_authors, num_repos = get_contributors(org_name, number_of_days, headers, repo_type, only_non_archived)
     
     if output_file:
         output_data = {
@@ -127,6 +147,10 @@ def report_contributors(org_name, number_of_days, output_file):
     # Print unique contributors and their total count        
     print(f"Total commit authors in the last {number_of_days} days:", len(unique_authors))
     print(f"Total members in {org_name}:", len(org_members))
+    if only_non_archived:
+            print(f"Total number of repositories in {org_name}, showing {repo_type} repository types and only non archived repositories:", num_repos)
+    else:
+            print(f"Total number of repositories in {org_name}, showing {repo_type} repository types and both archived and non archived repositories:", num_repos)
     print(f"Total unique contributors from {org_name} in the last {number_of_days} days:", len(unique_authors & org_members))
 
 if __name__ == '__main__':
@@ -134,8 +158,8 @@ if __name__ == '__main__':
     parser.add_argument("org_name", help="The name of the GitHub organization.")
     parser.add_argument("number_of_days", type=int, help="Number of days to look over.")
     parser.add_argument("output_filename", help="A file to log output.")
+    parser.add_argument("-repo_type", help="What types of repositories to include (all, public, private, etc.).", default='all')
+    parser.add_argument("-only_non_archived", help="Only show non archived repositories.", default='true')
     
     args = parser.parse_args()
-    report_contributors(args.org_name, args.number_of_days, args.output_filename)
-
-
+    report_contributors(args.org_name, args.number_of_days, args.output_filename, args.repo_type, args.only_non_archived)
