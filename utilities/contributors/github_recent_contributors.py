@@ -30,22 +30,52 @@ Note:
 """
 import requests
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 import argparse
 import json
 
 
 def get_repos(org_name, headers):
     """Fetch all repositories for the given organization."""
-    response = requests.get(
-        f'https://api.github.com/orgs/{org_name}/repos',
-        headers=headers
-    )
+    repos = []
+    page = 1
+    print(f"\nFetching repositories for {org_name}...")
+    while True:
+        print(f"  Fetching repositories page {page}...")
+        response = requests.get(
+            f'https://api.github.com/orgs/{org_name}/repos?page={page}',
+            headers=headers
+        )
+        
+        if response.status_code == 403:
+            error_message = response.json().get('message', 'Unknown error')
+            if 'rate limit exceeded' in error_message.lower():
+                raise ValueError(
+                    f"GitHub API rate limit exceeded. Please wait before trying again.\n"
+                    f"Error message: {error_message}"
+                )
+            else:
+                raise ValueError(
+                    f"Access denied (403) when fetching repositories for organization {org_name}.\n"
+                    f"Possible causes:\n"
+                    f"1. The GitHub token is invalid or expired\n"
+                    f"2. The token doesn't have sufficient permissions (needs 'repo' or 'public_repo' scope)\n"
+                    f"3. The organization name '{org_name}' is incorrect\n"
+                    f"4. The token doesn't have access to this organization\n"
+                    f"Error message: {error_message}"
+                )
+        elif response.status_code != 200:
+            raise ValueError(f"Error fetching repositories for organization {org_name}. Status code: {response.status_code}")
+        
+        repos_page = response.json()
+        if not repos_page:
+            break
+        repos.extend(repos_page)
+        print(f"  Found {len(repos_page)} repositories on page {page}")
+        page += 1
     
-    if response.status_code != 200:
-        raise ValueError(f"Error fetching repositories for organization {org_name}. Status code: {response.status_code}")
-
-    return response.json()
+    print(f"Total repositories found: {len(repos)}")
+    return repos
 
 def get_organization_members(org_name, headers):
     """Fetch all members of the organization."""
@@ -72,32 +102,52 @@ def get_contributors(org_name, number_of_days, headers):
     
     # Fetch all repositories in the organization
     repos = get_repos(org_name, headers)
+    print(f"\nAnalyzing {len(repos)} repositories in {org_name}...")
 
-    # Date range calculation
-    since_date = (datetime.utcnow() - timedelta(days=number_of_days)).isoformat() + "Z"
-    until_date = datetime.utcnow().isoformat() + "Z"
+    # Date range calculation using timezone-aware datetime
+    since_date = (datetime.now(UTC) - timedelta(days=number_of_days)).isoformat()
+    until_date = datetime.now(UTC).isoformat()
 
     # Loop through each repository in the organization
     for repo in repos:
         owner = repo['owner']['login']
         repo_name = repo['name']
+        repo_contributors = set()
+        repo_authors = set()
         
-        # Fetch commits for each repository in the given date range
-        response = requests.get(
-            f'https://api.github.com/repos/{owner}/{repo_name}/commits',
-            params={'since': since_date, 'until': until_date},
-            headers=headers
-        )
+        print(f"\nAnalyzing repository: {owner}/{repo_name}")
         
-        commits = response.json()
+        # Fetch commits for each repository in the given date range with pagination
+        page = 1
+        while True:
+            print(f"  Fetching commits page {page}...")
+            response = requests.get(
+                f'https://api.github.com/repos/{owner}/{repo_name}/commits',
+                params={'since': since_date, 'until': until_date, 'page': page},
+                headers=headers
+            )
+            
+            commits_page = response.json()
 
-        if isinstance(commits, list):
-            for commit in commits:
-                unique_contributors.add(commit['commit']['author']['name'])
+            if not isinstance(commits_page, list):
+                print(f"  Warning: Repo {repo_name} is empty or error occurred.")
+                break
+
+            if not commits_page:
+                break
+
+            for commit in commits_page:
+                repo_contributors.add(commit['commit']['author']['name'])
                 if commit['author']:
-                    unique_authors.add(commit['author']['login'])
-        else:
-            print(f"Repo: {repo_name} is empty.") 
+                    repo_authors.add(commit['author']['login'])
+            
+            page += 1
+        
+        # Update global sets
+        unique_contributors.update(repo_contributors)
+        unique_authors.update(repo_authors)
+        
+        print(f"  Found {len(repo_contributors)} contributors and {len(repo_authors)} GitHub authors in {repo_name}")
         
     return unique_contributors, unique_authors
 
@@ -137,5 +187,3 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
     report_contributors(args.org_name, args.number_of_days, args.output_filename)
-
-
