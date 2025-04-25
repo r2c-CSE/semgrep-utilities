@@ -149,7 +149,7 @@ A Python script to count unique contributors across repositories in a Bitbucket 
 
 - Python 3.x
 - `requests` library
-- Bitbucket API access token with appropriate permissions
+- Bitbucket API access token with appropriate permissions: `read` permission for `Projects` and `Repositories` is enough
 
 ## Installation
 
