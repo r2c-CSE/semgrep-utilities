@@ -133,6 +133,119 @@ If you encounter any issues:
 - Verify that your GitLab account has the necessary permissions to access the groups and projects.
 - If you're hitting rate limits frequently, try increasing the backoff time in the make_request method.
 
+
+# Bitbucket Contributor Counter
+
+This script counts unique contributors across all repositories in a Bitbucket workspace for a specified time period.
+
+## Features
+
+- Counts unique contributors across all repositories in a workspace
+- Configurable time period for analysis
+- Handles rate limiting with exponential backoff
+- Outputs results to both console and JSON file
+- Uses environment variables for secure token management
+- Automatic pagination handling for both repositories and commits
+- Detailed logging of API requests and responses
+
+## Prerequisites
+
+- Python 3.x
+- `requests` library
+- Bitbucket access token with appropriate permissions
+
+## Setup
+
+1. Install the required Python package:
+```bash
+pip install requests
+```
+
+2. Set up your Bitbucket access token as an environment variable:
+```bash
+export BITBUCKET_ACCESS_TOKEN="your_token_here"
+```
+
+## Configuration
+
+The script has the following configurable constants at the top of the file:
+
+- `WORKSPACE`: Your Bitbucket workspace name
+- `COMMITS_FROM_DAYS`: Number of days to look back for commits (default: 1000)
+
+## Usage
+
+Run the script:
+```bash
+python bitbucket_contributor_count_retry.py
+```
+
+The script will:
+1. Fetch all repositories in the specified workspace (with pagination)
+2. For each repository, fetch commits within the specified time period (with pagination)
+3. Extract unique contributors from the commits
+4. Output the results to the console
+5. Save the results to a JSON file with timestamp
+
+## Pagination
+
+The script automatically handles pagination for:
+- Repository listing: Fetches all repositories across multiple pages
+- Commit history: Fetches all commits within the specified time period across multiple pages
+
+Debug logging will show:
+- Number of repositories found per page
+- Total number of repositories and pages
+- Number of commits found per page for each repository
+- Total number of commits and pages per repository
+
+## Output
+
+The script generates two types of output:
+
+1. Console output with logging information about:
+   - Repository processing progress
+   - Number of commits and pages per repository
+   - Number of unique contributors per repository
+   - Total unique contributors across all repositories
+   - API request/response details (in DEBUG mode)
+
+2. JSON file (`contributors_YYYYMMDD_HHMMSS.json`) containing:
+   - Workspace name
+   - Analysis period in days
+   - Total number of contributors
+   - Sorted list of all contributors
+
+## Logging
+
+The script uses Python's logging module with the following levels:
+- DEBUG (default): Detailed API request/response information, pagination details
+- INFO: Repository progress, counts, and results
+- WARNING: Rate limit notifications
+
+To change the logging level, modify the `level` parameter in `logging.basicConfig()`:
+```python
+logging.basicConfig(
+    level=logging.INFO,  # Change to INFO to see less detail
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+```
+
+## Error Handling
+
+The script includes error handling for:
+- Missing access token
+- API rate limiting (with automatic retry)
+- Failed API requests
+- Pagination issues
+
+## Security
+
+- Access token is stored in environment variables, not in the code
+- API requests use secure HTTPS
+- Token is passed securely in request headers 
+
 ## Contributing
 Contributions to improve the script are welcome. Please feel free to submit a Pull Request.
 
