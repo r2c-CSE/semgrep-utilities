@@ -69,11 +69,12 @@ Where:
 * `REPORT_FILE` is the Semgrep report path
 
 ### Utility to integrate results from the findings API response in DefectDojo
-This utility takes the results from the Semgrep [Findings API](https://semgrep.dev/api/v1/docs/#tag/Finding) and transforms it into scan outputted look alike JSON with fields that DefectDojo conenctor looks for. Once it the results are transformed, the JSON file is uploaded to the DefectDojo platform.
 
 ## Overview
 
-The primary goal is to get the insert the Semgrep findings API data into DefectDojo. The users who use Managed Scanning find it difficult as the DefectDojo integration works with the Semgrep JSON output file. This is mainly focused on the SAST results. 
+To integrate Semgrep Cloud Platform findings into DefectDojo, this utility uses the Semgrep [Findings API](https://semgrep.dev/api/v1/docs/#tag/Finding). It fetches the results, converts them from the API default response into the JSON format compatible with DefectDojo, and then uploads this formatted report directly to your specified DefectDojo Product and Engagement.
+
+The primary goal is to insert the Semgrep findings API data into DefectDojo. The users who use Managed Scanning find it difficult as the DefectDojo integration works with Semgrep JSON output file. This is mainly focused on the SAST results. 
 
 You can write a similar script for SCA findings. The [DefectDojo parser](https://github.com/DefectDojo/django-DefectDojo/blob/477583eb674a6a93516a2b794cd9889cb6d7ab81/dojo/tools/semgrep/parser.py) and the sample [Semgrep JSON](https://github.com/DefectDojo/django-DefectDojo/tree/master/unittests/scans/semgrep) files can help understanding the requirements for SCA.
 
