@@ -68,7 +68,7 @@ Where:
 * `DOJO_URL` is the URL where DefectDojo is installed.
 * `REPORT_FILE` is the Semgrep report path
 
-### Utility to integrate results from the findings API response in DefectDojo
+### Utility to integrate the results from the findings API in DefectDojo
 
 To integrate Semgrep Cloud Platform findings into DefectDojo, this utility uses the Semgrep [Findings API](https://semgrep.dev/api/v1/docs/#tag/Finding). It fetches the results, converts them from the API default response into the JSON format compatible with DefectDojo, and then uploads this formatted report directly to your specified DefectDojo Product and Engagement.
 
