@@ -70,8 +70,6 @@ Where:
 
 ### Utility to integrate results from the findings API response in DefectDojo
 
-## Overview
-
 To integrate Semgrep Cloud Platform findings into DefectDojo, this utility uses the Semgrep [Findings API](https://semgrep.dev/api/v1/docs/#tag/Finding). It fetches the results, converts them from the API default response into the JSON format compatible with DefectDojo, and then uploads this formatted report directly to your specified DefectDojo Product and Engagement.
 
 The primary goal is to insert the Semgrep findings API data into DefectDojo. The users who use Managed Scanning find it difficult as the DefectDojo integration works with Semgrep JSON output file. This is mainly focused on the SAST results. 
