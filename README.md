@@ -68,6 +68,42 @@ Where:
 * `DOJO_URL` is the URL where DefectDojo is installed.
 * `REPORT_FILE` is the Semgrep report path
 
+### Utility to integrate results from the findings API response in DefectDojo
+This utility takes the results from the Semgrep [Findings API] (https://semgrep.dev/api/v1/docs/#tag/Finding) and transforms it into scan outputted look alike JSON with fields that DefectDojo conenctor looks for. Once it the results are transformed, the JSON file is uploaded to the DefectDojo platform.
+
+## Overview
+
+The primary goal is to get the insert the Semgrep findings API data into DefectDojo. The users who use Managed Scanning find it difficult as the DefectDojo integration works with the Semgrep JSON output file. This is mainly focused on the SAST results. 
+
+You can write a similar script for SCA findings. The [DefectDojo parser] (https://github.com/DefectDojo/django-DefectDojo/blob/477583eb674a6a93516a2b794cd9889cb6d7ab81/dojo/tools/semgrep/parser.py) and the sample [Semgrep JSON] (https://github.com/DefectDojo/django-DefectDojo/tree/master/unittests/scans/semgrep) files can help understanding the requirements for SCA.
+
+It consists of two main scripts:
+
+1.  `transformFindingsToJSON.py`: This is the main execution script. It handles:
+    * Fetching findings from a specific Semgrep deployment via its API.
+    * Handling pagination to retrieve all available findings.
+    * Transforming the API response structure into the `Semgrep JSON Report` format that DefectDojo expects for imports.
+    * Saving the transformed findings to a local JSON file (`semgrep_findings_formatted.json`).
+    * Calling the upload script to send the results to DefectDojo.
+2.  `uploadSemgrepJSONToDefectDojo.py`: This script contains the function responsible for:
+    * Taking the generated JSON file and relevant DefectDojo details (URL, token, product, engagement).
+    * Making a POST request to the DefectDojo API (`/api/v2/import-scan/`) to upload the findings.
+
+Steps:
+* In your system, declare environment variable `DEFECT_DOJO_API_TOKEN`
+```
+export DEFECT_DOJO_API_TOKEN=xxxxxx
+```
+* In DefectDojo:
+    * Create your product (a product is DefectDojo's concept for a project).
+    * For that DefectDojo product, create an engagement called `semgrep`.
+* Add the configuration values listed in `transformFindingsToJSON.py`
+* Run script
+```bash
+    python transformFindingsToJSON.py
+    ```
+
+
 ## General utilities
 It is the category for general utilities.
 
