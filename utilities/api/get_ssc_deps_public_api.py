@@ -14,17 +14,24 @@ def get_deployment_id():
     return org_id
 
 def get_sca_dependencies(org_id):
+    dependencies = []
     file_path = "dependencies.json"
 
     headers = {"Accept": "application/json", "Authorization": "Bearer " + token}
-    payload = {"pageSize": 2000}
+    payload = {"pageSize": 100}
+    has_more = True
 
-    r = requests.post(f"https://semgrep.dev/api/v1/deployments/{org_id}/dependencies",headers=headers, json=payload)
-    if r.status_code != 200:
-        sys.exit(f'Could not get dependencies: {r.status_code} {r.text}')
-    data = r.json()
+    while (has_more == True):
+        print(f"Making request with payload {payload}")
+        r = requests.post(f"https://semgrep.dev/api/v1/deployments/{org_id}/dependencies",headers=headers, json=payload)
+        if r.status_code != 200:
+            sys.exit(f'Could not get dependencies: {r.status_code} {r.text}')
+        data = r.json()
+        dependencies += data['dependencies']
+        payload['cursor'] = data['cursor']
+        has_more = data['hasMore']
     with open(file_path, "w") as file:
-         json.dump(data, file)
+        json.dump(dependencies, file)
 
 
 if __name__ == "__main__":
