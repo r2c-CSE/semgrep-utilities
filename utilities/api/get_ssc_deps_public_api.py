@@ -18,7 +18,7 @@ def get_sca_dependencies(org_id):
     file_path = "dependencies.json"
 
     headers = {"Accept": "application/json", "Authorization": "Bearer " + token}
-    payload = {"pageSize": 100}
+    payload = {"pageSize": 1000}
     has_more = True
 
     while (has_more == True):
