@@ -78,7 +78,7 @@ def get_organization_members(org_name, headers):
         page += 1
     return {member['login'] for member in members}
 
-def get_contributors(org_name, number_of_days, headers):
+def get_contributors(org_name, number_of_days, headers, repo_list: set[str] = None):
     # init contributor set
     unique_contributors = set()
     unique_authors = set()
@@ -98,14 +98,12 @@ def get_contributors(org_name, number_of_days, headers):
     for repo in repos:
         owner = repo['owner']['login']
         repo_name = repo['name']
+        repo_full_name = repo['full_name']
 
-        if repo_list:
-            if repo_name in repo_list:
-                print(f"Processing repo: {repo_name}")
-            else:
-                #print(f"skipping: {repo_name}")
-                continue
+        if repo_list and repo_name not in repo_list and repo_full_name not in repo_list:
+            continue
         
+        print(f"Processing repo: {repo_name}")
         # Fetch commits for each repository in the given date range
         response = requests.get(
             f'https://api.github.com/repos/{owner}/{repo_name}/commits',
@@ -125,7 +123,7 @@ def get_contributors(org_name, number_of_days, headers):
         
     return unique_contributors, unique_authors
 
-def report_contributors(org_name, number_of_days, output_file):
+def report_contributors(org_name, number_of_days, output_file, repo_list: set[str] = None):
     # init github auth
     token = os.environ.get("GITHUB_PERSONAL_ACCESS_TOKEN")
     if not token:
@@ -133,7 +131,7 @@ def report_contributors(org_name, number_of_days, output_file):
     headers = {'Authorization': f'token {token}'}
 
     org_members = get_organization_members(org_name, headers)
-    unique_contributors, unique_authors = get_contributors(org_name, number_of_days, headers)
+    unique_contributors, unique_authors = get_contributors(org_name, number_of_days, headers, repo_list)
     
     if output_file:
         output_data = {
@@ -162,9 +160,17 @@ if __name__ == '__main__':
     parser.add_argument("number_of_days", type=int, help="Number of days to look over.")
     parser.add_argument("output_filename", help="A file to log output.")
     parser.add_argument("--repos", nargs="+", help="List of repo names (optional). If omitted, all repos will be considered.")
+    parser.add_argument("--repo-file", help="Path to a file containing repository names, one per line (optional).")
     args = parser.parse_args()
 
-    repo_list = args.repos if args.repos else []
-    if repo_list:
-        print(f"repo_list: {repo_list}")
-    report_contributors(args.org_name, args.number_of_days, args.output_filename)
+    repo_list = set()
+    if args.repo_file:
+        try:
+            with open(args.repo_file, 'r') as f:
+                repo_list = {line.strip() for line in f if line.strip()}
+        except FileNotFoundError:
+            raise ValueError(f"Repository file not found: {args.repo_file}")
+    elif args.repos:
+        repo_list = set(args.repos)
+
+    report_contributors(args.org_name, args.number_of_days, args.output_filename, repo_list)
