@@ -16,10 +16,12 @@ import os
 from datetime import datetime
 import logging
 
-def generate_html_sast(df_high: pd.DataFrame, df_med: pd.DataFrame, df_low: pd.DataFrame):
+def generate_html_sast(df_critical: pd.DataFrame, df_high: pd.DataFrame, df_med: pd.DataFrame, df_low: pd.DataFrame):
     # get the Overview table HTML from the dataframe
     # overview_table_html = df_overview.to_html(table_id="table")
     # get the Findings table HTML from the dataframe
+    critical_findings_table_html = df_critical.to_html(index=False, table_id="tableCritical", render_links=True)
+    num_rows_critical = df_critical.shape[0]
     high_findings_table_html = df_high.to_html(index=False, table_id="tableHigh", render_links=True)
     num_rows_high = df_high.shape[0]
     med_findings_table_html = df_med.to_html(index=False, table_id="tableMedium", render_links=True)
@@ -39,6 +41,8 @@ def generate_html_sast(df_high: pd.DataFrame, df_med: pd.DataFrame, df_low: pd.D
     </div>
 
     <div class="topnav">
+    <a class="active" href="#sast-critical"> SAST Findings- Critical Severity ({num_rows_critical})</a> 
+    <a> &nbsp &nbsp &nbsp &nbsp &nbsp </a>
     <a class="active" href="#sast-high"> SAST Findings- High Severity ({num_rows_high})</a> 
     <a> &nbsp &nbsp &nbsp &nbsp &nbsp </a>
     <a href="#sast-med"> Findings- SAST Medium Severity ({num_rows_med}) </a>
@@ -47,7 +51,25 @@ def generate_html_sast(df_high: pd.DataFrame, df_med: pd.DataFrame, df_low: pd.D
     </div>
 
     <div class="heading">
-    <h2> <p id="sast-high"> Findings Summary- HIGH Severity </p> </h2>
+    <h2> <p id="sast-critical" style="background-color: #8B0000; color: white;"> Findings Summary - Critical Severity </p> </h2>
+    </div>
+    <div class="container">
+    {critical_findings_table_html}
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready( function () {{
+            $('#tableCritical').DataTable({{
+                order: [[4, 'asc']]
+                // paging: false,    
+                // scrollY: 400,
+            }});
+        }});
+    </script>
+    </div>
+
+    <div class="heading">
+    <h2> <p id="sast-high" style="background-color: red; color: white;"> Findings Summary - High Severity </p> </h2>
     </div>
     <div class="container">
     {high_findings_table_html}
@@ -65,7 +87,7 @@ def generate_html_sast(df_high: pd.DataFrame, df_med: pd.DataFrame, df_low: pd.D
     </div>
 
     <div class="heading">
-    <h2> <p id="sast-med"> Findings Summary- MEDIUM Severity </p> </h2>
+    <h2> <p id="sast-med" style="background-color: orange;"> Findings Summary - Medium Severity </p> </h2>
     </div>
     <div class="container">
     {med_findings_table_html}
@@ -83,7 +105,7 @@ def generate_html_sast(df_high: pd.DataFrame, df_med: pd.DataFrame, df_low: pd.D
     </div>
 
     <div class="heading">
-    <h2> <p id="sast-low"> Findings Summary- LOW Severity </p> </h2>
+    <h2> <p id="sast-low" style="background-color: lightblue;"> Findings Summary - Low Severity </p> </h2>
     </div>
     <div class="container">
     {low_findings_table_html}
@@ -112,10 +134,6 @@ def process_sast_findings(df: pd.DataFrame, projectname, flag_report_from_api):
     # Create new DF with SAST findings only
     if flag_report_from_api == False:
         df = df.loc[(df['check_id'].str.contains('ssc')==False)]
-
-    # Get the list of all column names from headers
-    #column_headers = list(df.columns.values)
-    #logging.debug("The Column Header :", column_headers)
 
     # list of columns of interest to include in the report
     if flag_report_from_api:
@@ -160,6 +178,7 @@ def process_sast_findings(df: pd.DataFrame, projectname, flag_report_from_api):
     
     START_ROW = 0    
     # replace severity values ERROR = HIGH, WARNING = MEDIUM, INFO = LOW 
+    df_red = df_red.replace('CRITICAL', 'CRITICAL', regex=True)
     df_red = df_red.replace('ERROR', 'HIGH', regex=True)
     df_red = df_red.replace('WARNING', 'MEDIUM', regex=True)
     df_red = df_red.replace('INFO', 'LOW', regex=True)
@@ -208,6 +227,11 @@ def process_sast_findings(df: pd.DataFrame, projectname, flag_report_from_api):
     worksheet.set_column(4, 7, 12)
 
     #  create new df_high by filtering df_red for HIGH severity
+    df_critical = df_red.loc[(df_red['severity'] == 'CRITICAL')]
+    # Create a list of column headers, to use in add_table().
+    column_settings = [{"header": column.split(".")[-1]} for column in df_critical.columns]
+
+    #  create new df_high by filtering df_red for HIGH severity
     df_high = df_red.loc[(df_red['severity'] == 'HIGH')]
     # Create a list of column headers, to use in add_table().
     column_settings = [{"header": column.split(".")[-1]} for column in df_high.columns]
@@ -226,7 +250,7 @@ def process_sast_findings(df: pd.DataFrame, projectname, flag_report_from_api):
     writer.close()
 
     # generate the HTML from the dataframe
-    html = generate_html_sast(df_high, df_med, df_low)
+    html = generate_html_sast(df_critical, df_high, df_med, df_low)
     
     # create filename for HTML report
     if flag_report_from_api:
