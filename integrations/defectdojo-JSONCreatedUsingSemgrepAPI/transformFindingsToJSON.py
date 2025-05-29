@@ -29,7 +29,7 @@ def retrieve_paginated_data(endpoint):
         findings = data["findings"]
          # If findings list is empty, stop fetching more pages
         if not findings:
-            print("No more findings available.")
+            print("No more findings.")
             break 
 
         all_findings.extend(findings)
