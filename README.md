@@ -78,10 +78,10 @@ This utility uses the Semgrep [Findings API](https://semgrep.dev/api/v1/docs/#ta
 This script works with SAST results. You can write a similar script for SCA findings. The [DefectDojo parser](https://github.com/DefectDojo/django-DefectDojo/blob/477583eb674a6a93516a2b794cd9889cb6d7ab81/dojo/tools/semgrep/parser.py) and the sample [Semgrep JSON](https://github.com/DefectDojo/django-DefectDojo/tree/master/unittests/scans/semgrep) files can help understanding the requirements for SCA.
 
 It consists of `transformFindingsToJSON.py` which does the following: 
-    * Fetches all available findings from a specific Semgrep deployment (uses pagination)
-    * Transforms the API response structure into the `Semgrep JSON Report` format that DefectDojo expects for imports.
-    * Saves the transformed findings to a local JSON file (`semgrep_findings_formatted.json`).
-    
+* Fetches all available findings from a specific Semgrep deployment (uses pagination)
+* Transforms the API response structure into the `Semgrep JSON Report` format that DefectDojo expects for imports.
+* Saves the transformed findings to a local JSON file (`semgrep_findings_formatted.json`).
+
 * Run script
 ```
 python3 transformFindingsToJSON.py
