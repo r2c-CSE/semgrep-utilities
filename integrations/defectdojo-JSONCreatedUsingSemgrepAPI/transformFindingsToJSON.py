@@ -3,8 +3,6 @@ import json
 import os
 import sys
 
-SEMGREP_APP_TOKEN = os.environ["SEMGREP_APP_TOKEN"]
-
 def retrieve_paginated_data(endpoint):
     all_findings = []
     page = 0
@@ -82,7 +80,7 @@ def main():
 
     # Construct findings_url using parsed arguments
     findings_url = f"{args.base_url}/api/v1/deployments/{args.deployment_slug}/findings"
-
+    SEMGREP_APP_TOKEN = os.environ["SEMGREP_APP_TOKEN"]
     try:
         semgrep_data =  retrieve_paginated_data(findings_url)
         formatted_data = format_findings_for_dd(semgrep_data)
