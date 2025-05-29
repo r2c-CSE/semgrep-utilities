@@ -80,12 +80,17 @@ This script works with SAST results. You can write a similar script for SCA find
 It consists of `transformFindingsToJSON.py` which does the following: 
 * Fetches all available findings from a specific Semgrep deployment (uses pagination)
 * Transforms the API response structure into the `Semgrep JSON Report` format that DefectDojo expects for imports.
-* Saves the transformed findings to a local JSON file (`semgrep_findings_formatted.json`).
+* Saves the transformed findings to a local JSON file 
 
 Run script
 ```
-python3 transformFindingsToJSON.py
+python3 transformFindingsToJSON.py \
+  --deployment_slug your_deployment_name \
+  --base_url https://semgrep.dev \
+  --output_file my_custom_report.json
 ```
+
+You can now use the generated JSON file to upload results to DefectDojo.
 
 ## General utilities
 It is the category for general utilities.
