@@ -2,12 +2,8 @@ import requests
 import json
 import os
 import sys
-# Configuration
-deployment_slug = "swati"
-BASE_URL = "https://semgrep.dev"
-findings_url = BASE_URL+"/api/v1/deployments/"+deployment_slug+"/findings"
+
 SEMGREP_APP_TOKEN = os.environ["SEMGREP_APP_TOKEN"]
-OUTPUT_FILE = "semgrep_findings_formatted.json"
 
 def retrieve_paginated_data(endpoint):
     all_findings = []
