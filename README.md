@@ -46,7 +46,7 @@ python3 semgrep-ci/bitbucket/update_pipeline_with_semgrep_scan.py
 ## Integration utilities
 It is the category for integration utilities.
 
-### Utility to integrate Semgrep results in DefectDojo
+###  Integrate Semgrep findings in DefectDojo
 
 [DefectDojo](https://www.defectdojo.com/) is a well-known tool for managing security vulnerabilities.
 This utility dumps security findings detected by semgrep to DefectDojo.
@@ -59,6 +59,9 @@ export DEFECT_DOJO_API_TOKEN=xxxxxx
 * In DefectDojo:
     * Create your product (a product is DefectDojo's concept for a project).
     * For that DefectDojo product, create an engagement called `semgrep`.
+
+#### Using CLI JSON results
+
 * Run a semgrep scan with flags `--json --output report.json` to generate a json report.
 * Run script
 ```
@@ -68,35 +71,18 @@ Where:
 * `DOJO_URL` is the URL where DefectDojo is installed.
 * `REPORT_FILE` is the Semgrep report path
 
-### Utility to integrate the results from the findings API in DefectDojo
+### Using Semgrep Findings API results
 
 This utility uses the Semgrep [Findings API](https://semgrep.dev/api/v1/docs/#tag/Finding) to integrate Semgrep Cloud Platform findings into DefectDojo. It fetches the findings from the API, converts them into a JSON format compatible with DefectDojo, and then uploads the formatted result to your specified DefectDojo Product and Engagement.
 
-This script works with SAST results. 
+This script works with SAST results. You can write a similar script for SCA findings. The [DefectDojo parser](https://github.com/DefectDojo/django-DefectDojo/blob/477583eb674a6a93516a2b794cd9889cb6d7ab81/dojo/tools/semgrep/parser.py) and the sample [Semgrep JSON](https://github.com/DefectDojo/django-DefectDojo/tree/master/unittests/scans/semgrep) files can help understanding the requirements for SCA.
 
-You can write a similar script for SCA findings. The [DefectDojo parser](https://github.com/DefectDojo/django-DefectDojo/blob/477583eb674a6a93516a2b794cd9889cb6d7ab81/dojo/tools/semgrep/parser.py) and the sample [Semgrep JSON](https://github.com/DefectDojo/django-DefectDojo/tree/master/unittests/scans/semgrep) files can help understanding the requirements for SCA.
-
-It consists of two main scripts:
-
-1.  `transformFindingsToJSON.py`: This is the main execution script. It handles:
+It consists of `transformFindingsToJSON.py` which handles:
     * Fetching findings from a specific Semgrep deployment via its API.
     * Handling pagination to retrieve all available findings.
     * Transforming the API response structure into the `Semgrep JSON Report` format that DefectDojo expects for imports.
     * Saving the transformed findings to a local JSON file (`semgrep_findings_formatted.json`).
-    * Calling the upload script to send the results to DefectDojo.
-2.  `uploadSemgrepJSONToDefectDojo.py`: This script contains the function responsible for:
-    * Taking the generated JSON file and relevant DefectDojo details (URL, token, product, engagement).
-    * Making a POST request to the DefectDojo API (`/api/v2/import-scan/`) to upload the findings.
-
-Steps:
-* In your system, declare environment variable `DEFECT_DOJO_API_TOKEN`
-```
-export DEFECT_DOJO_API_TOKEN=xxxxxx
-```
-* In DefectDojo:
-    * Create your product (a product is DefectDojo's concept for a project).
-    * For that DefectDojo product, create an engagement called `semgrep`.
-* Add the configuration values listed in `transformFindingsToJSON.py`
+    
 * Run script
 ```
 python3 transformFindingsToJSON.py
