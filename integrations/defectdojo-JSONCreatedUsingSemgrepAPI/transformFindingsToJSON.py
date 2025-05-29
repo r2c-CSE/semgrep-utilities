@@ -74,6 +74,19 @@ def save_to_file(data, filename):
     print(f"Findings saved to {filename}")
 
 def main():
+    parser = argparse.ArgumentParser(description="Fetch Semgrep findings and format them for DefectDojo.")
+    parser.add_argument("--deployment_slug", required=True, 
+                        help="The slug of the Semgrep deployment. This argument is required.")
+    parser.add_argument("--base_url", default="https://semgrep.dev", 
+                        help="The base URL of the Semgrep API (e.g., 'https://semgrep.dev').")
+    parser.add_argument("--output_file", default="report.json", 
+                        help="The name of the output JSON file.")
+    
+    args = parser.parse_args()
+
+    # Construct findings_url using parsed arguments
+    findings_url = f"{args.base_url}/api/v1/deployments/{args.deployment_slug}/findings"
+
     try:
         semgrep_data =  retrieve_paginated_data(findings_url)
         formatted_data = format_findings_for_dd(semgrep_data)
