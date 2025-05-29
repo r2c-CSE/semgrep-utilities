@@ -1,7 +1,6 @@
 import requests
 import json
 import os
-from uploadSemgrepJSONToDefectDojo import uploadToDefectDojo
 import sys
 # Configuration
 deployment_slug = "swati"
@@ -9,10 +8,7 @@ BASE_URL = "https://semgrep.dev"
 findings_url = BASE_URL+"/api/v1/deployments/"+deployment_slug+"/findings"
 SEMGREP_APP_TOKEN = os.environ["SEMGREP_API_TOKEN"]
 OUTPUT_FILE = "semgrep_findings_formatted.json"
-dd_url= "http://localhost:8080"
-product_name = "Semgrep SAST"
-engagement_name = "Semgrep Scans"
-dd_token = os.getenv("DEFECT_DOJO_API_TOKEN")
+
 def retrieve_paginated_data(endpoint):
     all_findings = []
     page = 0
@@ -33,7 +29,7 @@ def retrieve_paginated_data(endpoint):
         findings = data["findings"]
          # If findings list is empty, stop fetching more pages
         if not findings:
-            print("No findings available.")
+            print("No more findings available.")
             break 
 
         all_findings.extend(findings)
@@ -41,8 +37,6 @@ def retrieve_paginated_data(endpoint):
 
     return  {"findings": all_findings}
 
-def fetch_semgrep_findings():
-    return retrieve_paginated_data(findings_url)
 
 def format_findings_for_dd(semgrep_data):
     formatted_findings = []
@@ -81,11 +75,9 @@ def save_to_file(data, filename):
 
 def main():
     try:
-        semgrep_data = fetch_semgrep_findings()
+        semgrep_data =  retrieve_paginated_data(findings_url)
         formatted_data = format_findings_for_dd(semgrep_data)
         save_to_file(formatted_data, OUTPUT_FILE)
-        report = OUTPUT_FILE
-        uploadToDefectDojo("true", dd_token,dd_url, product_name, engagement_name, report)
     except Exception as e:
         print(f"Error: {e}")
 
