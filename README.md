@@ -82,7 +82,7 @@ It consists of `transformFindingsToJSON.py` which does the following:
 * Transforms the API response structure into the `Semgrep JSON Report` format that DefectDojo expects for imports.
 * Saves the transformed findings to a local JSON file (`semgrep_findings_formatted.json`).
 
-* Run script
+Run script
 ```
 python3 transformFindingsToJSON.py
 ```
