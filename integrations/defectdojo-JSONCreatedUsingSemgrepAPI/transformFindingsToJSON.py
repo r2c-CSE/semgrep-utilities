@@ -2,6 +2,9 @@ import requests
 import json
 import os
 import sys
+import argparse
+
+SEMGREP_APP_TOKEN = os.environ["SEMGREP_APP_TOKEN"]
 
 def retrieve_paginated_data(endpoint):
     all_findings = []
@@ -80,11 +83,11 @@ def main():
 
     # Construct findings_url using parsed arguments
     findings_url = f"{args.base_url}/api/v1/deployments/{args.deployment_slug}/findings"
-    SEMGREP_APP_TOKEN = os.environ["SEMGREP_APP_TOKEN"]
+    
     try:
         semgrep_data =  retrieve_paginated_data(findings_url)
         formatted_data = format_findings_for_dd(semgrep_data)
-        save_to_file(formatted_data, OUTPUT_FILE)
+        save_to_file(formatted_data, args.output_file)
     except Exception as e:
         print(f"Error: {e}")
 
