@@ -6,10 +6,10 @@ import argparse
 
 SEMGREP_APP_TOKEN = os.environ["SEMGREP_APP_TOKEN"]
 
-def retrieve_paginated_data(endpoint):
+def retrieve_paginated_data(endpoint,pg_size):
     all_findings = []
     page = 0
-    page_size = 100  # Adjust as needed
+    page_size = pg_size
     headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
     while True:
         response = requests.get(endpoint+"?&page_size="+str(page_size)+"&page="+str(page), headers=headers)
@@ -78,14 +78,15 @@ def main():
                         help="The base URL of the Semgrep API (e.g., 'https://semgrep.dev').")
     parser.add_argument("--output_file", default="report.json", 
                         help="The name of the output JSON file.")
-    
+    parser.add_argument("--page_size", default=100, 
+                        help="Maximum number of records per returned page. If not specified, defaults to 100 records.")
     args = parser.parse_args()
 
     # Construct findings_url using parsed arguments
     findings_url = f"{args.base_url}/api/v1/deployments/{args.deployment_slug}/findings"
     
     try:
-        semgrep_data =  retrieve_paginated_data(findings_url)
+        semgrep_data =  retrieve_paginated_data(findings_url,args.page_size)
         formatted_data = format_findings_for_dd(semgrep_data)
         save_to_file(formatted_data, args.output_file)
     except Exception as e:
