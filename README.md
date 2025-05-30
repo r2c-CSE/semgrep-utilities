@@ -87,7 +87,8 @@ Run script
 python3 transformFindingsToJSON.py \
   --deployment_slug your_deployment_name \
   --base_url https://semgrep.dev \
-  --output_file my_custom_report.json
+  --output_file my_custom_report.json \
+  --page_size 200
 ```
 
 You can now use the generated JSON file to upload results to DefectDojo.
