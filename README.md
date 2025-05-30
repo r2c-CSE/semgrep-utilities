@@ -46,7 +46,7 @@ python3 semgrep-ci/bitbucket/update_pipeline_with_semgrep_scan.py
 ## Integration utilities
 It is the category for integration utilities.
 
-### Utility to integrate Semgrep results in DefectDojo
+###  Integrate Semgrep findings in DefectDojo
 
 [DefectDojo](https://www.defectdojo.com/) is a well-known tool for managing security vulnerabilities.
 This utility dumps security findings detected by semgrep to DefectDojo.
@@ -59,6 +59,9 @@ export DEFECT_DOJO_API_TOKEN=xxxxxx
 * In DefectDojo:
     * Create your product (a product is DefectDojo's concept for a project).
     * For that DefectDojo product, create an engagement called `semgrep`.
+
+#### Using CLI JSON results
+
 * Run a semgrep scan with flags `--json --output report.json` to generate a json report.
 * Run script
 ```
@@ -67,6 +70,28 @@ python3 integrations/defectdojo/import_semgrep_to_defect_dojo.py --host DOJO_URL
 Where:
 * `DOJO_URL` is the URL where DefectDojo is installed.
 * `REPORT_FILE` is the Semgrep report path
+
+### Using Semgrep Findings API results
+
+This utility uses the Semgrep [Findings API](https://semgrep.dev/api/v1/docs/#tag/Finding) to integrate Semgrep Cloud Platform findings into DefectDojo. It fetches the findings from the API, converts them into a JSON format compatible with DefectDojo, and then uploads the formatted result to your specified DefectDojo Product and Engagement.
+
+This script works with SAST results. You can write a similar script for SCA findings. The [DefectDojo parser](https://github.com/DefectDojo/django-DefectDojo/blob/477583eb674a6a93516a2b794cd9889cb6d7ab81/dojo/tools/semgrep/parser.py) and the sample [Semgrep JSON](https://github.com/DefectDojo/django-DefectDojo/tree/master/unittests/scans/semgrep) files can help understanding the requirements for SCA.
+
+It consists of `transformFindingsToJSON.py` which does the following: 
+* Fetches all available findings from a specific Semgrep deployment (uses pagination)
+* Transforms the API response structure into the `Semgrep JSON Report` format that DefectDojo expects for imports.
+* Saves the transformed findings to a local JSON file 
+
+Run script
+```
+python3 transformFindingsToJSON.py \
+  --deployment_slug your_deployment_name \
+  --base_url https://semgrep.dev \
+  --output_file my_custom_report.json \
+  --page_size 200
+```
+
+You can now use the generated JSON file to upload results to DefectDojo.
 
 ## General utilities
 It is the category for general utilities.
