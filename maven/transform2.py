@@ -13,6 +13,11 @@ result = subprocess.run(["cat", file_path], capture_output=True, text=True)
 
 # Assign the output to actual_lines
 actual_lines = result.stdout
+
+# Function to determine if a line should be skipped
+def should_be_skipped(line):
+    return re.search(r'\(evi.+', line) or line.endswith('...')
+
 # Function to extract and transform only the relevant lines
 def extract_and_transform_lines(actual):
     # Split the actual input into lines
@@ -43,7 +48,9 @@ def transform_lines_with_space(original):
         # Skip "evicted" dependencies as they are superseded by a different version
         # This regex is short and simple because "evicted" is sometimes truncated
         # When revising, recommended to check behavior and performance with a regex tester
-        if re.search(r'\(evi.+', line):
+        # It will also skip lines ending with ... as they don't show a valid dependency, 
+        # for example: +-io.opentelemetry.semconv:opentelemetry-semconv-incubating:1...
+        if should_be_skipped(line):
             continue
         parts = line.split(':')
         if len(parts) > 2:
