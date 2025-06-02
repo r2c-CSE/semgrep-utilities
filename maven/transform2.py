@@ -43,7 +43,8 @@ def transform_lines_with_space(original):
         # Skip "evicted" dependencies as they are superseded by a different version
         # This regex is short and simple because "evicted" is sometimes truncated
         # When revising, recommended to check behavior and performance with a regex tester
-        # It will also skip lines ending with ... as they don't show a valid dependency
+        # It will also skip lines ending with ... as they don't show a valid dependency, 
+        # for example: +-io.opentelemetry.semconv:opentelemetry-semconv-incubating:1...
         if re.search(r'\(evi.+', line) or line.endswith('...'):
             continue
         parts = line.split(':')
