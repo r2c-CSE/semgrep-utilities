@@ -1,10 +1,11 @@
 # Semgrep utilities
 
-It is a non-official but helpful repository with Semgrep utilities such as API examples, integration, scripts to speed up the onboarding process, and standard configuration.
+This is a non-official but helpful repository with Semgrep utilities, such as API examples, integration, onboarding acceleration, and standard configuration.
 If you have something valuable to share, feel free to collaborate!
 
 ## CI utilities
-It is the category for ci utilities.
+
+CI utilities primarily are intended to accelerate onboarding by making it easier to set up Semgrep in your CI pipelines.
 
 ### Utility to speed up onboarding for Azure classic pipelines 
 
@@ -44,7 +45,8 @@ python3 semgrep-ci/bitbucket/update_pipeline_with_semgrep_scan.py
 ```
 
 ## Integration utilities
-It is the category for integration utilities.
+
+These utilities help send Semgrep data to other tools you may use.
 
 ###  Integrate Semgrep findings in DefectDojo
 
@@ -71,7 +73,7 @@ Where:
 * `DOJO_URL` is the URL where DefectDojo is installed.
 * `REPORT_FILE` is the Semgrep report path
 
-### Using Semgrep Findings API results
+#### Using Semgrep Findings API results
 
 This utility uses the Semgrep [Findings API](https://semgrep.dev/api/v1/docs/#tag/Finding) to integrate Semgrep Cloud Platform findings into DefectDojo. It fetches the findings from the API, converts them into a JSON format compatible with DefectDojo, and then uploads the formatted result to your specified DefectDojo Product and Engagement.
 
@@ -94,7 +96,8 @@ python3 transformFindingsToJSON.py \
 You can now use the generated JSON file to upload results to DefectDojo.
 
 ## General utilities
-It is the category for general utilities.
+
+These utilities include Semgrep public API scripts and other miscellaneous helpers.
 
 ### Semgrep API with Python
  
@@ -170,9 +173,9 @@ bash.lang.security.ifs-tampering.ifs-tampering,0.044
 
 ## Scala Transformation
 
-Scala is currently not on our list of [supported languages](https://semgrep.dev/docs/supported-languages/#semgrep-supply-chain) for SSC. However, Scala is a Java derivative. And while Java rules can attend the Scala party, reachability rules are like that one friend who didn't get the invite. So for now, Scala's flying solo with parity and lockfile support, no reachability plus-one. That being said, we don’t have any specific support for Scala ecosystems/package files.
+Scala is currently not on our list of [supported languages](https://semgrep.dev/docs/supported-languages/#semgrep-supply-chain) for SSC. However, Scala is a Java derivative. And while Java rules can attend the Scala party, reachability rules are like that one friend who didn't get the invite. So for now, Scala's flying solo with parity and lockfile support, no reachability plus-one.
 
-If you use SBT to construct your dependency tree, this script can help you transform it for Semgrep Supply Chain to scan. For those unfamiliar, a guide to use SBT can be found [here](https://www.baeldung.com/scala/sbt-dependency-tree).
+However, if you use SBT to construct your dependency tree, this script can help you transform it for Semgrep Supply Chain to scan. For those unfamiliar, a guide to use SBT can be found [here](https://www.baeldung.com/scala/sbt-dependency-tree).
 
 ### SBT Dependency Tree Output
 
@@ -247,7 +250,7 @@ result = subprocess.run(["cat", "maven_dep_tree.txt"], capture_output=True, text
 ```
 python3 transform.py maven_dep_tree.txt > maven_dep_tree.txt
 ```
-### What happens if the repo contains multiple `build.sbt` files in subfolders.
+### What happens if the repo contains multiple `build.sbt` files in subfolders
 
 Then a script like this could help to generate, recursively, the `maven_dep_tree.txt` file in every subfolder:
 ```
