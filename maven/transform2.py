@@ -16,7 +16,7 @@ actual_lines = result.stdout
 
 # Function to determine if a line should be skipped
 def should_be_skipped(line):
-    return re.search(r'\(evi.+', line) or line.endswith('...')
+    return re.search(r'\(e.*', line) or re.search(r'\.\.+$', line)
 
 # Function to extract and transform only the relevant lines
 def extract_and_transform_lines(actual):
