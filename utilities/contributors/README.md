@@ -1,351 +1,334 @@
-# github_recent_contributors.py
-This script is meant to help estimate the number of contributors that are active within a Github organization over a period of time.
+# Semgrep Contributors Tool
 
-The script does not use exactly the same logic as Semgrep in determining active contributors but should be helpful in determining a rough estimate.
+A unified command-line tool for counting and analyzing contributors across multiple Git platforms including GitHub, GitLab, Bitbucket, and Azure DevOps.
 
-## Usage
-You'll need to first export a [Github PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) into your environment for the script to use.
+## Overview
 
-Export your PAT as the variable `GITHUB_PERSONAL_ACCESS_TOKEN`.  
-
-Example: 
-```
-export GITHUB_PERSONAL_ACCESS_TOKEN=ghp_BunchOfSecretStuffGoesHere
-```
-
-The Token will need the following scopes:
-- repo
-- read:org
-- read:user
-- user:email
-
-The script takes the following arguements:
-- The name of the github organization
-- The number of days to look over (we recommend 90 as a safe default)
-- An output filename to store the details from the execution
-
-After you have the PAT in your environment, run this script like this:
-```
-python3 github_recent_contributors.py r2c-cse 90 output.json
-```
-
-## Output
-Example console output:
-```
-Total commit authors in the last 90 days: 33
-Total members in r2c-cse: 16
-Total unique contributors from r2c-cse in the last 90 days: 5
-```
-
-Example output file:
-```
-{
-    "organization": "r2c-cse",
-    "date": "2023-09-26",
-    "number_of_days_history": 90,
-    "org_members": [
-        ...
-    ],
-    "commit_authors": [
-        ...
-    ],
-    "commiting_members": [
-        ...
-    ]
-}
-```
-
-# gitlab_contributor_count.py
-
-## Description
-
-This Python script counts the number of unique contributors across all repositories in all groups of a GitLab Self-Managed instance. It uses the GitLab API to fetch repository and commit data for a specified time period.
+This tool helps estimate the number of active contributors within organizations across different Git platforms over a specified time period. It provides a consistent interface for all supported platforms and generates detailed reports with contributor statistics.
 
 ## Features
 
-- Retrieves all groups and their projects from a GitLab instance
-- Fetches commits for each project within a specified time frame
-- Counts unique contributors across all repositories
-- Handles API rate limiting with an exponential backoff retry mechanism
-- Provides detailed logging of the process
-- Generates a CSV file with a summary of contributors per repository and overall unique contributors
-
-## Requirements
-
-- Python 
-- `requests` library
+- **Multi-platform support**: GitHub, GitLab, Bitbucket, and Azure DevOps
+- **Unified CLI interface**: Single command with platform-specific subcommands
+- **Flexible filtering**: Filter by specific repositories or groups
+- **Detailed reporting**: JSON output with comprehensive contributor statistics
+- **Rate limiting handling**: Built-in retry mechanisms for API rate limits
+- **Environment variable support**: Secure API key management
 
 ## Installation
 
-1. Clone this repository or download the script.
-2. Install the required Python package:
+### Prerequisites
 
+- Python 3.12.8 or higher
+- API access tokens for the platforms you want to analyze
+
+### Setup
+
+1. Clone this repository and navigate to the `utilities/contributors` directory
+2. Install the package using uv (recommended) or pip:
+
+```bash
+# Using uv (recommended)
+uv sync
+
+# Or using pip
+pip install -e .
 ```
-pip install requests
+
+### Docker
+
+You can also run the tool using Docker, which eliminates the need to install Python dependencies locally:
+
+```bash
+# Build the Docker image
+docker build -t semgrep-contributors .
+
+# Run with Docker (example for GitHub)
+docker run --rm \
+  -e GITHUB_API_KEY=your_token_here \
+  -v $(pwd):/workspace \
+  semgrep-contributors github \
+  --org-name your-org \
+  --number-of-days 30 \
+  --output-filename /workspace/contributors.json
 ```
 
-## Configuration
+**Docker Options:**
+- `--rm`: Automatically remove the container when it exits
+- `-e`: Set environment variables for API keys
+- `-v $(pwd):/workspace`: Mount current directory to share files between host and container
+- `-w /workspace`: Set working directory (optional, for convenience)
 
-Before running the script, you need to set up the following:
+**Example for all platforms:**
+```bash
+# GitHub
+docker run --rm -e GITHUB_API_KEY=your_token semgrep-contributors github --org-name my-org
 
-1. GitLab instance URL
-2. Private token for API authentication
-3. Number of days to look back for contributions
+# GitLab
+docker run --rm -e GITLAB_API_KEY=your_token semgrep-contributors gitlab --hostname gitlab.company.com
 
-Edit the following lines at the bottom of the script:
+# Bitbucket
+docker run --rm -e BITBUCKET_API_KEY=your_token -e BITBUCKET_WORKSPACE=my-workspace semgrep-contributors bitbucket
 
-```python
-base_url = "https://your-gitlab-instance.com"  # Replace with your GitLab instance URL
-private_token = "your_private_token_here"  # Replace with your actual private token
-days = 3000  # Number of days to look back
+# Azure DevOps
+docker run --rm -e AZURE_DEVOPS_API_KEY=your_token -e AZURE_DEVOPS_ORGANIZATION=my-org semgrep-contributors azure-devops
 ```
 
 ## Usage
 
-Run the script using Python:
-
-```
-python gitlab_contributor_count.py
-```
-
-## Output
-
-The script generates two types of output:
-- A log file named gitlab_contributor_count.log with detailed information about the process.
-- A CSV file named contributor_summary.csv containing:
-    - A list of repositories with their contributor counts and names
-    - The total number of unique contributors across all repositories
- 
-
-## Logging
-The script provides detailed logging at different levels:
-- DEBUG: Detailed information about groups, projects, and commits retrieved
-- INFO: Summary information about the process and results
-- WARNING: Any issues encountered during execution (e.g., rate limiting)
-- ERROR: Any errors that occur during the process
-
-Logs are written to both the console and the gitlab_contributor_count.log file.
-
-## Troubleshooting
-If you encounter any issues:
-- Check the gitlab_contributor_count.log file for error messages.
-- Ensure your GitLab instance URL and private token are correct.
-- Verify that your GitLab account has the necessary permissions to access the groups and projects.
-- If you're hitting rate limits frequently, try increasing the backoff time in the make_request method.
-
-
-# Bitbucket Contributor Counter
-
-This script counts unique contributors across all repositories in a Bitbucket workspace for a specified time period.
-
-## Features
-
-- Counts unique contributors across all repositories in a workspace
-- Configurable time period for analysis
-- Handles rate limiting with exponential backoff
-- Outputs results to both console and JSON file
-- Uses environment variables for secure token management
-- Automatic pagination handling for both repositories and commits
-- Detailed logging of API requests and responses
-
-## Prerequisites
-
-- Python 3.x
-- `requests` library
-- Bitbucket access token with appropriate permissions
-
-## Setup
-
-1. Install the required Python package:
-```bash
-pip install requests
-```
-
-2. Set up your Bitbucket access token as an environment variable:
-```bash
-export BITBUCKET_ACCESS_TOKEN="your_token_here"
-```
-
-## Configuration
-
-The script has the following configurable constants at the top of the file:
-
-- `WORKSPACE`: Your Bitbucket workspace name
-- `COMMITS_FROM_DAYS`: Number of days to look back for commits (default: 1000)
-
-## Usage
-
-Run the script:
-```bash
-python bitbucket_contributor_count_retry.py
-```
-
-The script will:
-1. Fetch all repositories in the specified workspace (with pagination)
-2. For each repository, fetch commits within the specified time period (with pagination)
-3. Extract unique contributors from the commits
-4. Output the results to the console
-5. Save the results to a JSON file with timestamp
-
-## Pagination
-
-The script automatically handles pagination for:
-- Repository listing: Fetches all repositories across multiple pages
-- Commit history: Fetches all commits within the specified time period across multiple pages
-
-Debug logging will show:
-- Number of repositories found per page
-- Total number of repositories and pages
-- Number of commits found per page for each repository
-- Total number of commits and pages per repository
-
-## Output
-
-The script generates two types of output:
-
-1. Console output with logging information about:
-   - Repository processing progress
-   - Number of commits and pages per repository
-   - Number of unique contributors per repository
-   - Total unique contributors across all repositories
-   - API request/response details (in DEBUG mode)
-
-2. JSON file (`contributors_YYYYMMDD_HHMMSS.json`) containing:
-   - Workspace name
-   - Analysis period in days
-   - Total number of contributors
-   - Sorted list of all contributors
-
-## Logging
-
-The script uses Python's logging module with the following levels:
-- DEBUG (default): Detailed API request/response information, pagination details
-- INFO: Repository progress, counts, and results
-- WARNING: Rate limit notifications
-
-To change the logging level, modify the `level` parameter in `logging.basicConfig()`:
-```python
-logging.basicConfig(
-    level=logging.INFO,  # Change to INFO to see less detail
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
-```
-
-## Error Handling
-
-The script includes error handling for:
-- Missing access token
-- API rate limiting (with automatic retry)
-- Failed API requests
-- Pagination issues
-
-## Security
-
-- Access token is stored in environment variables, not in the code
-- API requests use secure HTTPS
-- Token is passed securely in request headers 
-
-## Contributing
-Contributions to improve the script are welcome. Please feel free to submit a Pull Request.
-
-
-# Azure DevOps Contributors Counter
-
-A Python script to fetch and analyze unique contributors across all repositories in an Azure DevOps organization and project.
-
-## Description
-
-This script connects to Azure DevOps and generates a report of all unique contributors who have made commits across repositories within a specified time period. It provides both a summary view and detailed breakdown by repository.
-
-## Features
-
-- Fetches contributors from all repositories in a project
-- Supports custom time period analysis
-- Generates detailed JSON output
-- Provides both summary and detailed contributor information
-- Handles pagination for large repositories
-- Includes error handling and connection testing
-
-## Prerequisites
-
-- Python 3.x
-- `requests` library
-- Azure DevOps Personal Access Token (PAT)
-
-### Required Azure DevOps Permissions
-
-Your PAT token needs the following permissions:
-- Code (Read)
-- Graph (Read)
-- Git (Read)
-- Project and Team (Read)
-
-## Installation
-
-1. Clone this repository or download the script
-2. Install the required dependencies:
-   ```bash
-   pip install requests
-   ```
-
-## Usage
-
-1. Set your Azure DevOps Personal Access Token as an environment variable:
-   ```bash
-   export AZURE_PERSONAL_ACCESS_TOKEN='your_pat_token_here'
-   ```
-
-2. Run the script with the required parameters:
-   ```bash
-   python ado_contributor_count.py <organization_name> <project_name> <number_of_days> <output_filename>
-   ```
-
-### Parameters
-
-- `organization_name`: Your Azure DevOps organization name
-- `project_name`: The project name within the organization
-- `number_of_days`: Number of days to look back for contributors
-- `output_filename`: JSON file to store the output
-
-### Example
+The tool provides a unified CLI interface with platform-specific subcommands:
 
 ```bash
-python ado_contributor_count.py my-org my-project 30 contributors.json
+semgrep-contributors [OPTIONS] COMMAND [ARGS]...
 ```
 
-## Output
+### Common Options
 
-The script generates a JSON file with the following structure:
+- `--debug`: Enable debug logging
+- `--help`, `-h`: Show help information
 
+### Platform Commands
+
+#### GitHub
+
+```bash
+semgrep-contributors github [OPTIONS]
+```
+
+**Options:**
+- `--api-key TEXT`: GitHub API key (or set `GITHUB_API_KEY` environment variable)
+- `--org-name TEXT`: Name of the GitHub organization (required)
+- `--number-of-days INTEGER`: Number of days to analyze (default: 30)
+- `--output-filename TEXT`: Output JSON file path (optional)
+- `--repo-file PATH`: File containing repository names to filter (optional)
+- `--repositories TEXT`: Comma-separated list of repositories to analyze (optional)
+
+**Example:**
+```bash
+export GITHUB_API_KEY=ghp_your_token_here
+semgrep-contributors github --org-name r2c-cse --number-of-days 90 --output-filename github_contributors.json
+```
+
+#### GitLab
+
+```bash
+semgrep-contributors gitlab [OPTIONS]
+```
+
+**Options:**
+- `--api-key TEXT`: GitLab API key (or set `GITLAB_API_KEY` environment variable)
+- `--number-of-days INTEGER`: Number of days to analyze (default: 30)
+- `--output-filename TEXT`: Output JSON file path (optional)
+- `--repo-file PATH`: File containing repository names to filter (optional)
+- `--hostname TEXT`: GitLab instance hostname (default: gitlab.com)
+- `--group TEXT`: GitLab group to analyze (optional)
+- `--repositories TEXT`: Comma-separated list of repositories to analyze (optional)
+
+**Example:**
+```bash
+export GITLAB_API_KEY=glpat_your_token_here
+semgrep-contributors gitlab --hostname gitlab.company.com --group my-group --number-of-days 60
+```
+
+#### Bitbucket
+
+```bash
+semgrep-contributors bitbucket [OPTIONS]
+```
+
+**Options:**
+- `--api-key TEXT`: Bitbucket API key (or set `BITBUCKET_API_KEY` environment variable)
+- `--workspace TEXT`: Bitbucket workspace (or set `BITBUCKET_WORKSPACE` environment variable)
+- `--number-of-days INTEGER`: Number of days to analyze (default: 30)
+- `--output-filename TEXT`: Output JSON file path (optional)
+- `--repo-file PATH`: File containing repository names to filter (optional)
+- `--repositories TEXT`: Comma-separated list of repositories to analyze (optional)
+
+**Example:**
+```bash
+export BITBUCKET_API_KEY=your_token_here
+export BITBUCKET_WORKSPACE=my-workspace
+semgrep-contributors bitbucket --number-of-days 45 --output-filename bitbucket_contributors.json
+```
+
+#### Azure DevOps
+
+```bash
+semgrep-contributors azure-devops [OPTIONS]
+```
+
+**Options:**
+- `--api-key TEXT`: Azure DevOps API key (or set `AZURE_DEVOPS_API_KEY` environment variable)
+- `--organization TEXT`: Azure DevOps organization (or set `AZURE_DEVOPS_ORGANIZATION` environment variable)
+- `--number-of-days INTEGER`: Number of days to analyze (default: 30)
+- `--output-filename TEXT`: Output JSON file path (optional)
+- `--repo-file PATH`: File containing repository names to filter (optional)
+- `--repositories TEXT`: Comma-separated list of repositories to analyze (optional)
+
+**Example:**
+```bash
+export AZURE_DEVOPS_API_KEY=your_pat_token_here
+export AZURE_DEVOPS_ORGANIZATION=my-org
+semgrep-contributors azure-devops --number-of-days 30 --output-filename azure_contributors.json
+```
+
+## API Key Requirements
+
+### GitHub
+- **Token Type**: Personal Access Token (PAT)
+- **Required Scopes**: `repo`, `read:org`, `read:user`, `user:email`
+
+### GitLab
+- **Token Type**: Personal Access Token
+- **Required Scopes**: `read_api`, `read_user`, `read_repository`
+
+### Bitbucket
+- **Token Type**: App Password or Personal Access Token
+- **Required Scopes**: `Repositories: Read`, `Pull requests: Read`
+
+### Azure DevOps
+- **Token Type**: Personal Access Token (PAT)
+- **Required Scopes**: `Code (Read)`, `Graph (Read)`, `Git (Read)`, `Project and Team (Read)`
+
+## Output Format
+
+The tool generates JSON reports with the following structure:
+
+### Base Report Structure
 ```json
 {
-  "organization": "organization_name",
-  "project": "project_name",
-  "date": "YYYY-MM-DD",
-  "number_of_days_history": number_of_days,
-  "total_contributors": total_count,
-  "total_repositories": repo_count,
-  "repositories": [
+  "date": "2024-01-15",
+  "number_of_days_history": 30,
+  "repository_stats": [
     {
-      "name": "repo_name",
-      "contributors": contributor_count,
-      "contributor_emails": ["email1@example.com", "email2@example.com"]
+      "name": "repo-name",
+      "contributor_count": 5,
+      "contributors": ["user1@example.com", "user2@example.com"]
     }
   ],
-  "all_contributor_emails": ["email1@example.com", "email2@example.com"]
+  "total_contributor_count": 15,
+  "total_repository_count": 10
 }
+```
+
+### Platform-Specific Extensions
+
+**GitHub:**
+```json
+{
+  "organization": "org-name",
+  "org_members": ["member1@example.com", "member2@example.com"],
+  "org_contributors": ["contributor1@example.com"],
+  "org_contributors_count": 1
+}
+```
+
+**GitLab:**
+```json
+{
+  "all_contributors": ["contributor1@example.com", "contributor2@example.com"]
+}
+```
+
+**Bitbucket:**
+```json
+{
+  "workspace": "workspace-name",
+  "all_contributors": ["contributor1@example.com", "contributor2@example.com"]
+}
+```
+
+**Azure DevOps:**
+```json
+{
+  "organization": "org-name",
+  "all_contributor_emails": ["contributor1@example.com", "contributor2@example.com"]
+}
+```
+
+## Repository Filtering
+
+You can filter repositories using either:
+
+1. **Repository file**: Create a text file with one repository name per line
+2. **Command line**: Provide a comma-separated list of repository names
+
+Example repository file (`repos.txt`):
+```
+my-repo-1
+my-repo-2
+my-repo-3
+```
+
+Usage:
+```bash
+semgrep-contributors github --org-name my-org --repo-file repos.txt
+# or
+semgrep-contributors github --org-name my-org --repositories "repo1,repo2,repo3"
+```
+
+## Development
+
+### Project Structure
+```
+src/contributors/
+├── cli.py              # Main CLI interface
+├── main.py             # Entry point
+├── commands/           # Command implementations
+│   └── get_contributors.py
+├── models/             # Pydantic data models
+│   ├── reports.py
+│   ├── github_models.py
+│   ├── gitlab_models.py
+│   ├── bitbucket_models.py
+│   └── azure_devops_models.py
+├── clients/            # API clients
+└── reporters/          # Platform-specific reporters
+```
+
+### Running Tests
+```bash
+# Install test dependencies
+uv sync --group dev
+
+# Run tests
+pytest
+```
+
+### Building
+```bash
+# Build the package
+uv build
+
+# Install in development mode
+uv pip install -e .
 ```
 
 ## Troubleshooting
 
-If you encounter issues:
+### Common Issues
 
-1. Verify your PAT token is correct and not expired
-2. Confirm the organization and project names are correct
-3. Ensure your PAT token has all required permissions
-4. Check if you can access the project in your browser
-5. Review the error messages and debug output provided by the script
+1. **API Rate Limiting**: The tool includes automatic retry mechanisms, but you may need to wait if you hit rate limits frequently.
+
+2. **Authentication Errors**: Ensure your API tokens have the correct permissions and are not expired.
+
+3. **Repository Access**: Verify that your API token has access to the repositories you're trying to analyze.
+
+4. **Debug Mode**: Use the `--debug` flag to get detailed logging information:
+   ```bash
+   semgrep-contributors --debug github --org-name my-org
+   ```
+
+### Logging
+
+The tool provides different logging levels:
+- **INFO** (default): Basic progress and summary information
+- **DEBUG**: Detailed API request/response information and pagination details
 
 ## Contributing
-Contributions to improve the script are welcome. Please feel free to submit a Pull Request.
+
+Contributions are welcome! Please feel free to submit issues and pull requests to improve the tool.
+
+## License
+
+This project is part of the Semgrep utilities and follows the same licensing terms.
