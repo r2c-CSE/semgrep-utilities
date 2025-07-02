@@ -33,7 +33,7 @@ def get_project_endpoint(deployment):
     If not, iterates through the first page of results from the list projects API
     looking for a match by remote URL. Failing that, gives up and raises Exception.
     """
-    all_projects_endpoint = f"/deployments/{deployment["slug"]}/projects"
+    all_projects_endpoint = f"/deployments/{deployment['slug']}/projects"
     project_name = os.environ.get("CI_PROJECT_PATH", "")
     try:
         semgrep_api(f"{all_projects_endpoint}/{project_name}")
