@@ -1,3 +1,36 @@
+"""
+This is an example script demonstrating how to automatically set tags on a Semgrep project
+from a GitLab pipeline. It's intended to be modified for your specific use case rather than
+run as-is. The script itself is a sample and not a supported Semgrep product.
+
+Example minimal pipeline configuration:
+
+  semgrep-tags:
+  image: python
+  script:
+      - pip install requests
+      - python set-semgrep-tags.py
+
+It also requires an API-scoped SEMGREP_API_TOKEN in CI/CD variables, which you can create here:
+
+  https://semgrep.dev/orgs/-/settings/tokens
+
+Note that this is different from the CI-scoped token you need to run Semgrep itself.
+
+As written, this script tries to use the repository name or URL to find a matching Semgrep project.
+If it succeeds, it adds tags to that project for each group in the GitLab project path between
+the top-level namespace and the project name itself. For example, if the GitLab project is:
+
+  my-org/appsec-team/infrastructure/test-environments
+
+Then this script would apply the tags `appsec-team` and `infrastructure` to a Semgrep project
+named `my-org/appsec-team/infrastructure/test-environments`.
+
+See the docstrings below for details about how to customize this behavior, including using a
+different source for tags, removing disallowed tags, or searching more robustly for the
+matching Semgrep project.
+"""
+
 import json
 import os
 import requests
