@@ -92,3 +92,7 @@ This will show all repositories like:
 - **API Token**: Set the `SEMGREP_APP_TOKEN` environment variable
 - **Tag Updates**: Existing key-value tags get updated, simple tags are skipped if they exist
 - **Reserved Tags**: System tags like `managed-scan` are preserved automatically
+
+## Future Improvements
+
+- **Auto-detect Organization**: Since API tokens are 1:1 with deployments, the organization slug could be automatically detected, simplifying the CLI to just `python create_semgrep_tag.py <repo_name> <tag_name> [tag_value]`

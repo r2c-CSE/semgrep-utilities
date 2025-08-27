@@ -23,6 +23,27 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def get_organization_slug(api_token: str) -> Optional[str]:
+    """
+    Auto-detect organization slug from API token.
+    
+    TODO: As suggested by @stuartcmehrens, API tokens are 1:1 with deployments,
+    so we should be able to get the org slug automatically instead of requiring
+    users to provide it. Need to find the correct Semgrep API endpoint that 
+    returns deployment/organization information for the authenticated token.
+    
+    Potential endpoints to investigate:
+    - /api/v1/me or /api/v1/user (user info with deployment)
+    - /api/v1/deployments (list deployments for user)  
+    - /api/v1/deployment (current deployment info)
+    
+    Once implemented, this would simplify the CLI to just:
+    python create_semgrep_tag.py <repo_name> <tag_name> [tag_value]
+    """
+    # Placeholder implementation - requires API research
+    return None
+
+
 def get_project_from_list(org_slug: str, project_name: str, api_token: str) -> Optional[dict]:
     """Get project data from the projects list endpoint"""
     url = f"https://semgrep.dev/api/v1/deployments/{org_slug}/projects"
