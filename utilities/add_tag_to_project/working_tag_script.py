@@ -134,8 +134,8 @@ def main():
     org_slug = sys.argv[1]
     repo_name = sys.argv[2]
     
-    # Set the API token
-    api_token = "37827ebbe2b85150d5d6fe53d749ba631338b77ab5d3919c2cf94b88dd45607a"
+    # Set the API token from environment variable
+    api_token = os.getenv("SEMGREP_APP_TOKEN")
     
     if len(sys.argv) == 4 and sys.argv[3] == "--list":
         tags = list_repository_tags(org_slug, repo_name, api_token)

@@ -6,7 +6,7 @@ Test different Semgrep API endpoints to find the correct one for repository tags
 import os
 import requests
 
-api_token = "37827ebbe2b85150d5d6fe53d749ba631338b77ab5d3919c2cf94b88dd45607a"
+api_token = os.getenv("SEMGREP_APP_TOKEN")  # Get from environment variable
 org_slug = "semgrep_kyle_sms"
 repo_id = "3739271"
 repo_name = "kyle-semgrep/js-app"

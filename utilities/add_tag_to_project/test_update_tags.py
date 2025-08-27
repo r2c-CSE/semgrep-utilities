@@ -7,7 +7,7 @@ import os
 import requests
 import json
 
-api_token = "37827ebbe2b85150d5d6fe53d749ba631338b77ab5d3919c2cf94b88dd45607a"
+api_token = os.getenv("SEMGREP_APP_TOKEN")  # Get from environment variable
 org_slug = "semgrep_kyle_sms"
 repo_name = "kyle-semgrep/js-app"
 
