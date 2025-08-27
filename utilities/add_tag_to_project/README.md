@@ -4,12 +4,18 @@ A Python script to create and manage tags for Semgrep repositories using the Sem
 
 ## Setup
 
-1. Install dependencies:
+1. Create a virtual environment (recommended):
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+2. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Set your Semgrep API token:
+3. Set your Semgrep API token:
 ```bash
 export SEMGREP_APP_TOKEN="your_semgrep_api_token_here"
 ```
@@ -18,42 +24,42 @@ export SEMGREP_APP_TOKEN="your_semgrep_api_token_here"
 
 ### Create a simple tag
 ```bash
-python create_semgrep_tag_final.py <org_slug> <repo_name> <tag_name>
+python create_semgrep_tag.py <org_slug> <repo_name> <tag_name>
 ```
 
 ### Create a key-value tag
 ```bash
-python create_semgrep_tag_final.py <org_slug> <repo_name> <tag_name> <tag_value>
+python create_semgrep_tag.py <org_slug> <repo_name> <tag_name> <tag_value>
 ```
 
 ### List tags for a specific repository
 ```bash
-python create_semgrep_tag_final.py <org_slug> <repo_name> --list
+python create_semgrep_tag.py <org_slug> <repo_name> --list
 ```
 
 ### List all repositories in organization
 ```bash
-python create_semgrep_tag_final.py <org_slug> --list-all
+python create_semgrep_tag.py <org_slug> --list-all
 ```
 
 ## Examples
 
 ```bash
 # Create a simple tag (like managed-scan, Python-3.7)
-python create_semgrep_tag_final.py semgrep_kyle_sms kyle-semgrep/js-app Python-3.7
+python create_semgrep_tag.py semgrep_kyle_sms kyle-semgrep/js-app Python-3.7
 
 # Create a key-value tag (like environment:production)
-python create_semgrep_tag_final.py semgrep_kyle_sms kyle-semgrep/js-app environment production
+python create_semgrep_tag.py semgrep_kyle_sms kyle-semgrep/js-app environment production
 
 # Create more tags
-python create_semgrep_tag_final.py semgrep_kyle_sms kyle-semgrep/js-app language JavaScript
-python create_semgrep_tag_final.py semgrep_kyle_sms kyle-semgrep/js-app team security
+python create_semgrep_tag.py semgrep_kyle_sms kyle-semgrep/js-app language JavaScript
+python create_semgrep_tag.py semgrep_kyle_sms kyle-semgrep/js-app team security
 
 # List tags for a specific repository
-python create_semgrep_tag_final.py semgrep_kyle_sms kyle-semgrep/js-app --list
+python create_semgrep_tag.py semgrep_kyle_sms kyle-semgrep/js-app --list
 
 # List all repositories in the organization
-python create_semgrep_tag_final.py semgrep_kyle_sms --list-all
+python create_semgrep_tag.py semgrep_kyle_sms --list-all
 ```
 
 ## Key Features
@@ -70,7 +76,7 @@ python create_semgrep_tag_final.py semgrep_kyle_sms --list-all
 Use the `--list-all` flag to find the exact repository name format:
 
 ```bash
-python create_semgrep_tag_final.py your_org_slug --list-all
+python create_semgrep_tag.py your_org_slug --list-all
 ```
 
 This will show all repositories like:

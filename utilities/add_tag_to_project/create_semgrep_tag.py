@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Semgrep Repository Tag Creation Script
+Semgrep Repository Tag Creation Script (Working Version)
 
 This script creates tags for Semgrep repositories using the Semgrep API.
 Requires SEMGREP_APP_TOKEN environment variable to be set.
@@ -8,26 +8,57 @@ Requires SEMGREP_APP_TOKEN environment variable to be set.
 
 import os
 import sys
-import json
 import requests
-from typing import Optional
+import json
+import urllib.parse
+import logging
+from typing import Optional, List
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(levelname)s: %(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
+logger = logging.getLogger(__name__)
+
+
+def get_project_from_list(org_slug: str, project_name: str, api_token: str) -> Optional[dict]:
+    """Get project data from the projects list endpoint"""
+    url = f"https://semgrep.dev/api/v1/deployments/{org_slug}/projects"
+    headers = {
+        "Authorization": f"Bearer {api_token}",
+        "Content-Type": "application/json"
+    }
+    
+    try:
+        response = requests.get(url, headers=headers, timeout=30)
+        if response.status_code == 200:
+            data = response.json()
+            for project in data.get('projects', []):
+                if project.get('name') == project_name:
+                    return project
+    except Exception as e:
+        logger.error(f"Error getting project list: {e}")
+    
+    return None
 
 
 def create_repository_tag(
     organization_slug: str,
-    repository_id: str,
+    repository_name: str,
     tag_name: str,
-    tag_value: str,
+    tag_value: Optional[str] = None,
     api_token: Optional[str] = None
 ) -> bool:
     """
-    Create a tag for a Semgrep repository.
+    Create a tag for a Semgrep repository using the repository name.
     
     Args:
-        organization_slug: The organization slug (with underscores)
-        repository_id: The repository ID
+        organization_slug: The organization slug (with underscores)  
+        repository_name: The full repository name (e.g., 'owner/repo')
         tag_name: The name of the tag to create
-        tag_value: The value for the tag
+        tag_value: Optional value for the tag (if None, creates simple tag)
         api_token: API token (defaults to SEMGREP_APP_TOKEN env var)
     
     Returns:
@@ -36,99 +67,125 @@ def create_repository_tag(
     if not api_token:
         api_token = os.getenv("SEMGREP_APP_TOKEN")
         if not api_token:
-            print("Error: SEMGREP_APP_TOKEN environment variable not set")
+            logger.error("SEMGREP_APP_TOKEN environment variable not set")
             return False
     
-    # First get existing project to preserve current tags
-    # Try using repository name format (owner/repo) instead of ID
-    url = f"https://semgrep.dev/api/v1/deployments/{organization_slug}/repos/{repository_id}"
+    # First, get the current project data from the list endpoint to see actual tags
+    project_data = get_project_from_list(organization_slug, repository_name, api_token)
+    if not project_data:
+        logger.error(f"Could not find project: {repository_name}")
+        return False
+    
+    logger.info(f"Found project: {project_data['name']}")
+    current_tags = project_data.get('tags', [])
+    logger.info(f"Current tags: {current_tags}")
+    
+    # Create new tag (simple tag or key:value format)
+    if tag_value is None:
+        new_tag = tag_name
+        logger.info(f"Creating simple tag: '{tag_name}'")
+    else:
+        new_tag = f"{tag_name}:{tag_value}"
+        logger.info(f"Creating key-value tag: '{tag_name}:{tag_value}'")
+    
+    # Check if tag already exists and update, or add new
+    updated_tags = []
+    tag_found = False
+    
+    for existing_tag in current_tags:
+        # For simple tags, check exact match
+        # For key-value tags, check if it starts with tag_name:
+        if tag_value is None:
+            if existing_tag == tag_name:
+                tag_found = True
+                logger.info(f"Tag '{tag_name}' already exists")
+                updated_tags.append(existing_tag)  # Keep as-is
+            else:
+                updated_tags.append(existing_tag)
+        else:
+            if existing_tag.startswith(f"{tag_name}:"):
+                updated_tags.append(new_tag)
+                tag_found = True
+                logger.info(f"Updating existing tag '{tag_name}' from '{existing_tag}' to '{new_tag}'")
+            else:
+                updated_tags.append(existing_tag)
+    
+    if not tag_found:
+        updated_tags.append(new_tag)
+        if tag_value is None:
+            logger.info(f"Adding new simple tag '{tag_name}'")
+        else:
+            logger.info(f"Adding new key-value tag '{tag_name}:{tag_value}'")
+    
+    # Now update using the individual project endpoint
+    encoded_repo_name = urllib.parse.quote(repository_name, safe='')
+    url = f"https://semgrep.dev/api/v1/deployments/{organization_slug}/projects/{encoded_repo_name}"
     
     headers = {
         "Authorization": f"Bearer {api_token}",
         "Content-Type": "application/json"
     }
     
+    payload = {"tags": updated_tags}
+    
     try:
-        # Get current project data
-        get_response = requests.get(url, headers=headers, timeout=30)
-        if get_response.status_code != 200:
-            print(f"❌ Failed to get project data. Status code: {get_response.status_code}")
-            print(f"Response: {get_response.text}")
-            return False
-        
-        project_data = get_response.json()
-        existing_tags = project_data.get('tags', [])
-        
-        # Create new tag in the format expected by API
-        new_tag = f"{tag_name}:{tag_value}"
-        
-        # Check if tag already exists (update scenario)
-        updated_tags = []
-        tag_updated = False
-        
-        for existing_tag in existing_tags:
-            if existing_tag.startswith(f"{tag_name}:"):
-                updated_tags.append(new_tag)
-                tag_updated = True
-                print(f"Updating existing tag '{tag_name}'")
-            else:
-                updated_tags.append(existing_tag)
-        
-        # If tag doesn't exist, add it
-        if not tag_updated:
-            updated_tags.append(new_tag)
-            print(f"Adding new tag '{tag_name}={tag_value}'")
-        
-        # PATCH the project with updated tags
-        payload = {
-            "tags": updated_tags
-        }
-        
-        print(f"Updating repository {repository_id} tags: {updated_tags}")
-        
+        logger.info(f"Updating tags to: {updated_tags}")
         response = requests.patch(url, headers=headers, json=payload, timeout=30)
         
-        if response.status_code == 200 or response.status_code == 201:
-            print(f"✅ Tag created successfully!")
-            print(f"Response: {response.json()}")
+        if response.status_code in [200, 201]:
+            logger.info("Tag operation successful!")
+            # Verify by getting updated tags
+            updated_project_data = get_project_from_list(organization_slug, repository_name, api_token)
+            if updated_project_data:
+                logger.info(f"Verified tags: {updated_project_data.get('tags', [])}")
             return True
         else:
-            print(f"❌ Failed to create tag. Status code: {response.status_code}")
-            print(f"Response: {response.text}")
+            logger.error(f"Failed to create tag. Status code: {response.status_code}")
+            logger.error(f"Response: {response.text}")
             return False
             
-    except requests.exceptions.RequestException as e:
-        print(f"❌ Request failed: {e}")
-        return False
     except Exception as e:
-        print(f"❌ Unexpected error: {e}")
+        logger.error(f"Error: {e}")
         return False
 
 
 def list_repository_tags(
     organization_slug: str,
-    repository_id: str,
+    repository_name: str,
     api_token: Optional[str] = None
-) -> Optional[dict]:
+) -> Optional[List[str]]:
     """
     List existing tags for a Semgrep repository.
     
     Args:
         organization_slug: The organization slug (with underscores)
-        repository_id: The repository ID
+        repository_name: The full repository name (e.g., 'owner/repo')  
         api_token: API token (defaults to SEMGREP_APP_TOKEN env var)
     
     Returns:
-        dict: API response with tags, or None if failed
+        List[str]: List of tags, or None if failed
     """
     if not api_token:
         api_token = os.getenv("SEMGREP_APP_TOKEN")
         if not api_token:
-            print("Error: SEMGREP_APP_TOKEN environment variable not set")
+            logger.error("SEMGREP_APP_TOKEN environment variable not set")
             return None
     
-    url = f"https://semgrep.dev/api/v1/deployments/{organization_slug}/projects/{repository_id}/tags"
+    project_data = get_project_from_list(organization_slug, repository_name, api_token)
+    if project_data:
+        return project_data.get('tags', [])
+    return None
+
+
+def list_all_repositories(organization_slug: str, api_token: Optional[str] = None) -> Optional[List[dict]]:
+    """List all repositories in the organization"""
+    if not api_token:
+        api_token = os.getenv("SEMGREP_APP_TOKEN")
+        if not api_token:
+            logger.error("SEMGREP_APP_TOKEN environment variable not set")
+            return None
     
+    url = f"https://semgrep.dev/api/v1/deployments/{organization_slug}/projects"
     headers = {
         "Authorization": f"Bearer {api_token}",
         "Content-Type": "application/json"
@@ -136,56 +193,82 @@ def list_repository_tags(
     
     try:
         response = requests.get(url, headers=headers, timeout=30)
-        
         if response.status_code == 200:
-            return response.json()
-        else:
-            print(f"❌ Failed to list tags. Status code: {response.status_code}")
-            print(f"Response: {response.text}")
-            return None
-            
-    except requests.exceptions.RequestException as e:
-        print(f"❌ Request failed: {e}")
-        return None
+            data = response.json()
+            return data.get('projects', [])
+    except Exception as e:
+        logger.error(f"Error getting repositories: {e}")
+    
+    return None
 
 
 def main():
     """Main function to handle command line usage."""
-    if len(sys.argv) < 5:
-        print("Usage: python create_semgrep_tag.py <org_slug> <repo_id> <tag_name> <tag_value> [--list]")
+    if len(sys.argv) < 2:
+        print("Usage: python create_semgrep_tag.py <org_slug> [repo_name] [tag_name] [tag_value] [--list] [--list-all]")
         print()
         print("Examples:")
-        print("  python create_semgrep_tag.py my_org 12345 environment production")
-        print("  python create_semgrep_tag.py my_org 12345 team security")
-        print("  python create_semgrep_tag.py my_org 12345 --list (to list existing tags)")
+        print("  # Create a simple tag")
+        print("  python create_semgrep_tag.py semgrep_org_name your_gh_org/your_repo_name Python-3.7")
+        print()
+        print("  # Create a key-value tag")  
+        print("  python create_semgrep_tag.py semgrep_org_name your_gh_org/your_repo_name language Python")
+        print()
+        print("  # List tags for a specific repository")  
+        print("  python create_semgrep_tag.py semgrep_org_name your_gh_org/your_repo_name --list")
+        print()
+        print("  # List all repositories in the organization")
+        print("  python create_semgrep_tag.py semgrep_org_name --list-all")
         print()
         print("Environment Variables:")
         print("  SEMGREP_APP_TOKEN - Your Semgrep API token")
         sys.exit(1)
     
     org_slug = sys.argv[1]
-    repo_id = sys.argv[2]
     
-    # Check if --list flag is provided
-    if len(sys.argv) == 4 and sys.argv[3] == "--list":
-        print(f"Listing tags for repository {repo_id} in organization {org_slug}...")
-        tags = list_repository_tags(org_slug, repo_id)
-        if tags:
-            print(f"✅ Tags retrieved successfully:")
-            print(json.dumps(tags, indent=2))
+    # Handle --list-all flag
+    if len(sys.argv) == 3 and sys.argv[2] == "--list-all":
+        repositories = list_all_repositories(org_slug)
+        if repositories:
+            print(f"✅ Found {len(repositories)} repositories in {org_slug}:")
+            for repo in repositories:
+                tags = repo.get('tags', [])
+                tags_str = f" (tags: {tags})" if tags else " (no tags)"
+                print(f"  - {repo.get('name')}{tags_str}")
+        else:
+            print("❌ Failed to get repositories")
         return
     
-    if len(sys.argv) < 5:
-        print("Error: Missing tag_name and tag_value arguments")
+    if len(sys.argv) < 3:
+        logger.error("Missing repository name")
+        sys.exit(1)
+    
+    repo_name = sys.argv[2]
+    
+    # Handle --list flag for specific repository
+    if len(sys.argv) == 4 and sys.argv[3] == "--list":
+        tags = list_repository_tags(org_slug, repo_name)
+        if tags is not None:
+            print(f"✅ Current tags for {repo_name}: {tags}")
+        else:
+            print(f"❌ Repository not found or error occurred")
+        return
+    
+    if len(sys.argv) < 4:
+        logger.error("Missing tag_name")
+        print("Use --list to see current tags or --list-all to see all repositories")
         sys.exit(1)
     
     tag_name = sys.argv[3]
-    tag_value = sys.argv[4]
+    tag_value = sys.argv[4] if len(sys.argv) > 4 else None
     
-    success = create_repository_tag(org_slug, repo_id, tag_name, tag_value)
+    success = create_repository_tag(org_slug, repo_name, tag_name, tag_value)
     
     if success:
-        print(f"✅ Successfully created tag '{tag_name}={tag_value}' for repository {repo_id}")
+        if tag_value:
+            print(f"✅ Successfully processed tag '{tag_name}={tag_value}' for repository {repo_name}")
+        else:
+            print(f"✅ Successfully processed tag '{tag_name}' for repository {repo_name}")
         sys.exit(0)
     else:
         print(f"❌ Failed to create tag")
