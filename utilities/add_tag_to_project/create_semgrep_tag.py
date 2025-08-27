@@ -27,20 +27,31 @@ def get_organization_slug(api_token: str) -> Optional[str]:
     """
     Auto-detect organization slug from API token.
     
-    TODO: As suggested by @stuartcmehrens, API tokens are 1:1 with deployments,
-    so we should be able to get the org slug automatically instead of requiring
-    users to provide it. Need to find the correct Semgrep API endpoint that 
-    returns deployment/organization information for the authenticated token.
-    
-    Potential endpoints to investigate:
-    - /api/v1/me or /api/v1/user (user info with deployment)
-    - /api/v1/deployments (list deployments for user)  
-    - /api/v1/deployment (current deployment info)
-    
-    Once implemented, this would simplify the CLI to just:
-    python create_semgrep_tag.py <repo_name> <tag_name> [tag_value]
+    Since API tokens are 1:1 with deployments (as noted by @stuartcmehrens),
+    we can automatically get the org slug instead of requiring users to provide it.
     """
-    # Placeholder implementation - requires API research
+    url = "https://semgrep.dev/api/v1/deployments"
+    headers = {
+        "Authorization": f"Bearer {api_token}",
+        "Content-Type": "application/json"
+    }
+    
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            deployments = data.get('deployments', [])
+            if deployments:
+                # API tokens are 1:1 with deployments, so take the first (and likely only) one
+                org_slug = deployments[0].get('slug')
+                if org_slug:
+                    logger.info(f"Auto-detected organization: {org_slug}")
+                    return org_slug
+        else:
+            logger.error(f"Failed to get deployments: {response.status_code} - {response.text}")
+    except Exception as e:
+        logger.error(f"Error auto-detecting organization: {e}")
+    
     return None
 
 
@@ -226,30 +237,41 @@ def list_all_repositories(organization_slug: str, api_token: Optional[str] = Non
 def main():
     """Main function to handle command line usage."""
     if len(sys.argv) < 2:
-        print("Usage: python create_semgrep_tag.py <org_slug> [repo_name] [tag_name] [tag_value] [--list] [--list-all]")
+        print("Usage: python create_semgrep_tag.py [repo_name] [tag_name] [tag_value] [--list-all]")
         print()
         print("Examples:")
         print("  # Create a simple tag")
-        print("  python create_semgrep_tag.py semgrep_org_name your_gh_org/your_repo_name Python-3.7")
+        print("  python create_semgrep_tag.py your_gh_org/your_repo_name Python-3.7")
         print()
         print("  # Create a key-value tag")  
-        print("  python create_semgrep_tag.py semgrep_org_name your_gh_org/your_repo_name language Python")
+        print("  python create_semgrep_tag.py your_gh_org/your_repo_name language Python")
         print()
         print("  # List tags for a specific repository")  
-        print("  python create_semgrep_tag.py semgrep_org_name your_gh_org/your_repo_name --list")
+        print("  python create_semgrep_tag.py your_gh_org/your_repo_name --list")
         print()
         print("  # List all repositories in the organization")
-        print("  python create_semgrep_tag.py semgrep_org_name --list-all")
+        print("  python create_semgrep_tag.py --list-all")
         print()
         print("Environment Variables:")
         print("  SEMGREP_APP_TOKEN - Your Semgrep API token")
+        print()
+        print("Note: Organization is auto-detected from your API token")
         sys.exit(1)
     
-    org_slug = sys.argv[1]
+    # Auto-detect organization slug from API token
+    api_token = os.getenv("SEMGREP_APP_TOKEN")
+    if not api_token:
+        logger.error("SEMGREP_APP_TOKEN environment variable not set")
+        sys.exit(1)
+    
+    org_slug = get_organization_slug(api_token)
+    if not org_slug:
+        logger.error("Could not auto-detect organization from API token")
+        sys.exit(1)
     
     # Handle --list-all flag
-    if len(sys.argv) == 3 and sys.argv[2] == "--list-all":
-        repositories = list_all_repositories(org_slug)
+    if len(sys.argv) == 2 and sys.argv[1] == "--list-all":
+        repositories = list_all_repositories(org_slug, api_token)
         if repositories:
             print(f"✅ Found {len(repositories)} repositories in {org_slug}:")
             for repo in repositories:
@@ -260,30 +282,30 @@ def main():
             print("❌ Failed to get repositories")
         return
     
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         logger.error("Missing repository name")
         sys.exit(1)
     
-    repo_name = sys.argv[2]
+    repo_name = sys.argv[1]
     
     # Handle --list flag for specific repository
-    if len(sys.argv) == 4 and sys.argv[3] == "--list":
-        tags = list_repository_tags(org_slug, repo_name)
+    if len(sys.argv) == 3 and sys.argv[2] == "--list":
+        tags = list_repository_tags(org_slug, repo_name, api_token)
         if tags is not None:
             print(f"✅ Current tags for {repo_name}: {tags}")
         else:
             print(f"❌ Repository not found or error occurred")
         return
     
-    if len(sys.argv) < 4:
+    if len(sys.argv) < 3:
         logger.error("Missing tag_name")
         print("Use --list to see current tags or --list-all to see all repositories")
         sys.exit(1)
     
-    tag_name = sys.argv[3]
-    tag_value = sys.argv[4] if len(sys.argv) > 4 else None
+    tag_name = sys.argv[2]
+    tag_value = sys.argv[3] if len(sys.argv) > 3 else None
     
-    success = create_repository_tag(org_slug, repo_name, tag_name, tag_value)
+    success = create_repository_tag(org_slug, repo_name, tag_name, tag_value, api_token)
     
     if success:
         if tag_value:

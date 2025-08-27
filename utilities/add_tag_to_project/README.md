@@ -24,42 +24,42 @@ export SEMGREP_APP_TOKEN="your_semgrep_api_token_here"
 
 ### Create a simple tag
 ```bash
-python create_semgrep_tag.py <org_slug> <repo_name> <tag_name>
+python create_semgrep_tag.py <repo_name> <tag_name>
 ```
 
 ### Create a key-value tag
 ```bash
-python create_semgrep_tag.py <org_slug> <repo_name> <tag_name> <tag_value>
+python create_semgrep_tag.py <repo_name> <tag_name> <tag_value>
 ```
 
 ### List tags for a specific repository
 ```bash
-python create_semgrep_tag.py <org_slug> <repo_name> --list
+python create_semgrep_tag.py <repo_name> --list
 ```
 
 ### List all repositories in organization
 ```bash
-python create_semgrep_tag.py <org_slug> --list-all
+python create_semgrep_tag.py --list-all
 ```
 
 ## Examples
 
 ```bash
 # Create a simple tag (like managed-scan, Python-3.7)
-python create_semgrep_tag.py semgrep_kyle_sms kyle-semgrep/js-app Python-3.7
+python create_semgrep_tag.py kyle-semgrep/js-app Python-3.7
 
 # Create a key-value tag (like environment:production)
-python create_semgrep_tag.py semgrep_kyle_sms kyle-semgrep/js-app environment production
+python create_semgrep_tag.py kyle-semgrep/js-app environment production
 
 # Create more tags
-python create_semgrep_tag.py semgrep_kyle_sms kyle-semgrep/js-app language JavaScript
-python create_semgrep_tag.py semgrep_kyle_sms kyle-semgrep/js-app team security
+python create_semgrep_tag.py kyle-semgrep/js-app language JavaScript
+python create_semgrep_tag.py kyle-semgrep/js-app team security
 
 # List tags for a specific repository
-python create_semgrep_tag.py semgrep_kyle_sms kyle-semgrep/js-app --list
+python create_semgrep_tag.py kyle-semgrep/js-app --list
 
 # List all repositories in the organization
-python create_semgrep_tag.py semgrep_kyle_sms --list-all
+python create_semgrep_tag.py --list-all
 ```
 
 ## Key Features
@@ -76,7 +76,7 @@ python create_semgrep_tag.py semgrep_kyle_sms --list-all
 Use the `--list-all` flag to find the exact repository name format:
 
 ```bash
-python create_semgrep_tag.py your_org_slug --list-all
+python create_semgrep_tag.py --list-all
 ```
 
 This will show all repositories like:
@@ -87,12 +87,8 @@ This will show all repositories like:
 
 ## Notes
 
-- **Organization Slug**: Use underscores, not dashes (e.g., `semgrep_kyle_sms`)
+- **✅ Auto-detected Organization**: The organization is automatically detected from your API token (no need to specify org slug!)
 - **Repository Name**: Use the full `owner/repo` format (e.g., `kyle-semgrep/js-app`)
 - **API Token**: Set the `SEMGREP_APP_TOKEN` environment variable
 - **Tag Updates**: Existing key-value tags get updated, simple tags are skipped if they exist
 - **Reserved Tags**: System tags like `managed-scan` are preserved automatically
-
-## Future Improvements
-
-- **Auto-detect Organization**: Since API tokens are 1:1 with deployments, the organization slug could be automatically detected, simplifying the CLI to just `python create_semgrep_tag.py <repo_name> <tag_name> [tag_value]`
