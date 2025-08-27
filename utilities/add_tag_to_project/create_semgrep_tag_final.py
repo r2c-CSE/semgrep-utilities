@@ -11,7 +11,16 @@ import sys
 import requests
 import json
 import urllib.parse
+import logging
 from typing import Optional, List
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(levelname)s: %(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
+logger = logging.getLogger(__name__)
 
 
 def get_project_from_list(org_slug: str, project_name: str, api_token: str) -> Optional[dict]:
@@ -30,7 +39,7 @@ def get_project_from_list(org_slug: str, project_name: str, api_token: str) -> O
                 if project.get('name') == project_name:
                     return project
     except Exception as e:
-        print(f"Error getting project list: {e}")
+        logger.error(f"Error getting project list: {e}")
     
     return None
 
@@ -58,26 +67,26 @@ def create_repository_tag(
     if not api_token:
         api_token = os.getenv("SEMGREP_APP_TOKEN")
         if not api_token:
-            print("Error: SEMGREP_APP_TOKEN environment variable not set")
+            logger.error("SEMGREP_APP_TOKEN environment variable not set")
             return False
     
     # First, get the current project data from the list endpoint to see actual tags
     project_data = get_project_from_list(organization_slug, repository_name, api_token)
     if not project_data:
-        print(f"❌ Could not find project: {repository_name}")
+        logger.error(f"Could not find project: {repository_name}")
         return False
     
-    print(f"Found project: {project_data['name']}")
+    logger.info(f"Found project: {project_data['name']}")
     current_tags = project_data.get('tags', [])
-    print(f"Current tags: {current_tags}")
+    logger.info(f"Current tags: {current_tags}")
     
     # Create new tag (simple tag or key:value format)
     if tag_value is None:
         new_tag = tag_name
-        print(f"Creating simple tag: '{tag_name}'")
+        logger.info(f"Creating simple tag: '{tag_name}'")
     else:
         new_tag = f"{tag_name}:{tag_value}"
-        print(f"Creating key-value tag: '{tag_name}:{tag_value}'")
+        logger.info(f"Creating key-value tag: '{tag_name}:{tag_value}'")
     
     # Check if tag already exists and update, or add new
     updated_tags = []
@@ -89,7 +98,7 @@ def create_repository_tag(
         if tag_value is None:
             if existing_tag == tag_name:
                 tag_found = True
-                print(f"Tag '{tag_name}' already exists")
+                logger.info(f"Tag '{tag_name}' already exists")
                 updated_tags.append(existing_tag)  # Keep as-is
             else:
                 updated_tags.append(existing_tag)
@@ -97,16 +106,16 @@ def create_repository_tag(
             if existing_tag.startswith(f"{tag_name}:"):
                 updated_tags.append(new_tag)
                 tag_found = True
-                print(f"Updating existing tag '{tag_name}' from '{existing_tag}' to '{new_tag}'")
+                logger.info(f"Updating existing tag '{tag_name}' from '{existing_tag}' to '{new_tag}'")
             else:
                 updated_tags.append(existing_tag)
     
     if not tag_found:
         updated_tags.append(new_tag)
         if tag_value is None:
-            print(f"Adding new simple tag '{tag_name}'")
+            logger.info(f"Adding new simple tag '{tag_name}'")
         else:
-            print(f"Adding new key-value tag '{tag_name}:{tag_value}'")
+            logger.info(f"Adding new key-value tag '{tag_name}:{tag_value}'")
     
     # Now update using the individual project endpoint
     encoded_repo_name = urllib.parse.quote(repository_name, safe='')
@@ -120,23 +129,23 @@ def create_repository_tag(
     payload = {"tags": updated_tags}
     
     try:
-        print(f"Updating tags to: {updated_tags}")
+        logger.info(f"Updating tags to: {updated_tags}")
         response = requests.patch(url, headers=headers, json=payload, timeout=30)
         
         if response.status_code in [200, 201]:
-            print(f"✅ Tag operation successful!")
+            logger.info("Tag operation successful!")
             # Verify by getting updated tags
             updated_project_data = get_project_from_list(organization_slug, repository_name, api_token)
             if updated_project_data:
-                print(f"Verified tags: {updated_project_data.get('tags', [])}")
+                logger.info(f"Verified tags: {updated_project_data.get('tags', [])}")
             return True
         else:
-            print(f"❌ Failed to create tag. Status code: {response.status_code}")
-            print(f"Response: {response.text}")
+            logger.error(f"Failed to create tag. Status code: {response.status_code}")
+            logger.error(f"Response: {response.text}")
             return False
             
     except Exception as e:
-        print(f"❌ Error: {e}")
+        logger.error(f"Error: {e}")
         return False
 
 
@@ -159,7 +168,7 @@ def list_repository_tags(
     if not api_token:
         api_token = os.getenv("SEMGREP_APP_TOKEN")
         if not api_token:
-            print("Error: SEMGREP_APP_TOKEN environment variable not set")
+            logger.error("SEMGREP_APP_TOKEN environment variable not set")
             return None
     
     project_data = get_project_from_list(organization_slug, repository_name, api_token)
@@ -173,7 +182,7 @@ def list_all_repositories(organization_slug: str, api_token: Optional[str] = Non
     if not api_token:
         api_token = os.getenv("SEMGREP_APP_TOKEN")
         if not api_token:
-            print("Error: SEMGREP_APP_TOKEN environment variable not set")
+            logger.error("SEMGREP_APP_TOKEN environment variable not set")
             return None
     
     url = f"https://semgrep.dev/api/v1/deployments/{organization_slug}/projects"
@@ -188,7 +197,7 @@ def list_all_repositories(organization_slug: str, api_token: Optional[str] = Non
             data = response.json()
             return data.get('projects', [])
     except Exception as e:
-        print(f"Error getting repositories: {e}")
+        logger.error(f"Error getting repositories: {e}")
     
     return None
 
@@ -231,7 +240,7 @@ def main():
         return
     
     if len(sys.argv) < 3:
-        print("Error: Missing repository name")
+        logger.error("Missing repository name")
         sys.exit(1)
     
     repo_name = sys.argv[2]
@@ -246,7 +255,7 @@ def main():
         return
     
     if len(sys.argv) < 4:
-        print("Error: Missing tag_name")
+        logger.error("Missing tag_name")
         print("Use --list to see current tags or --list-all to see all repositories")
         sys.exit(1)
     
