@@ -25,14 +25,10 @@ This tool helps estimate the number of active contributors within organizations 
 ### Setup
 
 1. Clone this repository and navigate to the `utilities/contributors` directory
-2. Install the package using uv (recommended) or pip:
+2. Install the package using uv:
 
 ```bash
-# Using uv (recommended)
 uv sync
-
-# Or using pip
-pip install -e .
 ```
 
 ### Docker
@@ -47,10 +43,10 @@ docker build -t semgrep-contributors .
 docker run --rm \
   -e GITHUB_API_KEY=your_token_here \
   -v $(pwd):/workspace \
-  semgrep-contributors github \
+  semgrep-contributors get-contributors github \
   --org-name your-org \
   --number-of-days 30 \
-  --output-filename /workspace/contributors.json
+  --output-dir /workspace
 ```
 
 **Docker Options:**
@@ -62,16 +58,16 @@ docker run --rm \
 **Example for all platforms:**
 ```bash
 # GitHub
-docker run --rm -e GITHUB_API_KEY=your_token semgrep-contributors github --org-name my-org
+docker run --rm -e GITHUB_API_KEY=your_token semgrep-contributors    get-contributors github --org-name my-org
 
 # GitLab
-docker run --rm -e GITLAB_API_KEY=your_token semgrep-contributors gitlab --hostname gitlab.company.com
+docker run --rm -e GITLAB_API_KEY=your_token semgrep-contributors get-contributors gitlab --hostname gitlab.company.com
 
 # Bitbucket
-docker run --rm -e BITBUCKET_API_KEY=your_token -e BITBUCKET_WORKSPACE=my-workspace semgrep-contributors bitbucket
+docker run --rm -e BITBUCKET_API_KEY=your_token -e BITBUCKET_WORKSPACE=my-workspace semgrep-contributors get-contributors bitbucket
 
 # Azure DevOps
-docker run --rm -e AZURE_DEVOPS_API_KEY=your_token -e AZURE_DEVOPS_ORGANIZATION=my-org semgrep-contributors azure-devops
+docker run --rm -e AZURE_DEVOPS_API_KEY=your_token -e AZURE_DEVOPS_ORGANIZATION=my-org semgrep-contributors get-contributors azure-devops
 ```
 
 ## Usage
@@ -92,33 +88,33 @@ semgrep-contributors [OPTIONS] COMMAND [ARGS]...
 #### GitHub
 
 ```bash
-semgrep-contributors github [OPTIONS]
+semgrep-contributors get-contributors github [OPTIONS]
 ```
 
 **Options:**
 - `--api-key TEXT`: GitHub API key (or set `GITHUB_API_KEY` environment variable)
 - `--org-name TEXT`: Name of the GitHub organization (required)
 - `--number-of-days INTEGER`: Number of days to analyze (default: 30)
-- `--output-filename TEXT`: Output JSON file path (optional)
+- `--output-dir TEXT`: Output directory for JSON files (optional). Files are automatically named as `{platform}-contributors-{date}.json`
 - `--repo-file PATH`: File containing repository names to filter (optional)
 - `--repositories TEXT`: Comma-separated list of repositories to analyze (optional)
 
 **Example:**
 ```bash
 export GITHUB_API_KEY=ghp_your_token_here
-semgrep-contributors github --org-name r2c-cse --number-of-days 90 --output-filename github_contributors.json
+semgrep-contributors get-contributors github --org-name r2c-cse --number-of-days 90 --output-dir .
 ```
 
 #### GitLab
 
 ```bash
-semgrep-contributors gitlab [OPTIONS]
+semgrep-contributors get-contributors gitlab [OPTIONS]
 ```
 
 **Options:**
 - `--api-key TEXT`: GitLab API key (or set `GITLAB_API_KEY` environment variable)
 - `--number-of-days INTEGER`: Number of days to analyze (default: 30)
-- `--output-filename TEXT`: Output JSON file path (optional)
+- `--output-dir TEXT`: Output JSON file path (optional)
 - `--repo-file PATH`: File containing repository names to filter (optional)
 - `--hostname TEXT`: GitLab instance hostname (default: gitlab.com)
 - `--group TEXT`: GitLab group to analyze (optional)
@@ -127,20 +123,20 @@ semgrep-contributors gitlab [OPTIONS]
 **Example:**
 ```bash
 export GITLAB_API_KEY=glpat_your_token_here
-semgrep-contributors gitlab --hostname gitlab.company.com --group my-group --number-of-days 60
+semgrep-contributors get-contributors gitlab --hostname gitlab.company.com --group my-group --number-of-days 60
 ```
 
 #### Bitbucket
 
 ```bash
-semgrep-contributors bitbucket [OPTIONS]
+semgrep-contributors get-contributors bitbucket [OPTIONS]
 ```
 
 **Options:**
 - `--api-key TEXT`: Bitbucket API key (or set `BITBUCKET_API_KEY` environment variable)
 - `--workspace TEXT`: Bitbucket workspace (or set `BITBUCKET_WORKSPACE` environment variable)
 - `--number-of-days INTEGER`: Number of days to analyze (default: 30)
-- `--output-filename TEXT`: Output JSON file path (optional)
+- `--output-dir TEXT`: Output directory for JSON files (optional). Files are automatically named as `{platform}-contributors-{date}.json`
 - `--repo-file PATH`: File containing repository names to filter (optional)
 - `--repositories TEXT`: Comma-separated list of repositories to analyze (optional)
 
@@ -148,20 +144,20 @@ semgrep-contributors bitbucket [OPTIONS]
 ```bash
 export BITBUCKET_API_KEY=your_token_here
 export BITBUCKET_WORKSPACE=my-workspace
-semgrep-contributors bitbucket --number-of-days 45 --output-filename bitbucket_contributors.json
+semgrep-contributors get-contributors bitbucket --number-of-days 45 --output-dir .
 ```
 
 #### Azure DevOps
 
 ```bash
-semgrep-contributors azure-devops [OPTIONS]
+semgrep-contributors get-contributors azure-devops [OPTIONS]
 ```
 
 **Options:**
 - `--api-key TEXT`: Azure DevOps API key (or set `AZURE_DEVOPS_API_KEY` environment variable)
 - `--organization TEXT`: Azure DevOps organization (or set `AZURE_DEVOPS_ORGANIZATION` environment variable)
 - `--number-of-days INTEGER`: Number of days to analyze (default: 30)
-- `--output-filename TEXT`: Output JSON file path (optional)
+- `--output-dir TEXT`: Output directory for JSON files (optional). Files are automatically named as `{platform}-contributors-{date}.json`
 - `--repo-file PATH`: File containing repository names to filter (optional)
 - `--repositories TEXT`: Comma-separated list of repositories to analyze (optional)
 
@@ -169,7 +165,7 @@ semgrep-contributors azure-devops [OPTIONS]
 ```bash
 export AZURE_DEVOPS_API_KEY=your_pat_token_here
 export AZURE_DEVOPS_ORGANIZATION=my-org
-semgrep-contributors azure-devops --number-of-days 30 --output-filename azure_contributors.json
+semgrep-contributors get-contributors azure-devops --number-of-days 30 --output-dir .
 ```
 
 ## API Key Requirements
@@ -262,9 +258,9 @@ my-repo-3
 
 Usage:
 ```bash
-semgrep-contributors github --org-name my-org --repo-file repos.txt
+semgrep-contributors get-contributors github --org-name my-org --repo-file repos.txt
 # or
-semgrep-contributors github --org-name my-org --repositories "repo1,repo2,repo3"
+semgrep-contributors get-contributors github --org-name my-org --repositories "repo1,repo2,repo3"
 ```
 
 ## Development
