@@ -58,7 +58,7 @@ docker run --rm \
 **Example for all platforms:**
 ```bash
 # GitHub
-docker run --rm -e GITHUB_API_KEY=your_token semgrep-contributors    get-contributors github --org-name my-org
+docker run --rm -e GITHUB_API_KEY=your_token semgrep-contributors get-contributors github --org-name my-org
 
 # GitLab
 docker run --rm -e GITLAB_API_KEY=your_token semgrep-contributors get-contributors gitlab --hostname gitlab.company.com
