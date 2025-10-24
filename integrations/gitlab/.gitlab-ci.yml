@@ -1,0 +1,80 @@
+stages:
+- retrieve
+- transform
+- import
+
+retrieve-findings-with-api:
+  stage: retrieve
+  image: python:3.9-bullseye
+  script:
+   - echo "Download Python Script"
+   - pip3 install requests
+   - curl -O https://raw.githubusercontent.com/r2c-CSE/semgrep-utilities/DUMP_FINDINGS_TO_GITLAB_USING_SMS/integrations/gitlab/get_findings_json_format.py
+   - python3 get_findings_json_format.py
+  variables:
+    SEMGREP_APP_TOKEN: $SEMGREP_APP_TOKEN
+    SEMGREP_REPO_NAME: $CI_PROJECT_PATH
+    SEMGREP_PRIMARY_BRANCH: $CI_DEFAULT_BRANCH
+  artifacts:
+     paths:
+     - sast-api-report.json
+     - sca-api-report.json
+
+transform-sast-to-gitlab-report:
+  stage: transform
+  image: python:3.9-bullseye
+  dependencies:
+   - retrieve-findings-with-api
+  script:
+   - echo "Download Python Script"
+   - pip3 install argparse
+   - curl -O https://raw.githubusercontent.com/r2c-CSE/semgrep-utilities/DUMP_FINDINGS_TO_GITLAB_USING_SMS/integrations/gitlab/convert_sast_to_gl_sast.py
+   - python3 convert_sast_to_gl_sast.py
+  artifacts:
+     paths:
+     - gl-sast-report.json
+
+transform-api-sca-report-to-json-report:
+  stage: transform
+  image: python:3.9-bullseye
+  dependencies:
+   - retrieve-findings-with-api
+  script:
+   - echo "Download Python Script"
+   - pip3 install argparse
+   - curl -O https://raw.githubusercontent.com/r2c-CSE/semgrep-utilities/DUMP_FINDINGS_TO_GITLAB_USING_SMS/integrations/gitlab/convert_sca_api_report_to_json_report.py
+   - python3 convert_sca_api_report_to_json_report.py sca-api-report.json report-ssc.json
+  artifacts:
+     paths:
+     - report-ssc.json
+
+import-sast-report:
+  image: alpine:latest
+  stage: import
+  dependencies:
+    - transform-sast-to-gitlab-report
+  script:
+    - echo "Importing SAST report"
+  artifacts:
+    reports:
+      sast:
+        - gl-sast-report.json
+
+
+import-semgrep-dependency-scanning:
+  stage: import
+  image: python:3.9-bullseye
+  dependencies:
+   - transform-api-sca-report-to-json-report
+  script:
+   - echo "Download Python Script"
+   - pip3 install argparse
+   - curl -O https://raw.githubusercontent.com/r2c-CSE/semgrep-utilities/main/integrations/gitlab/scaGitLabScript.py
+   - python3 scaGitLabScript.py report-ssc.json --lowering-unreachable true
+   - echo "Importing SCA report"
+  artifacts:
+     reports:
+       dependency_scanning: gl-dependency-scanning-report.json
+     paths:
+     - gl-dependency-scanning-report.json
+
