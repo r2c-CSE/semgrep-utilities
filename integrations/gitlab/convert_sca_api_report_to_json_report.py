@@ -27,6 +27,7 @@ import json
 import sys
 import re
 from typing import Any, Dict, List
+from datetime import datetime
 
 def safe_get(d: Any, path: List[str], default: Any = None) -> Any:
     cur = d
@@ -194,14 +195,20 @@ def convert_finding(f: Dict[str, Any]) -> Dict[str, Any]:
         "extra": extra,
     }
 
+def current_iso_no_ms():
+    """Return current UTC time formatted as YYYY-MM-DDTHH:MM:SS"""
+    return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
+
+
 def skeleton() -> Dict[str, Any]:
     # A minimal but structurally accurate shell for report-scan-sca.json
+    now_str = current_iso_no_ms()
     return {
-        "version": "N/A",
+        "version": "latest",
         "results": [],
         "errors": [],
         "paths": {"scanned": [], "skipped": []},
-        "time": {"start": "N/A", "end": "N/A", "max_memory_bytes": 0, "elapsed": 0.0},
+        "time": {"start": now_str, "end": now_str, "max_memory_bytes": 0, "elapsed": 0.0},
         "engine_requested": ["supply-chain"],
         "interfile_languages_used": [],
         "skipped_rules": [],
