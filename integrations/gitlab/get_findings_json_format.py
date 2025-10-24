@@ -58,17 +58,6 @@ def get_projects(deployment_slug, headers):
     projects = retrieve_paginated_data(f"{BASE_URL}/{deployment_slug}/projects", "projects", 200, headers=headers)
     return projects
     
-def get_all_findings(projects, headers):
-    """
-    Gets all findings for all projects.
-    """
-    for project in projects['projects']:
-        project_name = project['name']
-        primary_branch = project['primary_branch']
-        primary_branch = primary_branch.replace("refs/heads/", "") # To get master (main) instead of refs/heads/master (refs/heads/main)
-        print("Getting findings for: " + project_name)
-        get_findings_per_project(deployment_slug, project_name, primary_branch, headers)    
-
 def get_findings_per_project(deployment_slug, project, primary_branch, headers):
     """
     Gets all findings for a project, and writes them to a file.
@@ -77,7 +66,7 @@ def get_findings_per_project(deployment_slug, project, primary_branch, headers):
     For example, if you want to retrieve open findings, then "open", "fixing", and "reviewing" statutes should be used.
     Note: You must retrieve all statuses or one status at a time. &status=open,fixing or &status=open|fixing or doesn't work. 
     """
-    desired_statuses = ["open", "fixing", "reviewing", "fixed", "ignored"]
+    desired_statuses = ["open"]
     merged_findings = {"findings": []}
     findings_url = f"{BASE_URL}/{deployment_slug}/findings?repos={project}&dedup=false"
     for status in desired_statuses:
@@ -98,10 +87,11 @@ if __name__ == "__main__":
     try:  
         SEMGREP_APP_TOKEN = os.getenv("SEMGREP_APP_TOKEN") 
         SEMGREP_REPO_NAME = os.getenv("SEMGREP_REPO_NAME") 
+        SEMGREP_PRIMARY_BRANCH = os.getenv("SEMGREP_PRIMARY_BRANCH") 
     except KeyError: 
         print("Please set the environment variable SEMGREP_APP_TOKEN") 
         sys.exit(1)
     default_headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
     deployment_slug = get_deployment(default_headers)
     # Uncomment the following line and add a project name to generate a JSON file for a single project
-    # get_findings_per_project(deployment_slug, SEMGREP_REPO_NAME, default_headers) 
+    get_findings_per_project(deployment_slug, SEMGREP_REPO_NAME, SEMGREP_PRIMARY_BRANCH, default_headers) 
