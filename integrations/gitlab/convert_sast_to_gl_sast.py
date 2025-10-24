@@ -93,4 +93,21 @@ def sast_to_gitlab(input_path, output_path):
                 "id": "semgrep",
                 "name": "Semgrep",
                 "url": "https://semgrep.dev",
-                "versi
+                "version": "latest",
+                "vendor": {"name": "Semgrep"}
+            },
+            "version": "latest",
+            "status": "success",
+            "type": "sast"
+        },
+        "vulnerabilities": vulnerabilities
+    }
+
+    with open(output_path, "w") as f:
+        json.dump(gl_sast, f, indent=2)
+
+    print(f"✅ Converted {len(vulnerabilities)} findings into GitLab SAST format → {output_path}")
+
+
+if __name__ == "__main__":
+    sast_to_gitlab("sast-api-report.json", "gl-sast-report.json")
