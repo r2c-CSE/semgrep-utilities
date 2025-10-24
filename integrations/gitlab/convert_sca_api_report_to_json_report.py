@@ -74,6 +74,7 @@ def build_metadata(f: Dict[str, Any]) -> Dict[str, Any]:
     owasp = rule.get("owasp_names") or []
     cwe = rule.get("cwe_names") or []
     vuln_classes = rule.get("vulnerability_classes") or []
+    rule_name = rule.get("name") or []
 
     # Translate fix_recommendations list[{"package": "...", "version":"..."}] into
     # Semgrep's "sca-fix-versions" style: [{"<pkg>": "<ver>"}...]
@@ -101,11 +102,11 @@ def build_metadata(f: Dict[str, Any]) -> Dict[str, Any]:
         "sca-reachable-if": f.get("reachable_condition") or "",
         "sca-schema": 20230302,
         "sca-severity": get_sca_severity(f.get("severity")),
-        "sca-vuln-database-identifier": vuln_id or "N/A",
+        "sca-vuln-database-identifier": vuln_id,
         "technology": technology,
         "license": "N/A",
         "vulnerability_class": vuln_classes,
-        "semgrep.dev": {"rule": {"url": "N/A"}, "src": "unchanged"},
+        "semgrep.dev": {"rule": {"url": ""+"https://semgrep.dev/orgs/-/supply-chain/advisories?q="+rule_name}, "src": "unchanged"},
         "source": "N/A",
         "semgrep.url": "N/A",
         "dev.semgrep.actions": [],
