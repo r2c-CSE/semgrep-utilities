@@ -105,4 +105,4 @@ def sast_to_gitlab(input_path, output_path):
 
 
 if __name__ == "__main__":
-    sast_to_gitlab("sast-report.json", "gl-sast-report.json")
+    sast_to_gitlab("sast-api-report.json", "gl-sast-report.json")
