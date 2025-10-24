@@ -78,7 +78,7 @@ def get_findings_per_project(deployment_slug, project, primary_branch, headers, 
         merged_findings["findings"].extend(merged_results.get("findings", []))
 
     json_merged_findings = json.dumps(merged_findings)
-    file_path = type + "-report.json"
+    file_path = type + "-api-report.json"
     with open(file_path, "w") as file:
          file.write(json_merged_findings)
 
