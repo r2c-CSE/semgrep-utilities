@@ -21,6 +21,10 @@ def convert_confidence(confidence):
     }
     return mapping.get(confidence.lower(), "UNKNOWN")
 
+def current_iso_no_ms():
+    """Return current UTC time formatted as YYYY-MM-DDTHH:MM:SS"""
+    return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
+
 def sast_to_gitlab(input_path, output_path):
     with open(input_path, "r") as f:
         semgrep_data = json.load(f)
@@ -71,12 +75,13 @@ def sast_to_gitlab(input_path, output_path):
         }
         vulnerabilities.append(vuln)
 
+    now_str = current_iso_no_ms()
     gl_sast = {
         "$schema": "https://gitlab.com/gitlab-org/security-products/security-report-schemas/-/blob/master/dist/sast-report-format.json",
         "version": "15.0.4",
         "scan": {
-            "start_time": datetime.utcnow().isoformat(),
-            "end_time": datetime.utcnow().isoformat(),
+            "start_time": now_str,
+            "end_time": now_str,
             "analyzer": {
                 "id": "semgrep",
                 "name": "Semgrep",
@@ -88,21 +93,4 @@ def sast_to_gitlab(input_path, output_path):
                 "id": "semgrep",
                 "name": "Semgrep",
                 "url": "https://semgrep.dev",
-                "version": "latest",
-                "vendor": {"name": "Semgrep"}
-            },
-            "version": "latest",
-            "status": "success",
-            "type": "sast"
-        },
-        "vulnerabilities": vulnerabilities
-    }
-
-    with open(output_path, "w") as f:
-        json.dump(gl_sast, f, indent=2)
-
-    print(f"✅ Converted {len(vulnerabilities)} findings into GitLab SAST format → {output_path}")
-
-
-if __name__ == "__main__":
-    sast_to_gitlab("sast-api-report.json", "gl-sast-report.json")
+                "versi
