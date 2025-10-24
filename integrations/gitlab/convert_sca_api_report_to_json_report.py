@@ -100,7 +100,7 @@ def build_metadata(f: Dict[str, Any]) -> Dict[str, Any]:
         "sca-kind": "N/A",
         "sca-reachable-if": f.get("reachable_condition") or "",
         "sca-schema": 20230302,
-        "sca-severity": (f.get("severity") or "N/A").upper(),
+        "sca-severity": get_sca_severity(f.get("severity")),
         "sca-vuln-database-identifier": vuln_id or "N/A",
         "technology": technology,
         "license": "N/A",
@@ -112,6 +112,23 @@ def build_metadata(f: Dict[str, Any]) -> Dict[str, Any]:
     }
     return metadata
 
+def get_sca_severity(severity: str) -> str:
+    """Normalize SCA severity values to match expected naming conventions."""
+    if not severity:
+        return "UNKNOWN"
+
+    mapping = {
+        "LOW": "LOW",
+        "MEDIUM": "MODERATE",
+        "MODERATE": "MODERATE",
+        "HIGH": "HIGH",
+        "CRITICAL": "CRITICAL",
+        "INFO": "INFO",
+        "INFORMATIONAL": "INFO",
+    }
+
+    return mapping.get(severity.strip().upper(), "UNKNOWN")
+
 def build_sca_info(f: Dict[str, Any]) -> Dict[str, Any]:
     loc = f.get("location", {}) or {}
     found_dep = f.get("found_dependency", {}) or {}
@@ -121,7 +138,7 @@ def build_sca_info(f: Dict[str, Any]) -> Dict[str, Any]:
     # Build found_dependency structure; package can be None if missing
     fd_struct = {
         "package": found_dep.get("package", None),
-        "version": found_dep.get("version") or "N/A",
+        "version": found_dep.get("version") or "latest",
         "ecosystem": (found_dep.get("ecosystem") or "N/A"),
         "allowed_hashes": {},
         "transitivity": found_dep.get("transitivity") or "unknown",
