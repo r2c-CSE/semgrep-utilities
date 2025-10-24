@@ -14,7 +14,6 @@ def map_severity(api_sev: str) -> str:
     s = api_sev.lower()
     if s in ("critical", "high"):
         return "ERROR"
-    # SCC samples often show MODERATE/MEDIUM as ERROR as well
     if s in ("medium", "moderate"):
         return "ERROR"
     return "WARNING"
@@ -34,6 +33,50 @@ def ensure_list(x):
         return []
     return x if isinstance(x, list) else [x]
 
+def coalesce_references(finding: dict) -> list:
+    """Collect reference URLs/strings from a variety of common fields."""
+    rule_block = finding.get("rule") or {}
+    refs = []
+
+    # Direct string/list fields
+    for key in [
+        "references", "reference_urls", "links", "urls", "advisory_urls",
+        "documentation", "docs", "sources"
+    ]:
+        val = finding.get(key) or rule_block.get(key)
+        if isinstance(val, str):
+            refs.append(val)
+        elif isinstance(val, list):
+            refs.extend([v for v in val if isinstance(v, str)])
+
+    # Nested advisory-ish structures
+    for adv_key in ["advisories", "advisory", "vulnerabilities", "cve", "ghsa"]:
+        adv = finding.get(adv_key) or rule_block.get(adv_key)
+        if isinstance(adv, dict):
+            for k in ["url", "reference", "link"]:
+                if isinstance(adv.get(k), str):
+                    refs.append(adv[k])
+        elif isinstance(adv, list):
+            for a in adv:
+                if isinstance(a, dict):
+                    for k in ["url", "reference", "link"]:
+                        if isinstance(a.get(k), str):
+                            refs.append(a[k])
+
+    # Singular URL helpers
+    for key in ["cve_url", "ghsa_url", "advisory_url"]:
+        val = finding.get(key) or rule_block.get(key)
+        if isinstance(val, str):
+            refs.append(val)
+
+    # Deduplicate, preserve order
+    seen, uniq = set(), []
+    for r in refs:
+        if r and r not in seen:
+            seen.add(r)
+            uniq.append(r)
+    return uniq
+
 def convert(api_data: dict, tool_version: str = "1.140.0") -> dict:
     findings = api_data.get("findings") or []
     results = []
@@ -50,7 +93,7 @@ def convert(api_data: dict, tool_version: str = "1.140.0") -> dict:
         rule_block = fnd.get("rule") or {}
         message = fnd.get("rule_message") or rule_block.get("message") or ""
 
-        vuln_id = fnd.get("vulnerability_identifier")  # CVE-...
+        vuln_id = fnd.get("vulnerability_identifier")
         cwe_names = ensure_list(rule_block.get("cwe_names") or fnd.get("cwe_names"))
         owasp_names = ensure_list(rule_block.get("owasp_names") or fnd.get("owasp_names"))
         vuln_classes = ensure_list(rule_block.get("vulnerability_classes") or fnd.get("vulnerability_classes"))
@@ -64,10 +107,8 @@ def convert(api_data: dict, tool_version: str = "1.140.0") -> dict:
         lockfile_path = fd.get("lockfile_path") or (loc.get("file_path") or "")
         lock_line = parse_line_number_from_url(fd.get("lockfile_line_url")) or (line if isinstance(line, int) else None)
 
-        # SCC “lines” field e.g. "urllib3==1.23"
         lines_str = f"{package}=={version}" if package and version else ""
 
-        # “sca-fix-versions” in SCC extra.metadata wants a list of {package: version}
         fixes = []
         for fr in ensure_list(fnd.get("fix_recommendations")):
             p = fr.get("package") or package
@@ -78,14 +119,14 @@ def convert(api_data: dict, tool_version: str = "1.140.0") -> dict:
         reachability = fnd.get("reachability")
         reachable_flag = reachability_rule_flag(reachability)
         sca_kind = sca_kind_from_reachability(reachability)
+        references = coalesce_references(fnd)
 
-        # fingerprint: prefer match_based_id, else syntactic_id, else deterministic hash
         fp = fnd.get("match_based_id") or fnd.get("syntactic_id")
         if not fp:
             h = hashlib.sha256(f"{rule_name}|{file_path}|{package}|{version}|{vuln_id}".encode()).hexdigest()
             fp = f"{h}_0"
 
-        result = {
+        results.append({
             "check_id": rule_name,
             "path": file_path,
             "start": {"line": line, "col": col, "offset": 0},
@@ -99,6 +140,7 @@ def convert(api_data: dict, tool_version: str = "1.140.0") -> dict:
                     "cve": vuln_id,
                     "cwe": cwe_names,
                     "owasp": owasp_names,
+                    "references": references,  # <-- now included
                     "sca-fix-versions": fixes,
                     "sca-kind": sca_kind,
                     "sca-schema": 20230302,
@@ -120,7 +162,7 @@ def convert(api_data: dict, tool_version: str = "1.140.0") -> dict:
                     "dependency_pattern": {
                         "ecosystem": eco,
                         "package": package,
-                        "semver_range": None  # not provided by API; left as None
+                        "semver_range": None
                     },
                     "found_dependency": {
                         "package": package,
@@ -136,9 +178,7 @@ def convert(api_data: dict, tool_version: str = "1.140.0") -> dict:
                 "reachable": reachable_flag
             },
             "engine_kind": "OSS"
-        }
-
-        results.append(result)
+        })
 
     return {"version": tool_version, "results": results}
 
