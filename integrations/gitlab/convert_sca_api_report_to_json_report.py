@@ -144,7 +144,7 @@ def convert(api_data: dict, tool_version: str = "1.140.0") -> dict:
 
 def main():
     inp = Path("sca-api-report.json")
-    outp = Path("report-scc.json")
+    outp = Path("report-ssc.json")
     data = json.loads(Path(inp).read_text(encoding="utf-8"))
     converted = convert(data)
     outp.write_text(json.dumps(converted, indent=2, ensure_ascii=False), encoding="utf-8")
