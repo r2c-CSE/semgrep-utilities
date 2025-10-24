@@ -58,7 +58,7 @@ def get_projects(deployment_slug, headers):
     projects = retrieve_paginated_data(f"{BASE_URL}/{deployment_slug}/projects", "projects", 200, headers=headers)
     return projects
     
-def get_findings_per_project(deployment_slug, project, primary_branch, headers):
+def get_findings_per_project(deployment_slug, project, primary_branch, headers, type):
     """
     Gets all findings for a project, and writes them to a file.
     The file format is equivalent to what the API would return if it weren't paginated.
@@ -68,7 +68,7 @@ def get_findings_per_project(deployment_slug, project, primary_branch, headers):
     """
     desired_statuses = ["open"]
     merged_findings = {"findings": []}
-    findings_url = f"{BASE_URL}/{deployment_slug}/findings?repos={project}&dedup=false"
+    findings_url = f"{BASE_URL}/{deployment_slug}/findings?repos={project}&dedup=false&issue_type={type}"
     for status in desired_statuses:
         findings_url = f"{findings_url}&status={status}"
         if USE_PRIMARY_BRANCH_PARAM:
@@ -78,7 +78,7 @@ def get_findings_per_project(deployment_slug, project, primary_branch, headers):
         merged_findings["findings"].extend(merged_results.get("findings", []))
 
     json_merged_findings = json.dumps(merged_findings)
-    file_path = "sast-report.json"
+    file_path = type + "-report.json"
     with open(file_path, "w") as file:
          file.write(json_merged_findings)
 
@@ -94,4 +94,5 @@ if __name__ == "__main__":
     default_headers = {"Accept": "application/json", "Authorization": "Bearer " + SEMGREP_APP_TOKEN}
     deployment_slug = get_deployment(default_headers)
     # Uncomment the following line and add a project name to generate a JSON file for a single project
-    get_findings_per_project(deployment_slug, SEMGREP_REPO_NAME, SEMGREP_PRIMARY_BRANCH, default_headers) 
+    get_findings_per_project(deployment_slug, SEMGREP_REPO_NAME, SEMGREP_PRIMARY_BRANCH, default_headers, "sast")
+    get_findings_per_project(deployment_slug, SEMGREP_REPO_NAME, SEMGREP_PRIMARY_BRANCH, default_headers, "sca") 
