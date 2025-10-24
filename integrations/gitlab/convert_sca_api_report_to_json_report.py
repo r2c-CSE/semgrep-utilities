@@ -143,11 +143,8 @@ def convert(api_data: dict, tool_version: str = "1.140.0") -> dict:
     return {"version": tool_version, "results": results}
 
 def main():
-    if len(sys.argv) < 3:
-        print("Usage: python convert_sca_api_report_to_json_report.py <sca-api-report.json> <report-scc.json>")
-        sys.exit(1)
-    inp = Path(sys.argv[1])
-    outp = Path(sys.argv[2])
+    inp = Path("sca-api-report.json")
+    outp = Path("report-scc.json")
     data = json.loads(Path(inp).read_text(encoding="utf-8"))
     converted = convert(data)
     outp.write_text(json.dumps(converted, indent=2, ensure_ascii=False), encoding="utf-8")
