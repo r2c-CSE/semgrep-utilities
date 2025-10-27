@@ -138,7 +138,7 @@ def build_sca_info(f: Dict[str, Any]) -> Dict[str, Any]:
 
     # Normalize reachability value for consistent comparison
     reachability_val = str(f.get("reachability", "")).strip().lower()
-    is_reachable = reachability_val in {"reachable", "conditionally reachable"}
+    is_reachable = reachability_val in {"reachable", "conditionally reachable", "always reachable"}
 
     # Build found_dependency structure; package can be None if missing
     fd_struct = {
