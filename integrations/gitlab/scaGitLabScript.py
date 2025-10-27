@@ -26,6 +26,7 @@ def conversion_semgrep_to_gitlab(report_semgrep, data, lowering_unreachable):
                             "name": package_name + " - " + cwe_title,
                             "description": vuln.get('extra')['message'],
                             "reachable": get_exposure(vuln),
+                            "epss": get_epss(vuln),
                             "severity": get_severity(vuln, lowering_unreachable),
                             "solution": "Upgrade dependencies to fixed versions: "+get_solution(vuln), 
                             "location": {
@@ -112,6 +113,30 @@ def get_severity(vuln, lowering_unreachable):
         if exposure == "Unreachable":
             severity = "Info"
     return severity
+
+def get_epss(vuln: dict) -> str:
+    """
+    Safely retrieves and formats the EPSS score from a vulnerability dictionary.
+
+    Returns:
+        str: The EPSS score as a percentage string (e.g., "42.3%")
+             or "?" if the score is missing or invalid.
+    """
+    try:
+        epss_data = vuln.get("epss_score") or {}
+        score = epss_data.get("score")
+
+        if score is None:
+            return "?"
+
+        # Ensure it's numeric before formatting
+        if isinstance(score, (int, float)):
+            return f"{score * 100:.2f}%"
+        else:
+            return "?"
+    except Exception:
+        return "?"
+
 
 def get_exposure(vuln):
 
