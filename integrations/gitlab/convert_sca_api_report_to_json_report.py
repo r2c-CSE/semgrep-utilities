@@ -136,11 +136,15 @@ def build_sca_info(f: Dict[str, Any]) -> Dict[str, Any]:
     lockfile_path = loc.get("file_path") or "N/A"
     line_num = parse_line_number_from_url((found_dep.get("lockfile_line_url") or ""))
 
+    # Normalize reachability value for consistent comparison
+    reachability_val = str(f.get("reachability", "")).strip().lower()
+    is_reachable = reachability_val in {"reachable", "conditionally reachable"}
+
     # Build found_dependency structure; package can be None if missing
     fd_struct = {
-        "package": found_dep.get("package", None),
+        "package": found_dep.get("package"),
         "version": found_dep.get("version") or "latest",
-        "ecosystem": (found_dep.get("ecosystem") or "N/A"),
+        "ecosystem": found_dep.get("ecosystem") or "N/A",
         "allowed_hashes": {},
         "transitivity": found_dep.get("transitivity") or "unknown",
         "lockfile_path": lockfile_path,
@@ -148,22 +152,24 @@ def build_sca_info(f: Dict[str, Any]) -> Dict[str, Any]:
     }
 
     dep_pattern = {
-        "ecosystem": (found_dep.get("ecosystem") or "N/A"),
-        "package": found_dep.get("package", None),
+        "ecosystem": found_dep.get("ecosystem") or "N/A",
+        "package": found_dep.get("package"),
         "semver_range": "N/A",
     }
 
     sca_info = {
-        "reachability_rule": str(f.get("reachability") or "").lower() == "reachable",
+        "reachability_rule": is_reachable,
         "sca_finding_schema": 20220913,
         "dependency_match": {
             "dependency_pattern": dep_pattern,
             "found_dependency": fd_struct,
             "lockfile": lockfile_path,
         },
-        "reachable": str(f.get("reachability") or "").lower() == "reachable",
+        "reachable": is_reachable,
     }
+
     return sca_info
+
 
 def convert_finding(f: Dict[str, Any]) -> Dict[str, Any]:
     rule_name = f.get("rule_name") or f.get("rule", {}).get("name") or "N/A"
