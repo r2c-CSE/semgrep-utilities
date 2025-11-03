@@ -46,7 +46,7 @@ def subscribe_to_webhook(config_id: str, namespace: str):
 
 
 # === Step 1: Get current user's ADO profile ===
-profile_url = "https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=6.0"
+profile_url = "https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=7.0"
 profile_resp = requests.get(profile_url, auth=auth)
 profile_resp.raise_for_status()
 profile_data = profile_resp.json()
