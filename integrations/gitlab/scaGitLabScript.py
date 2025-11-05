@@ -25,7 +25,8 @@ def conversion_semgrep_to_gitlab(report_semgrep, data, lowering_unreachable):
                             "id": vuln.get('extra')['fingerprint'][0:63],
                             "name": package_name + " - " + cwe_title,
                             "description": vuln.get('extra')['message'],
-                            "epss": get_epss(vuln),
+                            "cve": vuln.get('extra').get('metadata')['sca-vuln-database-identifier'],
+                            #"epss": get_epss(vuln),
                             "severity": get_severity(vuln, lowering_unreachable),
                             "solution": "Upgrade dependencies to fixed versions: "+get_solution(vuln), 
                             "location": {
