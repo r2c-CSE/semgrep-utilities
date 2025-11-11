@@ -1,0 +1,81 @@
+{
+  "customer": {
+    "name": "Sample Organization",
+    "industry": "Financial Technology / Insurance", 
+    "reportingContact": "security@example.com"
+  },
+  "projects": [
+    {
+      "semgrepProjectId": "1234567",
+      "include": true
+    },
+    {
+      "semgrepProjectId": "1234568", 
+      "include": true
+    }
+  ],
+  "applicationSettings": {
+    "businessCriticality": "High",
+    "complianceRequirements": ["SOC 2", "GDPR", "PCI-DSS", "OWASP Top 10"],
+    "riskTolerance": "Low"
+  },
+  "reportConfiguration": {
+    "includeSections": {
+      "executiveSummary": true,
+      "securityScorecard": true,
+      "owaspMapping": true,
+      "findingsDetails": true,
+      "remediationRoadmap": true,
+      "complianceMatrix": false,
+      "appendixMethodology": false
+    },
+    "severityThresholds": {
+      "blockingFindings": ["Critical"],
+      "expeditedFindings": ["Critical", "High"],
+      "scheduledFindings": ["Medium", "Low"]
+    },
+    "detailFilterMinSeverity": "Medium",
+    "findingsDetailLevel": "standard",
+    "includeDashboardLinks": true,
+    "repositoryReferenceMapping": {
+      "method": "static",
+      "staticMappings": {
+        "1234567": "98765432",
+        "1234568": "98765433"
+      },
+      "externalMappingFile": null
+    },
+    "outputFormats": ["PDF", "JSON"],
+    "branding": {
+      "companyLogo": "./assets/Semgrep_logo.png",
+      "primaryColor": "#2dcda7",
+      "accentColor": "#deede8"
+    }
+  },
+  "semgrepConfiguration": {
+    "requiredScans": {
+      "sast": true,
+      "supplyChain": true,
+      "secrets": true
+    },
+    "rulesets": [
+      "r2c-security-audit",
+      "owasp-top-10", 
+      "cwe-top-25"
+    ],
+    "minimumSemgrepLevel": "SL3"
+  },
+  "integrationSettings": {
+    "jiraTicketCreation": false,
+    "slackNotifications": false,
+    "emailReporting": {
+      "enabled": false,
+      "recipients": [],
+      "frequency": "weekly"
+    }
+  },
+  "organizationSettings": {
+    "organizationName": "demo-organization",
+    "apiToken": ""
+  }
+}

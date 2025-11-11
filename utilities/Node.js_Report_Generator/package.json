@@ -1,0 +1,52 @@
+{
+  "name": "semgrep-security-reporter",
+  "version": "1.0.0",
+  "description": "Enterprise-grade security report generator using Semgrep API data and React-PDF. Creates professional, Veracode-style reports with multi-organization support and dashboard integration.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "build": "tsc",
+    "generate": "node src/index.js",
+    "discovery": "node src/tools/repository-discovery.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/r2c-CSE/Node.js_Report_Generator.git"
+  },
+  "keywords": [
+    "semgrep",
+    "security",
+    "pdf",
+    "reports",
+    "sast",
+    "vulnerability",
+    "enterprise"
+  ],
+  "author": "Semgrep CSE Team",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/r2c-CSE/Node.js_Report_Generator/issues"
+  },
+  "homepage": "https://github.com/r2c-CSE/Node.js_Report_Generator#readme",
+  "dependencies": {
+    "@react-pdf/renderer": "^4.3.0",
+    "axios": "^1.11.0",
+    "commander": "^14.0.0",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "playwright": "^1.55.0",
+    "sharp": "^0.34.3",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.1.11",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
