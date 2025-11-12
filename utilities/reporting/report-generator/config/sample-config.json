@@ -47,7 +47,7 @@
     },
     "outputFormats": ["PDF", "JSON"],
     "branding": {
-      "companyLogo": "./assets/Semgrep_logo.png",
+      "companyLogo": "./assets/semgrep-companyLogo.png",
       "primaryColor": "#2dcda7",
       "accentColor": "#deede8"
     }
