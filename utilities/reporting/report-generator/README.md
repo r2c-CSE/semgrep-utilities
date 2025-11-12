@@ -1,11 +1,9 @@
 # Semgrep Security Reporter (Node.js Version)
 
-A Node.js/TypeScript implementation of the Semgrep Security Report Generator using React-PDF instead of QuestPDF for cost optimization and better integration with Semgrep's existing Node.js technology stack.
+A Node.js/TypeScript implementation of the Semgrep Security Report Generator using React-PDF.
 
 ## Features
 
-✅ **Complete Node.js Conversion**: Migrated from C# to Node.js/TypeScript  
-✅ **React-PDF Integration**: Cost-effective PDF generation without $1000 QuestPDF licensing  
 ✅ **Semgrep API Integration**: Full support for fetching findings with pagination and caching  
 ✅ **Business Logic Ported**: Security scoring, OWASP Top 10 2021 mapping, and Semgrep Levels  
 ✅ **Configuration System**: JSON-based configuration with customer branding support  
@@ -110,7 +108,7 @@ When no API token is provided, the application generates realistic dummy data to
 ## Technology Stack
 
 - **Node.js + TypeScript**: Type-safe JavaScript runtime
-- **React-PDF**: PDF generation library (replaces QuestPDF)
+- **React-PDF**: PDF generation library
 - **Winston**: Structured logging system
 - **Axios**: HTTP client for API calls
 
@@ -155,15 +153,6 @@ If tokens are accidentally committed:
 - **Axios**: HTTP client for Semgrep API calls
 - **Express**: Optional web server capabilities
 
-## Migration from C# Version
-
-This Node.js version maintains feature parity with the original C# implementation while:
-
-- Eliminating $1000 QuestPDF licensing cost
-- Aligning with Semgrep's Node.js/React-PDF technology stack  
-- Providing better integration opportunities with Semgrep's product
-- Supporting the same configuration format and business logic
-
 ## Development Status
 
 ✅ **Phase 1-4 Complete**: Core functionality, API integration, and basic PDF generation  
@@ -172,4 +161,4 @@ This Node.js version maintains feature parity with the original C# implementatio
 
 ---
 
-Generated with ❤️ for Semgrep Solutions Engineering
+Generated with ❤️ by Semgrep Solutions Engineering
