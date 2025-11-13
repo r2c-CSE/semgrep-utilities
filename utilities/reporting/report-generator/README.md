@@ -30,25 +30,6 @@ cp config/sample-config.json config/my-org-config.json
 # Edit config file, but keep apiToken empty (use env var)
 ```
 
-### Security Best Practices ⚠️
-
-**NEVER commit API tokens to version control!**
-
-✅ **Correct**: Use environment variables
-```bash
-export SEMGREP_APP_TOKEN=your_token_here
-npm run dev config/my-org-config.json
-```
-
-❌ **WRONG**: Hardcoding tokens in config files
-```json
-{
-  "organizationSettings": {
-    "apiToken": "hardcoded_token_here"  // Never do this!
-  }
-}
-```
-
 ### Run Report Generation
 ```bash
 # Development mode with structured logging
@@ -111,54 +92,5 @@ When no API token is provided, the application generates realistic dummy data to
 - **React-PDF**: PDF generation library
 - **Winston**: Structured logging system
 - **Axios**: HTTP client for API calls
-
-## Semgrep Coding Standards Compliance ✅
-
-This project follows the [Semgrep Coding Standards](https://github.com/kyle-semgrep/Semgrep_Coding_Standards) for security and best practices:
-
-### Security ⚠️
-- ✅ **No hardcoded secrets**: All API tokens use environment variables
-- ✅ **Environment variable pattern**: Uses `process.env.SEMGREP_APP_TOKEN`
-- ✅ **Token scanning**: Project regularly scanned for leaked credentials
-- ✅ **Secure defaults**: Empty tokens in config files force env var usage
-
-### Logging 📝
-- ✅ **Structured logging**: Winston for operational logs
-- ✅ **CLI separation**: Separate `CLIOutput` for user-facing messages
-- ✅ **Context-aware**: API calls, security events, and performance metrics
-- ✅ **No console.log**: Reserved for CLI user interaction only
-
-### Code Quality 🧹
-- ✅ **Clean directory structure**: Removed redundant/development files
-- ✅ **TypeScript**: Full type safety and modern JavaScript
-- ✅ **Documentation**: Comprehensive README and code comments
-- ✅ **Error handling**: Structured error logging and graceful failures
-
-### Emergency Protocol 🚨
-If tokens are accidentally committed:
-1. Immediately revoke the exposed token in Semgrep dashboard
-2. Generate a new token 
-3. Update environment variables
-4. Commit fixes with security context
-5. Force push to remove history if needed
-
-## Development Guidelines
-
-### Pre-Commit Checklist
-- [ ] No hardcoded secrets (scan with `git secrets` or Semgrep)
-- [ ] Structured logging used (no console.log for operations)
-- [ ] Environment variables documented in .env.example
-- [ ] README updated with changes
-- [ ] All API calls tested with real tokens
-- **Axios**: HTTP client for Semgrep API calls
-- **Express**: Optional web server capabilities
-
-## Development Status
-
-✅ **Phase 1-4 Complete**: Core functionality, API integration, and basic PDF generation  
-🔄 **Phase 5-6 In Progress**: Enhanced PDF components and advanced layouts  
-⏳ **Phase 7-10 Planned**: Dashboard integration, performance optimization, and documentation
-
----
 
 Generated with ❤️ by Semgrep Solutions Engineering
