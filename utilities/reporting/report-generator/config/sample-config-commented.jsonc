@@ -1,0 +1,162 @@
+{
+  // Customer information - appears on report cover and throughout document
+  "customer": {
+    "name": "Sample Organization",                    // Organization name for branding
+    "industry": "Financial Technology / Insurance",  // Industry classification  
+    "reportingContact": "security@example.com"       // Security team contact
+  },
+
+  // Project configuration - specify which Semgrep projects to include
+  "projects": [
+    {
+      // Semgrep project ID from your organization's dashboard
+      "semgrepProjectId": "1234567",
+      "include": true  // Set to false to exclude this project from reports
+    },
+    {
+      "semgrepProjectId": "1234568", 
+      "include": true
+    }
+  ],
+
+  // Application security settings and risk profile
+  "applicationSettings": {
+    // Business criticality level - affects severity scoring and recommendations
+    // Valid values: "Critical", "High", "Medium", "Low"
+    "businessCriticality": "High",
+    
+    // Compliance frameworks your organization needs to meet
+    // Common values: "SOC 2", "GDPR", "PCI-DSS", "OWASP Top 10", "HIPAA", "ISO 27001"
+    "complianceRequirements": ["SOC 2", "GDPR", "PCI-DSS", "OWASP Top 10"],
+    
+    // Organization's risk tolerance level
+    // Valid values: "Low", "Medium", "High"
+    "riskTolerance": "Low"
+  },
+
+  // Report generation configuration - controls content and formatting
+  "reportConfiguration": {
+    // Section inclusion controls - enable/disable major report sections
+    "includeSections": {
+      "executiveSummary": true,      // High-level overview for executives
+      "securityScorecard": true,     // Numerical security scoring
+      "owaspMapping": true,          // Map findings to OWASP Top 10
+      "findingsDetails": true,       // Detailed vulnerability listings
+      "remediationRoadmap": true,    // Prioritized fix recommendations
+      "complianceMatrix": false,     // Compliance framework mapping (optional)
+      "appendixMethodology": false   // Technical methodology details (optional)
+    },
+
+    // Severity thresholds for finding categorization
+    "severityThresholds": {
+      // Findings that should block deployments/releases
+      "blockingFindings": ["Critical"],
+      
+      // Findings requiring expedited remediation (within days)
+      "expeditedFindings": ["Critical", "High"],
+      
+      // Findings for regular sprint/milestone scheduling
+      "scheduledFindings": ["Medium", "Low"]
+    },
+
+    // IMPORTANT: Controls which findings appear in detailed sections
+    // Only findings at this severity level and above will be shown in:
+    // - Detailed findings pages (standard reports)
+    // - Project summary findings (brief reports) 
+    // - Remediation roadmap recommendations
+    // Valid values: "Critical", "High", "Medium", "Low"
+    "detailFilterMinSeverity": "Medium",
+
+    // Report detail level - controls the depth of findings presentation
+    // "brief": Shows findings summaries on project pages only
+    // "standard": Creates separate detailed findings pages with full descriptions, 
+    //            rule links, remediation guidance, and file-level details
+    "findingsDetailLevel": "standard",
+
+    // Enable dashboard links to Semgrep findings interface
+    // Requires repositoryReferenceMapping configuration below
+    "includeDashboardLinks": true,
+
+    // Repository reference mapping for dashboard links
+    // This maps Semgrep project IDs to repository reference IDs needed for deep links
+    "repositoryReferenceMapping": {
+      // Method for obtaining repository references
+      // "static": Use predefined mappings below
+      // "dynamic": Query Semgrep API (future enhancement)
+      "method": "static",
+      
+      // Static mappings of project ID to repository reference ID
+      // Get these IDs using the repository discovery tool or from network inspection
+      "staticMappings": {
+        "1234567": "98765432", // project_id: repository_ref_id
+        "1234568": "98765433"
+      },
+      
+      // Alternative: load mappings from external file (not implemented yet)
+      "externalMappingFile": null
+    },
+
+    // Output format options
+    // Currently supported: ["PDF", "JSON"]
+    "outputFormats": ["PDF", "JSON"],
+
+    // Visual branding and styling
+    "branding": {
+      "companyLogo": "./assets/Semgrep_logo.png", // Path to logo image
+      "primaryColor": "#2dcda7",                   // Semgrep green (hex color)
+      "accentColor": "#deede8"                     // Light green accent
+    }
+  },
+
+  // Semgrep-specific configuration and requirements
+  "semgrepConfiguration": {
+    // Required scan types for security coverage
+    "requiredScans": {
+      "sast": true,         // Static Application Security Testing
+      "supplyChain": true,  // Supply chain/dependency scanning  
+      "secrets": true       // Secrets detection
+    },
+
+    // Security rulesets to validate against
+    // Common rulesets: "r2c-security-audit", "owasp-top-10", "cwe-top-25", 
+    //                 "r2c-best-practices", "security"
+    "rulesets": [
+      "r2c-security-audit",
+      "owasp-top-10", 
+      "cwe-top-25"
+    ],
+
+    // Minimum Semgrep security level for the organization
+    // Valid values: "SL1", "SL2", "SL3" (SL3 being most secure)
+    "minimumSemgrepLevel": "SL3"
+  },
+
+  // Integration settings for external tools and notifications
+  "integrationSettings": {
+    // Jira ticket creation for findings (future enhancement)
+    "jiraTicketCreation": false,
+    
+    // Slack notifications for critical findings (future enhancement) 
+    "slackNotifications": false,
+    
+    // Email reporting configuration
+    "emailReporting": {
+      "enabled": false,                    // Enable automated email reports
+      "recipients": [],                    // Email addresses to receive reports
+      "frequency": "weekly"                // Options: "daily", "weekly", "monthly"
+    }
+  },
+
+  // Organization settings - required for API access
+  "organizationSettings": {
+    // Your Semgrep organization name (from dashboard URL)
+    // Example: if your dashboard is https://semgrep.dev/orgs/my-org-name/...
+    // then organizationName should be "my-org-name"
+    "organizationName": "your-org-name",
+    
+    // Semgrep API token with read access to findings and projects
+    // Get this from: Settings > Tokens in your Semgrep dashboard
+    // Can also be set via SEMGREP_APP_TOKEN environment variable
+    "apiToken": "your-api-token-here"
+  }
+}
