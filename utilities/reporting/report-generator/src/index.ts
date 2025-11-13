@@ -6,7 +6,7 @@ import { Logger, CLIOutput } from './utils';
 
 async function main() {
   try {
-    CLIOutput.section('Starting Semgrep Security Reporter (Node.js Version)');
+    CLIOutput.section('Starting Semgrep Security Reporter');
 
     // Get configuration file path from command line arguments or use default
     const configPath = process.argv[2] || 'config/sample-config.json';
