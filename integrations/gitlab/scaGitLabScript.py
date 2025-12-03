@@ -119,6 +119,8 @@ def get_exposure(vuln):
 
     if sca_kind == "upgrade-only":
         return "Reachable"
+    elif sca_kind == "malicious":
+        return "Reachable"
     elif sca_kind == "legacy":
         return "Undetermined"
     elif reachable:
