@@ -81,10 +81,10 @@ def get_findings_per_project(deployment_slug, project, primary_branch, headers):
     merged_findings = {"findings": []}
     findings_url = f"{BASE_URL}/{deployment_slug}/findings?repos={project}&dedup=false"
     for status in desired_statuses:
-        findings_url = f"{findings_url}&status={status}"
+        findings_url_status = f"{findings_url}&status={status}"
         if USE_PRIMARY_BRANCH_PARAM:
-            findings_url = f"{findings_url}&ref={primary_branch}"
-        project_findings = retrieve_paginated_data(findings_url, "findings", 3000, headers=headers)
+            findings_url_status = f"{findings_url}&ref={primary_branch}"
+        project_findings = retrieve_paginated_data(findings_url_status, "findings", 3000, headers=headers)
         merged_results = json.loads(project_findings)
         merged_findings["findings"].extend(merged_results.get("findings", []))
 
