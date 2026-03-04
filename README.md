@@ -1,6 +1,6 @@
 # Semgrep utilities
 
-This is a non-official but helpful repository with Semgrep utilities, such as API examples, integration, onboarding acceleration, and standard configuration.
+This is an unofficial and unsupported but helpful repository with Semgrep utilities, including API examples, integration, onboarding acceleration, and standard configuration.
 If you have something valuable to share, feel free to collaborate!
 
 ## CI utilities
