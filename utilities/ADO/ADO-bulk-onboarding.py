@@ -109,7 +109,31 @@ for org in orgs:
             subscribe_to_webhook(config_id, namespace)
 
         elif resp.status_code == 409:
-            print(f"      ⚠️  {namespace} already exists in Semgrep. Skipping webhook creation.")
+            data = resp.json()
+            print(f"      ⚠️ {namespace} already exists in Semgrep. Updating ADO PAT...")
+            url = f"{SEMGREP_CONFIGS_URL}/search"
+            search_payload = {
+                  "filter": {
+                        "namespace": namespace,
+                        "type": "SCM_TYPE_AZURE_DEVOPS"
+                    }
+            }
+            resp = requests.post(url, headers=semgrep_headers, json=search_payload)
+            data = resp.json()
+            config_id = data["configs"][0]["id"]
+            if resp.status_code == 200:
+                print(f"         ✅ Found existing config with {config_id}")
+                url = f"{SEMGREP_CONFIGS_URL}/{config_id}"
+                resp = requests.patch(url, headers=semgrep_headers, json=scm_payload)
+                if resp.status_code == 200:
+                    print(f"         ✅ Updated ADO PAT for {namespace}.")
+                else:
+                    print(f"         ❌ Failed to update ADO PAT for {namespace} (status {resp.status_code})")
+                    print("            Response:", resp.text)
+            else:
+                print(f"         ❌ Failed to find existing config for {namespace} (status {resp.status_code})")
+                print("            Response:", resp.text)
+
         else:
             print(f"      ❌ Failed to create {namespace} (status {resp.status_code})")
             print("         Response:", resp.text)

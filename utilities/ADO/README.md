@@ -2,6 +2,10 @@
 This script helps to automatically discover all the ADO orgs and projects accessible by the user and add them to target Semgrep org as SCM connections.
 It will also enumerate all the connections to enable auto-scan and incoming webhooks.
 
+2026-03-02 
+- some organization has a policy to regularly rotate the ADO PAT tokens, and in this case, they need to use the script to run batch update for all existing SCM connections to refresh the PAT.
+- so this change is to update the logic when a org/project is already connected to the semgrep org, the script will retrieve the config id of the connection and automatically update the PAT of the connection. It will do so for all existing SCM connections.
+
 ### known limitations:
 when there is new org/orgs being added to the Azure subscription, Semgrep.dev will not be automatically discover them or add them, and we need to run the script again to do so.
 
@@ -11,7 +15,7 @@ when there is new org/orgs being added to the Azure subscription, Semgrep.dev wi
 python3 -m venv venv
 source venv/bin/activate
 ./venv/bin/pip install requests
-python list-and-add-2-scm.py
+python ADO-bulk-onboarding.py
 Authenticated as: Shi Chao (shi@semgrep.com)
 
 ✅ Found 2 organization(s).
@@ -45,7 +49,7 @@ Authenticated as: Shi Chao (shi@semgrep.com)
 
 ### the script is made idempotent, so you could run it multiple times
 ```
-python list-and-add-2-scm.py
+python ADO-bulk-onboarding.py
 Authenticated as: Shi Chao (shi@semgrep.com)
 
 ✅ Found 2 organization(s).
@@ -66,3 +70,37 @@ Authenticated as: Shi Chao (shi@semgrep.com)
     Creating Semgrep SCM config for: ooo-devops/sandbox
       ⚠️  ooo-devops/sandbox already exists in Semgrep. Skipping webhook creation.
 ```
+
+### to update the ADO PAT for existing connections
+```
+python ADO-bulk-onboarding.py
+Authenticated as: Shi Chao (shi@semgrep.com)
+
+✅ Found 2 organization(s).
+
+=== Organization: sandbox-shichao ===
+  → Found 3 project(s).
+    Creating Semgrep SCM config for: sandbox-shichao/mini-demo
+      ⚠️ sandbox-shichao/mini-demo already exists in Semgrep. Updating ADO PAT...
+         ✅ Found existing config with 57756
+         ✅ Updated ADO PAT for sandbox-shichao/mini-demo.
+    Creating Semgrep SCM config for: sandbox-shichao/dummy
+      ⚠️ sandbox-shichao/dummy already exists in Semgrep. Updating ADO PAT...
+         ✅ Found existing config with 57757
+         ✅ Updated ADO PAT for sandbox-shichao/dummy.
+    Creating Semgrep SCM config for: sandbox-shichao/paytm-demo
+      ⚠️ sandbox-shichao/paytm-demo already exists in Semgrep. Updating ADO PAT...
+         ✅ Found existing config with 57758
+         ✅ Updated ADO PAT for sandbox-shichao/paytm-demo.
+
+=== Organization: ooo-devops ===
+  → Found 2 project(s).
+    Creating Semgrep SCM config for: ooo-devops/semgrep
+      ⚠️ ooo-devops/semgrep already exists in Semgrep. Updating ADO PAT...
+         ✅ Found existing config with 57759
+```
+         ✅ Updated ADO PAT for ooo-devops/semgrep.
+    Creating Semgrep SCM config for: ooo-devops/sandbox
+      ⚠️ ooo-devops/sandbox already exists in Semgrep. Updating ADO PAT...
+         ✅ Found existing config with 57760
+         ✅ Updated ADO PAT for ooo-devops/sandbox.
