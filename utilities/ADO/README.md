@@ -9,6 +9,20 @@ It will also enumerate all the connections to enable auto-scan and incoming webh
 ### known limitations:
 when there is new org/orgs being added to the Azure subscription, Semgrep.dev will not be automatically discover them or add them, and we need to run the script again to do so.
 
+### environment variables
+
+Two environment variables must be set before running the script:
+
+| Variable | Description |
+|---|---|
+| `ADO_PAT` | Azure DevOps Personal Access Token. Used to authenticate against the ADO API and discover organizations and projects. |
+| `SEMGREP_APP_TOKEN` | Semgrep API token. Used to authenticate against the Semgrep API, auto-discover the deployment ID, and create/update SCM connections. |
+
+```bash
+export ADO_PAT=<your-azure-devops-pat>
+export SEMGREP_APP_TOKEN=<your-semgrep-app-token>
+```
+
 ### usage
 
 ```
