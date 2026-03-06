@@ -23,6 +23,10 @@ export ADO_PAT=<your-azure-devops-pat>
 export SEMGREP_APP_TOKEN=<your-semgrep-app-token>
 ```
 
+### autoScan behaviour
+
+The script creates SCM connections with `autoScan` set to `false` by default. This means repositories will **not** be automatically scanned when the connection is created. If you want Semgrep to trigger scans automatically on new connections, set `autoScan` to `true` in the `scm_payload` inside the script.
+
 ### usage
 
 ```
