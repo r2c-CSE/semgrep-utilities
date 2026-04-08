@@ -2,6 +2,7 @@ import os
 import urllib.parse
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
+from xml.sax.saxutils import escape as xml_escape
 
 from reportlab.lib import colors
 from reportlab.lib.colors import HexColor
@@ -885,10 +886,10 @@ class BasicPdfGenerator:
         meta_parts = []
         if finding.owasp_category:
             owasp_url = OWASP_URLS.get(finding.owasp_category, 'https://owasp.org/Top10/')
-            meta_parts.append(f'<link href="{owasp_url}"><u>{finding.owasp_category}</u></link>')
+            meta_parts.append(f'<link href=\"{owasp_url}\"><u>{self._safe_text(finding.owasp_category)}</u></link>')
         if finding.cwe_id:
             cwe_num = finding.cwe_id.replace('CWE-', '')
-            meta_parts.append(f'<link href="https://cwe.mitre.org/data/definitions/{cwe_num}.html"><u>{finding.cwe_id}</u></link>')
+            meta_parts.append(f'<link href=\"https://cwe.mitre.org/data/definitions/{cwe_num}.html\"><u>{self._safe_text(finding.cwe_id)}</u></link>')
         meta_text = ' | '.join(meta_parts) if meta_parts else ''
 
         items.append(Paragraph(f'<b>{finding.severity.upper()}</b>  {meta_text}',
@@ -897,8 +898,9 @@ class BasicPdfGenerator:
 
         # Rule name (linked)
         rule_display = (finding.rule_name[:62] + '...') if len(finding.rule_name) > 65 else finding.rule_name
+        encoded_rule_id = urllib.parse.quote(finding.rule_id, safe='')
         items.append(Paragraph(
-            f'<link href="https://semgrep.dev/r/{finding.rule_id}"><u>{rule_display}</u></link>',
+            f'<link href=\"https://semgrep.dev/r/{encoded_rule_id}\"><u>{self._safe_text(rule_display)}</u></link>',
             ParagraphStyle('rule', fontSize=8, fontName='Helvetica-Bold', textColor=BLUE,
                            leading=11, spaceAfter=2)
         ))
@@ -908,7 +910,7 @@ class BasicPdfGenerator:
         if len(path_display) > 75:
             path_display = '...' + path_display[-72:]
         items.append(Paragraph(
-            f'{path_display}:{finding.start_line}',
+            self._safe_text(f'{path_display}:{finding.start_line}'),
             ParagraphStyle('path', fontSize=7, fontName='Courier', textColor=GRAY, leading=10, spaceAfter=2)
         ))
 
@@ -918,7 +920,7 @@ class BasicPdfGenerator:
             if len(rec) > 85:
                 rec = rec[:82] + '...'
             items.append(Paragraph(
-                rec,
+                self._safe_text(rec),
                 ParagraphStyle('rec', fontSize=7, fontName='Helvetica-Oblique', textColor=BLUE,
                                leading=10, spaceAfter=2)
             ))
@@ -977,7 +979,7 @@ class BasicPdfGenerator:
             # Rule name
             story.append(Paragraph('Rule:', st['TinyBold']))
             story.append(Paragraph(
-                f'<link href="https://semgrep.dev/r/{group["rule_id"]}"><u>{group["rule_name"]}</u></link>',
+                f'<link href="https://semgrep.dev/r/{urllib.parse.quote(group["rule_id"], safe="")}"><u>{self._safe_text(group["rule_name"])}</u></link>',
                 ParagraphStyle('rule', fontSize=11, fontName='Helvetica-Bold', textColor=BLUE)
             ))
             story.append(Spacer(1, 6))
@@ -990,7 +992,7 @@ class BasicPdfGenerator:
             ))
             for inst in instances[:3]:
                 story.append(Paragraph(
-                    f'{inst["path"]}:{inst["start_line"]}',
+                    self._safe_text(f'{inst["path"]}:{inst["start_line"]}'),
                     ParagraphStyle('loc', fontName='Courier', fontSize=10, textColor=GRAY, leading=13)
                 ))
             if len(instances) > 3:
@@ -1003,7 +1005,7 @@ class BasicPdfGenerator:
             # Description
             story.append(Paragraph('Description:', st['TinyBold']))
             story.append(Paragraph(
-                group.get('description') or group.get('message') or 'No description available.',
+                self._safe_text(group.get('description') or group.get('message') or 'No description available.'),
                 st['SmallBody']
             ))
             story.append(Spacer(1, 6))
@@ -1017,13 +1019,13 @@ class BasicPdfGenerator:
                     owasp_display = OWASP_DISPLAY_NAMES.get(owasp_cat, owasp_cat)
                     owasp_url = OWASP_URLS.get(owasp_cat, 'https://owasp.org/Top10/')
                     story.append(Paragraph(
-                        f'<link href="{owasp_url}"><u>{owasp_display}</u></link>',
+                        f'<link href=\"{owasp_url}\"><u>{self._safe_text(owasp_display)}</u></link>',
                         st['SmallLink']
                     ))
                 if cwe_id:
                     cwe_num = cwe_id.replace('CWE-', '')
                     story.append(Paragraph(
-                        f'<link href="https://cwe.mitre.org/data/definitions/{cwe_num}.html"><u>{cwe_id}</u></link>',
+                        f'<link href=\"https://cwe.mitre.org/data/definitions/{cwe_num}.html\"><u>{self._safe_text(cwe_id)}</u></link>',
                         st['SmallLink']
                     ))
                 story.append(Spacer(1, 6))
@@ -1032,7 +1034,7 @@ class BasicPdfGenerator:
             rec = group.get('assistant_recommendation')
             if rec:
                 story.append(Paragraph('Recommendation:', st['TinyBold']))
-                story.append(Paragraph(rec, st['SmallBody']))
+                story.append(Paragraph(self._safe_text(rec), st['SmallBody']))
                 story.append(Spacer(1, 6))
 
             # Dashboard link
@@ -1241,24 +1243,25 @@ class BasicPdfGenerator:
                     path_display = finding.path
                     if len(path_display) > 45:
                         path_display = '...' + path_display[-42:]
+                    encoded_rule_id = urllib.parse.quote(finding.rule_id, safe='')
 
                     rule_cell = Paragraph(
-                        f'<link href="https://semgrep.dev/r/{finding.rule_id}"><u>{rule_display}</u></link>'
-                        f'<br/><font size="7" color="#666666">{path_display}:{finding.start_line}</font>',
+                        f'<link href=\"https://semgrep.dev/r/{encoded_rule_id}\"><u>{self._safe_text(rule_display)}</u></link>'
+                        f'<br/><font size=\"7\" color=\"#666666\">{self._safe_text(path_display)}:{finding.start_line}</font>',
                         ParagraphStyle('rc', fontSize=8, textColor=BLUE, leading=11)
                     )
 
                     msg = finding.message or finding.description or ''
                     if len(msg) > 120:
                         msg = msg[:117] + '...'
-                    msg_cell = Paragraph(msg, ParagraphStyle('mc', fontSize=8, leading=11,
+                    msg_cell = Paragraph(self._safe_text(msg), ParagraphStyle('mc', fontSize=8, leading=11,
                                                               textColor=DARK_GRAY))
 
                     cwe = finding.cwe_id or '—'
                     if finding.cwe_id:
                         cwe_num = finding.cwe_id.replace('CWE-', '')
                         cwe_cell = Paragraph(
-                            f'<link href="https://cwe.mitre.org/data/definitions/{cwe_num}.html"><u>{cwe}</u></link>',
+                            f'<link href=\"https://cwe.mitre.org/data/definitions/{cwe_num}.html\"><u>{self._safe_text(cwe)}</u></link>',
                             ParagraphStyle('cwec', fontSize=8, textColor=BLUE)
                         )
                     else:
@@ -1448,6 +1451,11 @@ class BasicPdfGenerator:
             })
         repos.sort(key=lambda r: r['open_findings'], reverse=True)
         return repos
+
+    def _safe_text(self, value: Optional[str]) -> str:
+        if value is None:
+            return ''
+        return xml_escape(str(value), {'"': '&quot;', "'": '&#39;'})
 
     def _group_findings_by_rule(self, findings: List[SemgrepFinding]) -> List[dict]:
         groups: Dict[str, dict] = {}
