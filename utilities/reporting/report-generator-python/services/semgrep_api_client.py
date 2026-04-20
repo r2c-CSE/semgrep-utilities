@@ -207,8 +207,8 @@ class SemgrepApiClient:
                 last_scanned=datetime.now() - timedelta(hours=random.random() * 48),
                 findings=[],
                 scan_data=ScanMetadata(
-                    sast_completed=True,
-                    supply_chain_completed=True,
+                    sast_completed=False,
+                    supply_chain_completed=False,
                     secrets_completed=False,
                     files_scanned=random.randint(50, 500),
                     scan_duration=random.randint(2 * 60000, 15 * 60000),
@@ -270,23 +270,6 @@ class SemgrepApiClient:
             )
             project_findings.append(finding)
 
-        def _is_secrets_finding(raw: dict) -> bool:
-            product = (raw.get('product') or '').lower()
-            if product == 'secrets':
-                return True
-            issue_type = (raw.get('issue_type') or raw.get('type') or '').lower()
-            if issue_type == 'secrets':
-                return True
-            rule_name = (raw.get('rule', {}).get('name') or raw.get('check_id') or '').lower()
-            if rule_name.startswith('secrets.') or '.secrets.' in rule_name:
-                return True
-            categories = raw.get('rule', {}).get('categories') or raw.get('categories') or []
-            if any('secret' in str(c).lower() for c in categories):
-                return True
-            return False
-
-        secrets_completed = any(_is_secrets_finding(raw) for raw in findings_to_process)
-
         return SemgrepProject(
             name=project_name,
             repository=project_name,
@@ -296,8 +279,8 @@ class SemgrepApiClient:
             last_scanned=datetime.now() - timedelta(hours=random.random() * 48),
             findings=project_findings,
             scan_data=ScanMetadata(
-                sast_completed=True,
-                supply_chain_completed=True,
+                sast_completed=False,
+                supply_chain_completed=False,
                 secrets_completed=secrets_completed,
                 files_scanned=random.randint(50, 500),
                 scan_duration=random.randint(2 * 60000, 15 * 60000),
@@ -492,7 +475,7 @@ class SemgrepApiClient:
             scan_data=ScanMetadata(
                 sast_completed=True,
                 supply_chain_completed=True,
-                secrets_completed=random.random() > 0.5,
+                secrets_completed=True,
                 files_scanned=random.randint(50, 500),
                 scan_duration=random.randint(2 * 60000, 15 * 60000),
                 engine_version='1.45.0',

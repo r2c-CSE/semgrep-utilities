@@ -448,36 +448,6 @@ class BasicPdfGenerator:
                                         ('BOTTOMPADDING', (0, 0), (-1, -1), 3)]))
             story.append(t)
 
-        story.append(Spacer(1, 12))
-
-        # Scan Coverage
-        story.append(Paragraph('Scan Coverage', st['GreenSubTitle']))
-        scan_data_row = [['SAST', 'Supply Chain', 'Secrets']]
-        secrets_done = any(p.scan_data.secrets_completed for p in projects)
-        secrets_para = Paragraph(
-            'Complete' if secrets_done else 'Missing',
-            ParagraphStyle('sm', textColor=HexColor('#28A745') if secrets_done else RED,
-                           fontName='Helvetica-Bold', fontSize=11)
-        )
-        scan_status_row = [
-            [Paragraph('Complete', ParagraphStyle('sc', textColor=HexColor('#28A745'), fontName='Helvetica-Bold', fontSize=11)),
-             Paragraph('Complete', ParagraphStyle('sc2', textColor=HexColor('#28A745'), fontName='Helvetica-Bold', fontSize=11)),
-             secrets_para],
-        ]
-        scan_table = Table(
-            [scan_data_row[0], scan_status_row[0]],
-            colWidths=[CONTENT_WIDTH / 3] * 3,
-            style=TableStyle([
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, -1), 11),
-                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                ('GRID', (0, 0), (-1, -1), 0.5, BORDER_GRAY),
-                ('TOPPADDING', (0, 0), (-1, -1), 8),
-                ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
-            ])
-        )
-        story.append(scan_table)
-
         return story
 
     def _executive_summary_page(self, projects, config, open_findings, overall_level) -> list:
