@@ -453,10 +453,16 @@ class BasicPdfGenerator:
         # Scan Coverage
         story.append(Paragraph('Scan Coverage', st['GreenSubTitle']))
         scan_data_row = [['SAST', 'Supply Chain', 'Secrets']]
+        secrets_done = any(p.scan_data.secrets_completed for p in projects)
+        secrets_para = Paragraph(
+            'Complete' if secrets_done else 'Missing',
+            ParagraphStyle('sm', textColor=HexColor('#28A745') if secrets_done else RED,
+                           fontName='Helvetica-Bold', fontSize=11)
+        )
         scan_status_row = [
             [Paragraph('Complete', ParagraphStyle('sc', textColor=HexColor('#28A745'), fontName='Helvetica-Bold', fontSize=11)),
              Paragraph('Complete', ParagraphStyle('sc2', textColor=HexColor('#28A745'), fontName='Helvetica-Bold', fontSize=11)),
-             Paragraph('Missing', ParagraphStyle('sm', textColor=RED, fontName='Helvetica-Bold', fontSize=11))],
+             secrets_para],
         ]
         scan_table = Table(
             [scan_data_row[0], scan_status_row[0]],

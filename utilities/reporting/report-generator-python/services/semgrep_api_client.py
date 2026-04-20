@@ -209,7 +209,7 @@ class SemgrepApiClient:
                 scan_data=ScanMetadata(
                     sast_completed=True,
                     supply_chain_completed=True,
-                    secrets_completed=random.random() > 0.5,
+                    secrets_completed=False,
                     files_scanned=random.randint(50, 500),
                     scan_duration=random.randint(2 * 60000, 15 * 60000),
                     engine_version='1.45.0',
@@ -231,11 +231,15 @@ class SemgrepApiClient:
                         target_repo_name = p.get('name')
                         break
 
-            findings_to_process = [
-                f for f in findings_data['findings']
-                if target_repo_name and
-                   f.get('repository', {}).get('name', '').lower() == target_repo_name.lower()
-            ]
+            if target_repo_name:
+                findings_to_process = [
+                    f for f in findings_data['findings']
+                    if f.get('repository', {}).get('name', '').lower() == target_repo_name.lower()
+                ]
+            else:
+                print(f'Warning: Project ID {config_project_id} not found in org projects list. '
+                      f'Check that organizationName in your config matches the org that owns this project.')
+                findings_to_process = []
             print(f'Project {config_project_id} ({target_repo_name}): Found {len(findings_to_process)} findings')
 
         if target_repo_name:
@@ -266,6 +270,23 @@ class SemgrepApiClient:
             )
             project_findings.append(finding)
 
+        def _is_secrets_finding(raw: dict) -> bool:
+            product = (raw.get('product') or '').lower()
+            if product == 'secrets':
+                return True
+            issue_type = (raw.get('issue_type') or raw.get('type') or '').lower()
+            if issue_type == 'secrets':
+                return True
+            rule_name = (raw.get('rule', {}).get('name') or raw.get('check_id') or '').lower()
+            if rule_name.startswith('secrets.') or '.secrets.' in rule_name:
+                return True
+            categories = raw.get('rule', {}).get('categories') or raw.get('categories') or []
+            if any('secret' in str(c).lower() for c in categories):
+                return True
+            return False
+
+        secrets_completed = any(_is_secrets_finding(raw) for raw in findings_to_process)
+
         return SemgrepProject(
             name=project_name,
             repository=project_name,
@@ -277,7 +298,7 @@ class SemgrepApiClient:
             scan_data=ScanMetadata(
                 sast_completed=True,
                 supply_chain_completed=True,
-                secrets_completed=random.random() > 0.5,
+                secrets_completed=secrets_completed,
                 files_scanned=random.randint(50, 500),
                 scan_duration=random.randint(2 * 60000, 15 * 60000),
                 engine_version='1.45.0',
