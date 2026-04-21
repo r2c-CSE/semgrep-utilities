@@ -453,13 +453,19 @@ class BasicPdfGenerator:
         # Scan Coverage
         story.append(Paragraph('Scan Coverage', st['GreenSubTitle']))
         scan_data_row = [['SAST', 'Supply Chain', 'Secrets']]
-        scan_status_row = [
-            [Paragraph('Complete', ParagraphStyle('sc', textColor=HexColor('#28A745'), fontName='Helvetica-Bold', fontSize=11)),
-             Paragraph('Complete', ParagraphStyle('sc2', textColor=HexColor('#28A745'), fontName='Helvetica-Bold', fontSize=11)),
-             Paragraph('Missing', ParagraphStyle('sm', textColor=RED, fontName='Helvetica-Bold', fontSize=11))],
-        ]
+
+        def _scan_para(done: bool, style_name: str) -> Paragraph:
+            return Paragraph(
+                'Complete' if done else 'Missing',
+                ParagraphStyle(style_name, textColor=HexColor('#28A745') if done else RED,
+                               fontName='Helvetica-Bold', fontSize=11)
+            )
+
+        sast_done = any(p.scan_data.sast_completed for p in projects)
+        sca_done = any(p.scan_data.supply_chain_completed for p in projects)
+        secrets_done = any(p.scan_data.secrets_completed for p in projects)
         scan_table = Table(
-            [scan_data_row[0], scan_status_row[0]],
+            [scan_data_row[0], [_scan_para(sast_done, 'sc'), _scan_para(sca_done, 'sc2'), _scan_para(secrets_done, 'sm')]],
             colWidths=[CONTENT_WIDTH / 3] * 3,
             style=TableStyle([
                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
