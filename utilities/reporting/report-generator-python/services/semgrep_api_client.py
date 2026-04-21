@@ -2,7 +2,7 @@ import os
 import random
 import re
 import string
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional
 
 import requests
@@ -19,6 +19,8 @@ class SemgrepApiClient:
     _cached_findings: Dict[str, dict] = {}
     _cached_projects: Dict[str, dict] = {}
     _cached_project_details: Dict[str, dict] = {}
+    _cached_deployment_id: Dict[str, Optional[str]] = {}
+    _cached_scans: Dict[str, List[dict]] = {}
 
     def __init__(self, organization_name: Optional[str] = None, api_token: Optional[str] = None):
         self.organization_name = organization_name or 'sample-org'
@@ -55,6 +57,95 @@ class SemgrepApiClient:
                 return None
 
         return SemgrepApiClient._cached_project_details.get(cache_key)
+
+    def _get_deployment_id(self) -> Optional[str]:
+        cache_key = self.organization_name
+        if cache_key not in SemgrepApiClient._cached_deployment_id:
+            try:
+                resp = self._session.get(f'{self.BASE_URL}/deployments')
+                if resp.status_code == 200:
+                    deployments = resp.json().get('deployments', [])
+                    dep_id = str(deployments[0]['id']) if deployments else None
+                    SemgrepApiClient._cached_deployment_id[cache_key] = dep_id
+                else:
+                    print(f'Warning: Could not fetch deployment ID: {resp.status_code}')
+                    SemgrepApiClient._cached_deployment_id[cache_key] = None
+            except Exception as e:
+                print(f'Warning: Error fetching deployment ID: {e}')
+                SemgrepApiClient._cached_deployment_id[cache_key] = None
+        return SemgrepApiClient._cached_deployment_id.get(cache_key)
+
+    def _ensure_scans_cache_populated(self) -> None:
+        pass  # replaced by per-project fetch in get_scan_coverage
+
+    def get_scan_coverage(self, repo_name: str, project_id: str) -> Dict[str, bool]:
+        """
+        Returns which scan types completed in the last 30 days for a repo.
+        Uses the scans/search endpoint with repository_id filter.
+        """
+        if not self.api_token:
+            return {'sast': False, 'supply_chain': False, 'secrets': False}
+
+        cache_key = f'{self.organization_name}-{project_id}'
+        if cache_key not in SemgrepApiClient._cached_scans:
+            deployment_id = self._get_deployment_id()
+            if not deployment_id:
+                SemgrepApiClient._cached_scans[cache_key] = []
+            else:
+                url = f'{self.BASE_URL}/deployments/{deployment_id}/scans/search'
+                all_scans: List[dict] = []
+                cursor = ''
+
+                while True:
+                    try:
+                        payload: dict = {'pageSize': 100, 'repository_id': int(project_id)}
+                        if cursor:
+                            payload['cursor'] = cursor
+                        resp = self._session.post(url, json=payload)
+                        if resp.status_code != 200:
+                            print(f'Warning: Failed to fetch scans for {project_id}: {resp.status_code} - {resp.text[:200]}')
+                            break
+                        data = resp.json()
+                        all_scans.extend(data.get('scans', []))
+                        if not data.get('hasMore'):
+                            break
+                        cursor = data.get('cursor', '')
+                        if not cursor:
+                            break
+                    except Exception as e:
+                        print(f'Warning: Error fetching scans for {project_id}: {e}')
+                        break
+
+                SemgrepApiClient._cached_scans[cache_key] = all_scans
+                print(f'Fetched {len(all_scans)} scans for project {project_id}')
+
+        scans = SemgrepApiClient._cached_scans.get(cache_key, [])
+        cutoff = datetime.now(timezone.utc) - timedelta(days=30)
+        sast = False
+        supply_chain = False
+        secrets = False
+
+        for scan in scans:
+            status = (scan.get('status') or '').lower()
+            if 'complete' not in status and status not in ('done', 'success'):
+                continue
+
+            completed_str = scan.get('completed_at') or scan.get('started_at')
+            if completed_str:
+                completed_at = self._parse_datetime(completed_str)
+                if completed_at and completed_at < cutoff:
+                    continue
+
+            for product in (scan.get('enabled_products') or []):
+                p = product.lower()
+                if p == 'secrets':
+                    secrets = True
+                elif p in ('sca', 'supply_chain', 'supply-chain'):
+                    supply_chain = True
+                elif p == 'sast':
+                    sast = True
+
+        return {'sast': sast, 'supply_chain': supply_chain, 'secrets': secrets}
 
     def fetch_project_findings(self, config_project_id: str) -> SemgrepProject:
         if not self.api_token:
@@ -198,6 +289,7 @@ class SemgrepApiClient:
                     repo_ref_id = primary.get('repoRefId')
 
         if not findings_data or not findings_data.get('findings'):
+            coverage = self.get_scan_coverage(project_name, actual_project_id)
             return SemgrepProject(
                 name=project_name,
                 repository=project_name,
@@ -207,9 +299,9 @@ class SemgrepApiClient:
                 last_scanned=datetime.now() - timedelta(hours=random.random() * 48),
                 findings=[],
                 scan_data=ScanMetadata(
-                    sast_completed=False,
-                    supply_chain_completed=False,
-                    secrets_completed=False,
+                    sast_completed=coverage['sast'],
+                    supply_chain_completed=coverage['supply_chain'],
+                    secrets_completed=coverage['secrets'],
                     files_scanned=random.randint(50, 500),
                     scan_duration=random.randint(2 * 60000, 15 * 60000),
                     engine_version='1.45.0',
@@ -270,6 +362,7 @@ class SemgrepApiClient:
             )
             project_findings.append(finding)
 
+        coverage = self.get_scan_coverage(project_name, actual_project_id)
         return SemgrepProject(
             name=project_name,
             repository=project_name,
@@ -279,9 +372,9 @@ class SemgrepApiClient:
             last_scanned=datetime.now() - timedelta(hours=random.random() * 48),
             findings=project_findings,
             scan_data=ScanMetadata(
-                sast_completed=False,
-                supply_chain_completed=False,
-                secrets_completed=secrets_completed,
+                sast_completed=coverage['sast'],
+                supply_chain_completed=coverage['supply_chain'],
+                secrets_completed=coverage['secrets'],
                 files_scanned=random.randint(50, 500),
                 scan_duration=random.randint(2 * 60000, 15 * 60000),
                 engine_version='1.45.0',
