@@ -1,6 +1,6 @@
 # Creating (and approving) PRs to onboard Semgrep to GitHub repos
 
-If you use branch protection on your GitHub repos, onboarding Semgrep to many repos at the same time is not currently possible through the Semgrep Cloud Platform UI. The scripts in this directory provide an alternative. The script `onboard-repos.sh` creates PRs for all targeted repos in an organization, and the script `approve-semgrep-prs.sh` approves and merges those PRs.
+If you use branch protection on your GitHub repos, onboarding Semgrep to many repos at the same time using GitHub Actions is not currently possible through the Semgrep Cloud Platform UI. One recommended solution is to use Semgrep Managed Scans. The scripts in this directory provide an alternative to enable easier CI onboarding. The script `onboard-repos.sh` creates PRs for all targeted repos in an organization, and the script `approve-semgrep-prs.sh` approves and merges those PRs.
 
 The approval script is optional. PRs can also be reviewed manually. If you run the approval script, you can also choose whether or not to merge the approved PR.
 
