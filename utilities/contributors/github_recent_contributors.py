@@ -170,6 +170,7 @@ def get_contributors(org_name, number_of_days, headers):
 
         pull_page = 1
         while True:
+            stop_pagination = False
             response = requests.get(
                 f'https://api.github.com/repos/{owner}/{repo_name}/pulls',
                 headers=headers,
@@ -195,7 +196,7 @@ def get_contributors(org_name, number_of_days, headers):
 
             for pull in pulls:
                 if parse_github_date(pull['updated_at']) < since_date:
-                    pulls = []
+                    stop_pagination = True
                     break
 
                 pull_commits = get_paginated_results(
@@ -207,7 +208,7 @@ def get_contributors(org_name, number_of_days, headers):
                     if since_date <= commit_date <= until_date:
                         add_commit_author(commit, unique_contributors, unique_authors)
 
-            if not pulls:
+            if stop_pagination:
                 break
 
             pull_page += 1
