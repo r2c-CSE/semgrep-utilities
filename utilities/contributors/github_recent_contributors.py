@@ -168,21 +168,49 @@ def get_contributors(org_name, number_of_days, headers):
         for commit in commits:
             add_commit_author(commit, unique_contributors, unique_authors)
 
-        pulls = get_paginated_results(
-            f'https://api.github.com/repos/{owner}/{repo_name}/pulls',
-            headers,
-            params={'state': 'all'}
-        )
-
-        for pull in pulls:
-            pull_commits = get_paginated_results(
-                f'https://api.github.com/repos/{owner}/{repo_name}/pulls/{pull["number"]}/commits',
-                headers
+        pull_page = 1
+        while True:
+            response = requests.get(
+                f'https://api.github.com/repos/{owner}/{repo_name}/pulls',
+                headers=headers,
+                params={
+                    'state': 'all',
+                    'sort': 'updated',
+                    'direction': 'desc',
+                    'per_page': 100,
+                    'page': pull_page,
+                }
             )
-            for commit in pull_commits:
-                commit_date = parse_github_date(commit['commit']['author']['date'])
-                if since_date <= commit_date <= until_date:
-                    add_commit_author(commit, unique_contributors, unique_authors)
+
+            if response.status_code != 200:
+                raise ValueError(
+                    f"Error fetching pulls for {owner}/{repo_name}. "
+                    f"Status code: {response.status_code}"
+                )
+
+            pulls = response.json()
+
+            if not pulls:
+                break
+
+            for pull in pulls:
+                if parse_github_date(pull['updated_at']) < since_date:
+                    pulls = []
+                    break
+
+                pull_commits = get_paginated_results(
+                    f'https://api.github.com/repos/{owner}/{repo_name}/pulls/{pull["number"]}/commits',
+                    headers
+                )
+                for commit in pull_commits:
+                    commit_date = parse_github_date(commit['commit']['author']['date'])
+                    if since_date <= commit_date <= until_date:
+                        add_commit_author(commit, unique_contributors, unique_authors)
+
+            if not pulls:
+                break
+
+            pull_page += 1
         
     return unique_contributors, unique_authors
 
