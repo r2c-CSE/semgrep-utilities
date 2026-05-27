@@ -86,7 +86,10 @@ def get_repos(org_name, headers):
             continue
 
         if response.status_code != 200:
-            raise ValueError(f"Error fetching repositories for organization {org_name}. Status code: {response.status_code}")
+            raise ValueError(
+                f"Error fetching repositories for organization or user {org_name}. "
+                f"Status code: {response.status_code}"
+            )
 
         data = response.json()
         
