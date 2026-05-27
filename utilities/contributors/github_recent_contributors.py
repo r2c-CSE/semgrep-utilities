@@ -156,19 +156,17 @@ def get_contributors(org_name, number_of_days, headers):
                 continue
         
         # Fetch commits for each repository in the given date range
-        response = requests.get(
+        commits = get_paginated_results(
             f'https://api.github.com/repos/{owner}/{repo_name}/commits',
-            params={'since': since_date.isoformat(), 'until': until_date.isoformat()},
-            headers=headers
+            headers,
+            params={'since': since_date.isoformat(), 'until': until_date.isoformat()}
         )
-        
-        commits = response.json()
 
-        if isinstance(commits, list):
-            for commit in commits:
-                add_commit_author(commit, unique_contributors, unique_authors)
-        else:
-            print(f"Repo: {repo_name} is empty.") 
+        if not commits:
+            print(f"Repo: {repo_name} is empty.")
+
+        for commit in commits:
+            add_commit_author(commit, unique_contributors, unique_authors)
 
         pulls = get_paginated_results(
             f'https://api.github.com/repos/{owner}/{repo_name}/pulls',
