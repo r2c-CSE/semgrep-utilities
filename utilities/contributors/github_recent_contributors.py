@@ -36,16 +36,21 @@ import json
 
 
 def get_repos(org_name, headers):
-    """Fetch all repositories for the given organization."""
+    """Fetch all repositories for the given organization or user account."""
     repos = []
     page = 1  # Start from page 1
+    repos_url = f'https://api.github.com/orgs/{org_name}/repos'
 
     while True:
         response = requests.get(
-            f'https://api.github.com/orgs/{org_name}/repos',
+            repos_url,
             headers=headers,
             params={'per_page': 100, 'page': page}  # Fetch 100 repos per page
         )
+
+        if response.status_code == 404 and page == 1 and '/orgs/' in repos_url:
+            repos_url = f'https://api.github.com/users/{org_name}/repos'
+            continue
 
         if response.status_code != 200:
             raise ValueError(f"Error fetching repositories for organization {org_name}. Status code: {response.status_code}")
@@ -69,6 +74,14 @@ def get_organization_members(org_name, headers):
             f'https://api.github.com/orgs/{org_name}/members?page={page}',
             headers=headers
         )
+        if response.status_code == 404 and page == 1:
+            response = requests.get(
+                f'https://api.github.com/users/{org_name}',
+                headers=headers
+            )
+            if response.status_code == 200:
+                return {response.json()['login']}
+            break
         if response.status_code != 200:
             break
         members_page = response.json()
