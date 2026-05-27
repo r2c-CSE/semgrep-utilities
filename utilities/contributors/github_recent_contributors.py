@@ -45,6 +45,8 @@ def get_paginated_results(url, headers, params=None):
             page_params.update(params)
 
         response = requests.get(url, headers=headers, params=page_params)
+        if response.status_code == 409:
+            return results
         if response.status_code != 200:
             raise ValueError(f"Error fetching {url}. Status code: {response.status_code}")
 
