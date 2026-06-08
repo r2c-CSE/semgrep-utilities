@@ -52,10 +52,47 @@ Note:
 - Keep your tokens secure and never expose them in client-side code or public repositories.
 """
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 import os
 from datetime import datetime, timedelta, timezone, UTC
 import argparse
 import json
+
+
+# Per-request timeout (seconds). Without this a stalled connection can hang forever.
+REQUEST_TIMEOUT = 30
+
+
+def make_session():
+    """Build a requests.Session with retries and backoff.
+
+    Across a large org (thousands of repos) the GitHub API will occasionally
+    drop a connection ("Connection reset by peer") or return a transient
+    5xx / rate-limit (429) response. A bare request would abort the entire run
+    on the first such blip; retries with exponential backoff make the run
+    resilient and respect GitHub's Retry-After header for rate limiting.
+    """
+    retry = Retry(
+        total=5,
+        connect=5,
+        read=5,
+        status=5,
+        backoff_factor=2,  # 0s, 2s, 4s, 8s, 16s between attempts
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["GET"],
+        respect_retry_after_header=True,
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session = requests.Session()
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    return session
+
+
+# Module-level session reused for every request (also reuses TCP connections).
+session = make_session()
 
 
 def get_repos(org_name, headers):
@@ -64,10 +101,11 @@ def get_repos(org_name, headers):
     page = 1  # Start from page 1
 
     while True:
-        response = requests.get(
+        response = session.get(
             f'https://api.github.com/orgs/{org_name}/repos',
             headers=headers,
-            params={'per_page': 100, 'page': page}  # Fetch 100 repos per page
+            params={'per_page': 100, 'page': page},  # Fetch 100 repos per page
+            timeout=REQUEST_TIMEOUT
         )
 
         if response.status_code != 200:
@@ -96,9 +134,11 @@ def get_organization_members(org_name, headers):
     members = []
     page = 1
     while True:
-        response = requests.get(
-            f'https://api.github.com/orgs/{org_name}/members?page={page}',
-            headers=headers
+        response = session.get(
+            f'https://api.github.com/orgs/{org_name}/members',
+            headers=headers,
+            params={'per_page': 100, 'page': page},
+            timeout=REQUEST_TIMEOUT
         )
         if response.status_code != 200:
             break
@@ -141,16 +181,39 @@ def get_contributors(org_name, number_of_days, headers):
                 #print(f"skipping: {repo_name}")
                 continue
 
-        # Fetch commits for each repository in the given date range
-        response = requests.get(
-            f'https://api.github.com/repos/{owner}/{repo_name}/commits',
-            params={'since': since_date, 'until': until_date},
-            headers=headers
-        )
+        # Fetch commits for each repository in the given date range.
+        # The commits endpoint is paginated (max 100 per page); without
+        # following pagination, active repos would silently undercount
+        # commits and miss contributors. Isolate failures per repo so a
+        # single bad/unreachable repo doesn't abort the whole run.
+        commits = []
+        empty_repo = False
+        try:
+            page = 1
+            while True:
+                response = session.get(
+                    f'https://api.github.com/repos/{owner}/{repo_name}/commits',
+                    params={'since': since_date, 'until': until_date,
+                            'per_page': 100, 'page': page},
+                    headers=headers,
+                    timeout=REQUEST_TIMEOUT
+                )
+                page_commits = response.json()
+                if not isinstance(page_commits, list):
+                    # GitHub returns 409 with a dict body for empty repos.
+                    empty_repo = response.status_code == 409
+                    break
+                if not page_commits:
+                    break
+                commits.extend(page_commits)
+                if len(page_commits) < 100:
+                    break
+                page += 1
+        except requests.exceptions.RequestException as e:
+            print(f"Warning: failed to fetch commits for {repo_name}: {e}. Skipping repo.")
+            continue
 
-        commits = response.json()
-
-        if isinstance(commits, list):
+        if commits:
             # Initialize repo tracking
             repo_contributors = {}
 
@@ -208,7 +271,7 @@ def get_contributors(org_name, number_of_days, headers):
                         'first_commit_date': details['first_commit_date'],
                         'last_commit_date': details['last_commit_date']
                     })
-        else:
+        elif empty_repo:
             print(f"Repo: {repo_name} is empty.")
 
     return unique_contributors, unique_authors, repo_details, contributor_details
