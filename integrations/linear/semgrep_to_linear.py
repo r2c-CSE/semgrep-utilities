@@ -73,8 +73,9 @@ LINEAR_TEAM_ID = os.getenv("LINEAR_TEAM_ID", "").strip()
 SEMGREP_LABEL = "Semgrep"
 
 # When LINEAR_PROJECT_ID is not set, the target Linear project is read from the
-# Semgrep project tag starting with this prefix, e.g. "Team: sebas-90890a2b68fc".
-TEAM_TAG_PREFIX = "Team:"
+# Semgrep project tag starting with this prefix, e.g.
+# "Linear_Project: sebas-90890a2b68fc".
+TEAM_TAG_PREFIX = "Linear_Project:"
 
 # Reuse the retry/timeout tuning from the JIRA module.
 REQUEST_TIMEOUT_S = sj.REQUEST_TIMEOUT_S
@@ -463,9 +464,9 @@ def build_issue_content(
 
 
 def team_tag_project_ref(project_obj: Dict[str, Any]) -> Optional[str]:
-    """Return the Linear project ref from a Semgrep project's "Team:" tag, if any.
+    """Return the Linear project ref from a Semgrep project's "Linear_Project:" tag, if any.
 
-    e.g. a tag "Team: sebas-90890a2b68fc" yields "sebas-90890a2b68fc".
+    e.g. a tag "Linear_Project: sebas-90890a2b68fc" yields "sebas-90890a2b68fc".
     """
     tags = project_obj.get("tags")
     if not isinstance(tags, list):
@@ -534,7 +535,7 @@ def main() -> int:
         return 2
 
     # LINEAR_PROJECT_ID is optional: when unset, each Semgrep project's target
-    # Linear project is derived from its "Team:" tag (repos without one are
+    # Linear project is derived from its "Linear_Project:" tag (repos without one are
     # skipped).
     semgrep_client = sj.SemgrepClient(sj.SEMGREP_BASE_URL, token, timeout_s=REQUEST_TIMEOUT_S)
     linear_client = LinearClient(LINEAR_API_URL, linear_api_key, timeout_s=REQUEST_TIMEOUT_S)
@@ -552,7 +553,7 @@ def main() -> int:
     logger.info("Severities:        %s", target_severities)
     logger.info("Issue type:        %s", issue_type)
     logger.info("Linear API URL:    %s", LINEAR_API_URL)
-    logger.info("Linear project ID: %s", LINEAR_PROJECT_ID or "(derived per-repo from 'Team:' tags)")
+    logger.info("Linear project ID: %s", LINEAR_PROJECT_ID or "(derived per-repo from 'Linear_Project:' tags)")
     logger.info("DRY_RUN:           %s", dry_run)
 
     # Resolve a Linear project reference (UUID or URL slug id) to the concrete
@@ -606,7 +607,7 @@ def main() -> int:
 
     # 1) Determine the repos to process. When LINEAR_PROJECT_ID is not set we also
     #    need each Semgrep project's tags (to derive the target Linear project from
-    #    its "Team:" tag), so fetch the project objects in that case.
+    #    its "Linear_Project:" tag), so fetch the project objects in that case.
     project_by_name: Dict[str, Dict[str, Any]] = {}
     if (not args.repo) or (not LINEAR_PROJECT_ID):
         for p in semgrep_client.list_projects(deployment_slug):
@@ -633,13 +634,13 @@ def main() -> int:
         logger.info("[REPO] %s", repo)
 
         # Determine the target Linear project: the global LINEAR_PROJECT_ID if set,
-        # otherwise the Semgrep project's "Team:" tag. No target -> skip the repo.
+        # otherwise the Semgrep project's "Linear_Project:" tag. No target -> skip the repo.
         if LINEAR_PROJECT_ID:
             project_ref: Optional[str] = LINEAR_PROJECT_ID
         else:
             project_ref = team_tag_project_ref(project_by_name.get(repo) or {})
             if not project_ref:
-                logger.info("  - No 'Team:' tag and no LINEAR_PROJECT_ID; skipping repo.")
+                logger.info("  - No 'Linear_Project:' tag and no LINEAR_PROJECT_ID; skipping repo.")
                 continue
 
         target = resolve_target(project_ref)
