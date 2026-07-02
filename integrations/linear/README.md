@@ -217,7 +217,7 @@ The workflow:
 2. Retrieves all projects from that deployment.
 3. Filters projects whose name starts with `PROJECT_PREFIX` (or keeps all projects when it is unset).
 4. Retrieves findings for each filtered project, filtered by severity and issue type.
-5. Creates one Linear issue per finding in the target Linear project — `LINEAR_PROJECT_ID` if set, otherwise the project named in the Semgrep project's `Team:` tag (repos without a tag are skipped).
+5. Creates one Linear issue per finding in the target Linear project — `LINEAR_PROJECT_ID` if set, otherwise the project named in the Semgrep project's `Linear_Project:` tag (repos without a tag are skipped).
 6. Marks each ticketed finding as **To Fix** (`fixing`) back in Semgrep.
 
 ### Architecture
@@ -250,7 +250,7 @@ flowchart LR
     board[("Linear<br/>project")]
 
     sc -->|"1. list + prefix filter"| proj
-    proj -.->|"target project =<br/>LINEAR_PROJECT_ID or<br/>'Team:' tag (else skip repo)"| lc
+    proj -.->|"target project =<br/>LINEAR_PROJECT_ID or<br/>'Linear_Project:' tag (else skip repo)"| lc
     sc -->|"2. fetch findings<br/>(severity / issue_type)"| find
     lc -->|"3. resolve project + team"| resolve
     lc -->|"4. ensure label exists"| label
@@ -285,7 +285,7 @@ when the token can access more than one.
 | `PROJECT_PREFIX` | No | Repository name prefix filter, e.g. `myorg/`. When unset, **all** projects in the deployment are processed |
 | `DEPLOYMENT_SLUG` | No | Semgrep deployment slug. Auto-discovered from `/api/v1/deployments` when unset |
 | `LINEAR_API_KEY` | Yes | Linear API key (personal API key or OAuth token) |
-| `LINEAR_PROJECT_ID` | No | Linear project reference where issues are created. Accepts the project UUID **or** the URL slug id (e.g. `sebas-90890a2b68fc`); it is resolved to the canonical UUID. **When unset**, the target Linear project is derived per repo from the Semgrep project tag starting with `Team:` (e.g. `Team: sebas-90890a2b68fc`). A repo with no such tag **and** no `LINEAR_PROJECT_ID` is skipped (no issue created) |
+| `LINEAR_PROJECT_ID` | No | Linear project reference where issues are created. Accepts the project UUID **or** the URL slug id (e.g. `sebas-90890a2b68fc`); it is resolved to the canonical UUID. **When unset**, the target Linear project is derived per repo from the Semgrep project tag starting with `Linear_Project:` (e.g. `Linear_Project: sebas-90890a2b68fc`). A repo with no such tag **and** no `LINEAR_PROJECT_ID` is skipped (no issue created) |
 | `LINEAR_TEAM_ID` | No | Linear team ID. If omitted, the team is resolved from the Linear project (first team it belongs to) |
 | `LINEAR_API_URL` | No | Defaults to `https://api.linear.app/graphql` |
 
