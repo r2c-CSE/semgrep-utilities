@@ -18,6 +18,34 @@ The script performs the following workflow:
 3. Retrieves findings for each filtered project, filtered by severity and issue type via the API.
 4. Creates one JIRA ticket per finding through the Semgrep Tickets API.
 
+### Architecture
+
+```mermaid
+flowchart LR
+    subgraph script["semgrep_to_jira.py"]
+        direction TB
+        orch["main() orchestrator"]
+        client["SemgrepClient"]
+        orch --> client
+    end
+
+    subgraph semgrep["Semgrep API (semgrep.dev)"]
+        direction TB
+        dep["GET /deployments<br/>(resolve slug)"]
+        proj["GET /projects<br/>(paginated)"]
+        find["GET /findings<br/>(paginated · per-status:<br/>open / reviewing / fixing)"]
+        tick["POST /tickets<br/>(native ticketing)"]
+    end
+
+    jira[("JIRA<br/>project")]
+
+    client -->|"1. resolve deployment"| dep
+    client -->|"2. list + prefix filter"| proj
+    client -->|"3. fetch findings<br/>(severity / issue_type)"| find
+    client -->|"4. one ticket per finding"| tick
+    tick ==>|"creates issue"| jira
+```
+
 ---
 
 ## Requirements
@@ -114,9 +142,12 @@ python semgrep_to_jira.py --no-dry-run
 One ticket is created per finding when:
 
 - The finding matches the requested `--issue-type` and `--severities` (filtered by the API)
+- The finding's status is one of `open`, `reviewing`, or `fixing` (the findings API is queried once per status and results are merged/de-duped, since it accepts a single status per request)
 - The finding has a valid issue ID
 - The repository matches the prefix filter
 - The issue ID has not already been ticketed in the current run (in-memory de-dupe)
+
+> Both project listing and findings retrieval are fully paginated (zero-based `page`/`page_size`), so large deployments do not silently omit repositories or findings.
 
 ### POST payload fields
 
@@ -186,7 +217,47 @@ The workflow:
 2. Retrieves all projects from that deployment.
 3. Filters projects whose name starts with `PROJECT_PREFIX` (or keeps all projects when it is unset).
 4. Retrieves findings for each filtered project, filtered by severity and issue type.
-5. Creates one Linear issue per finding in the project given by `LINEAR_PROJECT_ID`.
+5. Creates one Linear issue per finding in the target Linear project — `LINEAR_PROJECT_ID` if set, otherwise the project named in the Semgrep project's `Team:` tag (repos without a tag are skipped).
+6. Marks each ticketed finding as **To Fix** (`fixing`) back in Semgrep.
+
+### Architecture
+
+```mermaid
+flowchart LR
+    subgraph script["semgrep_to_linear.py"]
+        direction TB
+        orch["main() orchestrator"]
+        sc["SemgrepClient<br/>(reused from semgrep_to_jira.py)"]
+        lc["LinearClient<br/>(GraphQL)"]
+        orch --> sc
+        orch --> lc
+    end
+
+    subgraph semgrep["Semgrep API (semgrep.dev)"]
+        direction TB
+        proj["GET /projects<br/>(paginated · returns tags)"]
+        find["GET /findings<br/>(paginated · per-status:<br/>open / reviewing / fixing)"]
+        triage["POST /triage<br/>(new_triage_state=fixing)"]
+    end
+
+    subgraph linear["Linear GraphQL API"]
+        direction TB
+        resolve["project / team lookup"]
+        label["resolve or create<br/>'Semgrep' label"]
+        create["issueCreate mutation"]
+    end
+
+    board[("Linear<br/>project")]
+
+    sc -->|"1. list + prefix filter"| proj
+    proj -.->|"target project =<br/>LINEAR_PROJECT_ID or<br/>'Team:' tag (else skip repo)"| lc
+    sc -->|"2. fetch findings<br/>(severity / issue_type)"| find
+    lc -->|"3. resolve project + team"| resolve
+    lc -->|"4. ensure label exists"| label
+    lc -->|"5. one issue per finding<br/>(+priority, +label, +CWE)"| create
+    create ==>|"creates issue"| board
+    sc -->|"6. mark finding To Fix"| triage
+```
 
 > ⚠️ **Data handling:** this script transmits Semgrep findings (scan output) to
 > Linear. Confirm Linear is an approved integration for your organization before
@@ -214,7 +285,7 @@ when the token can access more than one.
 | `PROJECT_PREFIX` | No | Repository name prefix filter, e.g. `myorg/`. When unset, **all** projects in the deployment are processed |
 | `DEPLOYMENT_SLUG` | No | Semgrep deployment slug. Auto-discovered from `/api/v1/deployments` when unset |
 | `LINEAR_API_KEY` | Yes | Linear API key (personal API key or OAuth token) |
-| `LINEAR_PROJECT_ID` | Yes | Linear project reference where issues are created. Accepts the project UUID **or** the URL slug id (e.g. `sebas-90890a2b68fc`); it is resolved to the canonical UUID at startup |
+| `LINEAR_PROJECT_ID` | No | Linear project reference where issues are created. Accepts the project UUID **or** the URL slug id (e.g. `sebas-90890a2b68fc`); it is resolved to the canonical UUID. **When unset**, the target Linear project is derived per repo from the Semgrep project tag starting with `Team:` (e.g. `Team: sebas-90890a2b68fc`). A repo with no such tag **and** no `LINEAR_PROJECT_ID` is skipped (no issue created) |
 | `LINEAR_TEAM_ID` | No | Linear team ID. If omitted, the team is resolved from the Linear project (first team it belongs to) |
 | `LINEAR_API_URL` | No | Defaults to `https://api.linear.app/graphql` |
 
@@ -250,7 +321,7 @@ python semgrep_to_linear.py --no-dry-run --issue-type sca --severities high crit
 
 | Argument | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `--issue-type` | No | `sast` | Issue type to filter: `sast`, `sca` or `secrets` |
+| `--issue-type` | No | `sast` | Issue type to filter: `sast`, `sca` or `ai_sast` |
 | `--severities` | No | `critical` | Severity levels to fetch. Multiple values accepted |
 | `--dry-run` | No | `True` | Log actions without creating issues (default behaviour) |
 | `--no-dry-run` | No | — | Disable dry run and actually create Linear issues |
@@ -260,15 +331,16 @@ python semgrep_to_linear.py --no-dry-run --issue-type sca --severities high crit
 
 Each finding becomes one Linear issue:
 
-- **Title:** `[Semgrep #<finding_id>] <Readable Rule Name> — <path>:<line>` — the readable name is the last segment of the rule id with dashes replaced by spaces and title-cased (e.g. `...active-debug-code-getstacktrace` → `Active Debug Code Getstacktrace`).
-- **Description:** finding ID, rule (linked to the rule on the Semgrep registry, `<SEMGREP_BASE_URL>/r?q=<rule_name>`), severity, **confidence** of the Semgrep rule, issue type (`sast`/`sca`/`secrets`), repository, **created-at** timestamp (when available), location (linked to the source line), rule message, **how-to-fix guidance from Semgrep Assistant** (from the finding's `assistant.guidance`, when available), a **View the code** link to the source line (when available), and a **View in Semgrep** link to the finding's details page (`<SEMGREP_BASE_URL>/orgs/<deployment>/findings/<finding_id>`).
+- **Title:** `[<Severity>] <Readable Rule Name> — <path>:<line>` (e.g. `[High] Compile Taint Grpc — Dashboard2.cs:71`) — the readable name is the last segment of the rule id with dashes replaced by spaces and title-cased (e.g. `...active-debug-code-getstacktrace` → `Active Debug Code Getstacktrace`).
+- **Description:** finding ID, rule (linked to the rule on the Semgrep registry, `<SEMGREP_BASE_URL>/r?q=<rule_name>`), severity, **confidence** of the Semgrep rule, issue type (`sast`/`sca`/`ai_sast`), repository, **CWE identifier(s)** from the rule (`rule.cweNames`, when available), **created-at** timestamp (when available), location (linked to the source line), rule message, **how-to-fix guidance from Semgrep Assistant** (from the finding's `assistant.guidance`, when available), a **View the code** link to the source line (when available), and a **View in Semgrep** link to the finding's details page (`<SEMGREP_BASE_URL>/orgs/<deployment>/findings/<finding_id>`).
 - **Priority:** mapped from Semgrep severity — `critical → Urgent`, `high → High`, `medium → Medium`, `low → Low`, `info → No priority`.
+- **Label:** every created issue is tagged with the `Semgrep` label. The label is looked up by name and created (team-scoped) if it does not exist. Label resolution/creation is skipped in dry-run mode.
 - **Semgrep status:** after a Linear issue is created (non-dry-run only), the finding is marked **To Fix** in Semgrep via the bulk triage API (`POST /api/v1/deployments/<deployment>/triage` with `new_triage_state=fixing`). A triage failure is logged as a warning and does not fail the run.
 
 ## Duplicate Prevention
 
 - **In-run de-dupe:** each finding ID is filed at most once per run (same as the JIRA script).
-- **Across runs (idempotency):** the `[Semgrep #<id>]` marker embedded in the title is searched within the target Linear project before creating; matching issues are skipped. This makes re-runs safe.
+- **Across runs (idempotency):** a `[Semgrep #<id>]` marker is embedded in the issue **description** (a footer line). Before creating, the target Linear project is searched for an issue whose description contains that marker; matching issues are skipped. This makes re-runs safe. (The marker moved from the title to the description when the title switched to a severity prefix.)
 
 ## API Used
 
@@ -284,7 +356,7 @@ query { project(id: $id) { teams(first: 1) { nodes { id } } } }
 
 ### Duplicate check
 ```graphql
-query { issues(filter: { project: { id: { eq: $id } }, title: { contains: $marker } }, first: 1) { nodes { id } } }
+query { issues(filter: { project: { id: { eq: $id } }, description: { contains: $marker } }, first: 1) { nodes { id } } }
 ```
 
 ### Create issue
