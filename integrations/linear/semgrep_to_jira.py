@@ -74,7 +74,10 @@ JIRA_PROJECT_ID = os.getenv("JIRA_PROJECT_ID", "").strip()
 
 # Findings query behavior
 FINDINGS_PAGE_SIZE = 200
-FINDINGS_STATUS = "open"  # commonly "open" / "fixed" / etc. (adjust to your workflow)
+PROJECTS_PAGE_SIZE = 100
+# The findings API takes a single `status` per request; we query each of these
+# and merge. "fixing" is the status shown as "To Fix" in the Semgrep UI.
+FINDINGS_STATUSES = ["open", "reviewing", "fixing"]
 
 # Misc
 REQUEST_TIMEOUT_S = _get_env_int("SEMGREP_REQUEST_TIMEOUT_S", 30)
@@ -185,14 +188,16 @@ class SemgrepClient:
     def list_projects(self, deployment_slug: str) -> List[Dict[str, Any]]:
         path = f"/api/v1/deployments/{deployment_slug}/projects"
 
+        # Projects are paginated via a zero-based `page` param (not a cursor).
+        # Stop when a page comes back empty; the "no new items" guard also stops
+        # us if the API caps page_size or ignores `page`, so we never loop
+        # forever or silently drop projects.
         projects: List[Dict[str, Any]] = []
-        cursor: Optional[str] = None
+        seen_names: Set[str] = set()
+        page = 0
 
         while True:
-            params: Dict[str, Any] = {}
-            if cursor:
-                params["cursor"] = cursor
-
+            params: Dict[str, Any] = {"page": page, "page_size": PROJECTS_PAGE_SIZE}
             data = self._request("GET", path, params=params)
 
             batch = (
@@ -201,14 +206,24 @@ class SemgrepClient:
                 or data.get("results")
                 or []
             )
-            if isinstance(batch, list):
-                projects.extend(batch)
-            else:
+            if not isinstance(batch, list):
                 raise RuntimeError(f"Unexpected projects response shape: {data.keys()}")
-
-            cursor = data.get("cursor") or data.get("next_cursor") or data.get("next")
-            if not cursor:
+            if not batch:
                 break
+
+            new_count = 0
+            for p in batch:
+                name = get_project_name(p) if isinstance(p, dict) else None
+                if isinstance(name, str):
+                    if name in seen_names:
+                        continue
+                    seen_names.add(name)
+                new_count += 1
+                projects.append(p)
+
+            if new_count == 0:
+                break
+            page += 1
 
         return projects
 
@@ -219,44 +234,62 @@ class SemgrepClient:
         *,
         severities: Optional[Iterable[str]] = None,
         issue_type: Optional[str] = None,
-        status: Optional[str] = None,
+        statuses: Optional[Iterable[str]] = None,
         page_size: int = 200,
     ) -> List[Dict[str, Any]]:
         path = f"/api/v1/deployments/{deployment_slug}/findings"
 
+        # The findings API accepts a single `status` per request, so query each
+        # requested status separately and de-dupe by finding id. Results are
+        # paginated via a zero-based `page` param (not a cursor); we stop on an
+        # empty page, and the "no new items" guard stops us if the API caps
+        # page_size or ignores `page` (so no infinite loop, no dropped pages).
+        status_list: List[Optional[str]] = list(statuses) if statuses else [None]
+
         findings: List[Dict[str, Any]] = []
-        cursor: Optional[str] = None
+        seen_ids: Set[int] = set()
 
-        while True:
-            params: Dict[str, Any] = {
-                "repos": repo,
-                "pageSize": page_size,
-            }
-            if status:
-                params["status"] = status
-            if severities:
-                params["severities"] = ",".join(severities)
-            if issue_type:
-                params["issue_type"] = issue_type
-            if cursor:
-                params["cursor"] = cursor
+        for status in status_list:
+            page = 0
+            while True:
+                params: Dict[str, Any] = {
+                    "repos": repo,
+                    "page": page,
+                    "page_size": page_size,
+                }
+                if status:
+                    params["status"] = status
+                if severities:
+                    params["severities"] = ",".join(severities)
+                if issue_type:
+                    params["issue_type"] = issue_type
 
-            data = self._request("GET", path, params=params)
+                data = self._request("GET", path, params=params)
 
-            batch = (
-                data.get("findings")
-                or data.get("data")
-                or data.get("results")
-                or []
-            )
-            if isinstance(batch, list):
-                findings.extend(batch)
-            else:
-                raise RuntimeError(f"Unexpected findings response shape: {data.keys()}")
+                batch = (
+                    data.get("findings")
+                    or data.get("data")
+                    or data.get("results")
+                    or []
+                )
+                if not isinstance(batch, list):
+                    raise RuntimeError(f"Unexpected findings response shape: {data.keys()}")
+                if not batch:
+                    break
 
-            cursor = data.get("cursor") or data.get("next_cursor") or data.get("next")
-            if not cursor:
-                break
+                new_count = 0
+                for f in batch:
+                    fid = f.get("id") if isinstance(f, dict) else None
+                    if isinstance(fid, int):
+                        if fid in seen_ids:
+                            continue
+                        seen_ids.add(fid)
+                    new_count += 1
+                    findings.append(f)
+
+                if new_count == 0:
+                    break
+                page += 1
 
         return findings
 
@@ -543,7 +576,7 @@ def main() -> int:
             repo,
             severities=target_severities,
             issue_type=issue_type,
-            status=FINDINGS_STATUS,
+            statuses=FINDINGS_STATUSES,
             page_size=FINDINGS_PAGE_SIZE,
         )
 
