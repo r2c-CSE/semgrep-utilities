@@ -69,6 +69,13 @@ LINEAR_API_URL = os.getenv("LINEAR_API_URL", "https://api.linear.app/graphql").r
 LINEAR_PROJECT_ID = os.getenv("LINEAR_PROJECT_ID", "").strip()
 LINEAR_TEAM_ID = os.getenv("LINEAR_TEAM_ID", "").strip()
 
+# Label applied to every issue this script creates.
+SEMGREP_LABEL = "Semgrep"
+
+# When LINEAR_PROJECT_ID is not set, the target Linear project is read from the
+# Semgrep project tag starting with this prefix, e.g. "Team: sebas-90890a2b68fc".
+TEAM_TAG_PREFIX = "Team:"
+
 # Reuse the retry/timeout tuning from the JIRA module.
 REQUEST_TIMEOUT_S = sj.REQUEST_TIMEOUT_S
 RATE_LIMIT_SLEEP_S = sj.RATE_LIMIT_SLEEP_S
@@ -206,6 +213,32 @@ class LinearClient:
         nodes = (data.get("issues") or {}).get("nodes") or []
         return bool(nodes)
 
+    def resolve_or_create_label(self, name: str, team_id: str) -> Optional[str]:
+        """Return the id of the label `name`, creating it (team-scoped) if absent."""
+        find_query = """
+        query FindLabel($filter: IssueLabelFilter!) {
+          issueLabels(filter: $filter, first: 1) {
+            nodes { id name }
+          }
+        }
+        """
+        data = self._graphql(find_query, {"filter": {"name": {"eq": name}}})
+        nodes = (data.get("issueLabels") or {}).get("nodes") or []
+        if nodes:
+            return nodes[0].get("id")
+
+        create_mutation = """
+        mutation LabelCreate($input: IssueLabelCreateInput!) {
+          issueLabelCreate(input: $input) {
+            success
+            issueLabel { id name }
+          }
+        }
+        """
+        created = self._graphql(create_mutation, {"input": {"name": name, "teamId": team_id}})
+        payload = created.get("issueLabelCreate") or {}
+        return (payload.get("issueLabel") or {}).get("id")
+
     def create_issue(
         self,
         *,
@@ -214,6 +247,7 @@ class LinearClient:
         title: str,
         description: str,
         priority: Optional[int] = None,
+        label_ids: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         mutation = """
         mutation IssueCreate($input: IssueCreateInput!) {
@@ -231,6 +265,8 @@ class LinearClient:
         }
         if priority is not None:
             issue_input["priority"] = priority
+        if label_ids:
+            issue_input["labelIds"] = label_ids
 
         data = self._graphql(mutation, {"input": issue_input})
         return data.get("issueCreate") or {}
@@ -302,6 +338,14 @@ def extract_linear_finding(finding: Dict[str, Any]) -> Dict[str, Any]:
         or _first_str(metadata, ["confidence"])
     )
 
+    # CWE identifiers associated with the rule, e.g.
+    # "CWE-319: Cleartext Transmission of Sensitive Information".
+    cwe = rule.get("cweNames") or rule.get("cwe_names") or metadata.get("cwe")
+    if isinstance(cwe, str):
+        cwe = [cwe]
+    if isinstance(cwe, list):
+        out["cwe_names"] = [c.strip() for c in cwe if isinstance(c, str) and c.strip()]
+
     # When the finding was first created/seen.
     out["created_at"] = _first_str(
         finding, ["created_at", "created", "first_seen_at", "relevant_since"]
@@ -337,7 +381,12 @@ def build_issue_content(
     line = fields.get("line")
 
     # Stable marker embedded in the title so re-runs can de-dupe idempotently.
+    # find_existing_issue() matches on the title, so the marker must stay in it
+    # (Linear's description `contains` filter proved unreliable for this).
     marker = f"[Semgrep #{issue_id}]"
+
+    # Title leads with the severity, e.g. "[High]".
+    severity_label = severity.capitalize() if severity else "Unknown"
 
     # Title uses a human-readable name derived from the last segment of the rule
     # id (dashes -> spaces, title-cased). e.g.
@@ -348,7 +397,9 @@ def build_issue_content(
     if path:
         location_str = f" — {path}" + (f":{line}" if isinstance(line, int) else "")
 
-    title = f"{marker} {display_name}{location_str}"
+    # Marker leads the title so it survives truncation and find_existing_issue()
+    # can match on it; severity follows.
+    title = f"{marker} [{severity_label}] {display_name}{location_str}"
     # Linear title limit is generous, but keep it reasonable.
     if len(title) > 250:
         title = title[:247] + "..."
@@ -367,6 +418,8 @@ def build_issue_content(
         f"**Issue type:** {issue_type}",
         f"**Repository:** {fields.get('repo') or repo}",
     ]
+    if fields.get("cwe_names"):
+        description_lines.append(f"**CWE:** {', '.join(fields['cwe_names'])}")
     if created_at:
         description_lines.append(f"**Created at:** {created_at}")
     if path:
@@ -394,6 +447,10 @@ def build_issue_content(
     finding_url = f"{sj.SEMGREP_BASE_URL}/orgs/{deployment_slug}/findings/{issue_id}"
     description_lines.append("")
     description_lines.append(f"[View in Semgrep]({finding_url})")
+    # De-dupe anchor: kept in the description (no longer in the title) so re-runs
+    # can find an existing issue for this finding. See find_existing_issue().
+    description_lines.append("")
+    description_lines.append(f"_{marker}_")
 
     priority = SEVERITY_TO_PRIORITY.get(severity)
 
@@ -403,6 +460,22 @@ def build_issue_content(
         "priority": priority,
         "marker": marker,
     }
+
+
+def team_tag_project_ref(project_obj: Dict[str, Any]) -> Optional[str]:
+    """Return the Linear project ref from a Semgrep project's "Team:" tag, if any.
+
+    e.g. a tag "Team: sebas-90890a2b68fc" yields "sebas-90890a2b68fc".
+    """
+    tags = project_obj.get("tags")
+    if not isinstance(tags, list):
+        return None
+    for tag in tags:
+        if isinstance(tag, str) and tag.strip().startswith(TEAM_TAG_PREFIX):
+            ref = tag.strip()[len(TEAM_TAG_PREFIX):].strip()
+            if ref:
+                return ref
+    return None
 
 
 def main() -> int:
@@ -422,9 +495,9 @@ def main() -> int:
     )
     parser.add_argument(
         "--issue-type",
-        choices=["sast", "sca", "secrets"],
+        choices=["sast", "sca", "ai_sast"],
         default="sast",
-        help="Issue type to filter findings (sast, sca or secrets, default: sast).",
+        help="Issue type to filter findings (sast, sca or ai_sast, default: sast).",
     )
     parser.add_argument(
         "--dry-run",
@@ -460,10 +533,9 @@ def main() -> int:
         logger.error("LINEAR_API_KEY env var is required.")
         return 2
 
-    if not LINEAR_PROJECT_ID:
-        logger.error("LINEAR_PROJECT_ID env var is required.")
-        return 2
-
+    # LINEAR_PROJECT_ID is optional: when unset, each Semgrep project's target
+    # Linear project is derived from its "Team:" tag (repos without one are
+    # skipped).
     semgrep_client = sj.SemgrepClient(sj.SEMGREP_BASE_URL, token, timeout_s=REQUEST_TIMEOUT_S)
     linear_client = LinearClient(LINEAR_API_URL, linear_api_key, timeout_s=REQUEST_TIMEOUT_S)
 
@@ -480,48 +552,78 @@ def main() -> int:
     logger.info("Severities:        %s", target_severities)
     logger.info("Issue type:        %s", issue_type)
     logger.info("Linear API URL:    %s", LINEAR_API_URL)
-    logger.info("Linear project ID: %s", LINEAR_PROJECT_ID)
+    logger.info("Linear project ID: %s", LINEAR_PROJECT_ID or "(derived per-repo from 'Team:' tags)")
     logger.info("DRY_RUN:           %s", dry_run)
 
-    # Resolve the Linear project reference (UUID or URL slug id) to its canonical
-    # UUID, which issueCreate and issue filters require. Also derive the team.
-    project = linear_client.resolve_project(LINEAR_PROJECT_ID)
-    project_uuid = project.get("id") or ""
-    if not project_uuid:
-        logger.error(
-            "Could not resolve Linear project %r. Check LINEAR_PROJECT_ID.",
-            LINEAR_PROJECT_ID,
-        )
-        return 2
-    logger.info("Linear project UUID: %s (%s)", project_uuid, project.get("name") or "?")
+    # Resolve a Linear project reference (UUID or URL slug id) to the concrete
+    # (project_uuid, team_id, label_ids) needed to create issues. Cached so repos
+    # sharing a project/team resolve only once. Returns None if unresolvable.
+    resolve_cache: Dict[str, Optional[Dict[str, Any]]] = {}
 
-    team_id = LINEAR_TEAM_ID or (project.get("team_id") or "")
-    if not team_id:
-        logger.error(
-            "Could not determine a Linear team. Set LINEAR_TEAM_ID or ensure "
-            "LINEAR_PROJECT_ID is valid and belongs to a team."
-        )
-        return 2
-    logger.info("Linear team ID:    %s", team_id)
+    def resolve_target(project_ref: str) -> Optional[Dict[str, Any]]:
+        if project_ref in resolve_cache:
+            return resolve_cache[project_ref]
 
-    # 1) Determine the list of repos to process (reused prefix filtering).
+        project = linear_client.resolve_project(project_ref)
+        project_uuid = project.get("id") or ""
+        if not project_uuid:
+            logger.warning("Could not resolve Linear project %r; skipping.", project_ref)
+            resolve_cache[project_ref] = None
+            return None
+
+        team_id = LINEAR_TEAM_ID or (project.get("team_id") or "")
+        if not team_id:
+            logger.warning(
+                "Could not determine a Linear team for project %r; skipping.", project_ref
+            )
+            resolve_cache[project_ref] = None
+            return None
+
+        # Resolve (creating if needed) the "Semgrep" label applied to created
+        # issues. Skipped in dry-run so a dry-run never mutates the workspace.
+        label_ids: Optional[List[str]] = None
+        if not dry_run:
+            label_id = linear_client.resolve_or_create_label(SEMGREP_LABEL, team_id)
+            if label_id:
+                label_ids = [label_id]
+            else:
+                logger.warning(
+                    "Could not resolve/create Linear label %r for team %s; issues will be unlabeled.",
+                    SEMGREP_LABEL,
+                    team_id,
+                )
+
+        logger.info(
+            "Linear target for %r: project=%s (%s) team=%s",
+            project_ref,
+            project_uuid,
+            project.get("name") or "?",
+            team_id,
+        )
+        target = {"project_uuid": project_uuid, "team_id": team_id, "label_ids": label_ids}
+        resolve_cache[project_ref] = target
+        return target
+
+    # 1) Determine the repos to process. When LINEAR_PROJECT_ID is not set we also
+    #    need each Semgrep project's tags (to derive the target Linear project from
+    #    its "Team:" tag), so fetch the project objects in that case.
+    project_by_name: Dict[str, Dict[str, Any]] = {}
+    if (not args.repo) or (not LINEAR_PROJECT_ID):
+        for p in semgrep_client.list_projects(deployment_slug):
+            name = sj.get_project_name(p)
+            if name:
+                project_by_name[name] = p
+
     if args.repo:
         matching = [args.repo.strip()]
         logger.info("Single-repo mode: %s", matching[0])
     else:
-        projects = semgrep_client.list_projects(deployment_slug)
-        project_names: List[str] = []
-        for p in projects:
-            name = sj.get_project_name(p)
-            if name:
-                project_names.append(name)
-
-        matching = [pn for pn in project_names if pn.startswith(sj.PROJECT_PREFIX)]
+        matching = [pn for pn in project_by_name if pn.startswith(sj.PROJECT_PREFIX)]
         if not matching:
             logger.info("No matching projects found. Exiting.")
             return 0
 
-        logger.info("Found %d projects; %d match prefix.", len(project_names), len(matching))
+        logger.info("Found %d projects; %d match prefix.", len(project_by_name), len(matching))
 
     # In-run de-dupe of issue IDs (mirrors the JIRA script).
     filed_issue_ids: Set[int] = set()
@@ -530,12 +632,29 @@ def main() -> int:
     for repo in sorted(set(matching)):
         logger.info("[REPO] %s", repo)
 
+        # Determine the target Linear project: the global LINEAR_PROJECT_ID if set,
+        # otherwise the Semgrep project's "Team:" tag. No target -> skip the repo.
+        if LINEAR_PROJECT_ID:
+            project_ref: Optional[str] = LINEAR_PROJECT_ID
+        else:
+            project_ref = team_tag_project_ref(project_by_name.get(repo) or {})
+            if not project_ref:
+                logger.info("  - No 'Team:' tag and no LINEAR_PROJECT_ID; skipping repo.")
+                continue
+
+        target = resolve_target(project_ref)
+        if not target:
+            continue
+        project_uuid = target["project_uuid"]
+        team_id = target["team_id"]
+        label_ids = target["label_ids"]
+
         findings = semgrep_client.list_findings_for_repo(
             deployment_slug,
             repo,
             severities=target_severities,
             issue_type=issue_type,
-            status=sj.FINDINGS_STATUS,
+            statuses=sj.FINDINGS_STATUSES,
             page_size=sj.FINDINGS_PAGE_SIZE,
         )
 
@@ -584,6 +703,7 @@ def main() -> int:
                     title=content["title"],
                     description=content["description"],
                     priority=content["priority"],
+                    label_ids=label_ids,
                 )
             except RuntimeError as exc:
                 failure_count += 1
