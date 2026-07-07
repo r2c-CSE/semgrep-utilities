@@ -35,20 +35,63 @@ import argparse
 import json
 
 
+def get_paginated_results(url, headers, params=None):
+    results = []
+    page = 1
+
+    while True:
+        page_params = {'per_page': 100, 'page': page}
+        if params:
+            page_params.update(params)
+
+        response = requests.get(url, headers=headers, params=page_params)
+        if response.status_code == 409:
+            return results
+        if response.status_code != 200:
+            raise ValueError(f"Error fetching {url}. Status code: {response.status_code}")
+
+        data = response.json()
+        if not data:
+            break
+
+        results.extend(data)
+        page += 1
+
+    return results
+
+
+def parse_github_date(date_value):
+    return datetime.fromisoformat(date_value.replace('Z', '+00:00'))
+
+
+def add_commit_author(commit, unique_contributors, unique_authors):
+    unique_contributors.add(commit['commit']['author']['name'])
+    if commit['author']:
+        unique_authors.add(commit['author']['login'])
+
+
 def get_repos(org_name, headers):
-    """Fetch all repositories for the given organization."""
+    """Fetch all repositories for the given organization or user account."""
     repos = []
     page = 1  # Start from page 1
+    repos_url = f'https://api.github.com/orgs/{org_name}/repos'
 
     while True:
         response = requests.get(
-            f'https://api.github.com/orgs/{org_name}/repos',
+            repos_url,
             headers=headers,
             params={'per_page': 100, 'page': page}  # Fetch 100 repos per page
         )
 
+        if response.status_code == 404 and page == 1 and '/orgs/' in repos_url:
+            repos_url = f'https://api.github.com/users/{org_name}/repos'
+            continue
+
         if response.status_code != 200:
-            raise ValueError(f"Error fetching repositories for organization {org_name}. Status code: {response.status_code}")
+            raise ValueError(
+                f"Error fetching repositories for organization or user {org_name}. "
+                f"Status code: {response.status_code}"
+            )
 
         data = response.json()
         
@@ -69,6 +112,14 @@ def get_organization_members(org_name, headers):
             f'https://api.github.com/orgs/{org_name}/members?page={page}',
             headers=headers
         )
+        if response.status_code == 404 and page == 1:
+            response = requests.get(
+                f'https://api.github.com/users/{org_name}',
+                headers=headers
+            )
+            if response.status_code == 200:
+                return {response.json()['login']}
+            break
         if response.status_code != 200:
             break
         members_page = response.json()
@@ -91,8 +142,8 @@ def get_contributors(org_name, number_of_days, headers):
     print(f"Number of repos = {len(repos)}")
 
     # Date range calculation
-    since_date = (datetime.now(timezone.utc) - timedelta(days=number_of_days)).isoformat()
-    until_date = datetime.now(UTC).isoformat()
+    since_date = datetime.now(timezone.utc) - timedelta(days=number_of_days)
+    until_date = datetime.now(UTC)
 
     # Loop through each repository in the organization
     for repo in repos:
@@ -107,21 +158,62 @@ def get_contributors(org_name, number_of_days, headers):
                 continue
         
         # Fetch commits for each repository in the given date range
-        response = requests.get(
+        commits = get_paginated_results(
             f'https://api.github.com/repos/{owner}/{repo_name}/commits',
-            params={'since': since_date, 'until': until_date},
-            headers=headers
+            headers,
+            params={'since': since_date.isoformat(), 'until': until_date.isoformat()}
         )
-        
-        commits = response.json()
 
-        if isinstance(commits, list):
-            for commit in commits:
-                unique_contributors.add(commit['commit']['author']['name'])
-                if commit['author']:
-                    unique_authors.add(commit['author']['login'])
-        else:
-            print(f"Repo: {repo_name} is empty.") 
+        if not commits:
+            print(f"Repo: {repo_name} is empty.")
+
+        for commit in commits:
+            add_commit_author(commit, unique_contributors, unique_authors)
+
+        pull_page = 1
+        while True:
+            stop_pagination = False
+            response = requests.get(
+                f'https://api.github.com/repos/{owner}/{repo_name}/pulls',
+                headers=headers,
+                params={
+                    'state': 'all',
+                    'sort': 'updated',
+                    'direction': 'desc',
+                    'per_page': 100,
+                    'page': pull_page,
+                }
+            )
+
+            if response.status_code != 200:
+                raise ValueError(
+                    f"Error fetching pulls for {owner}/{repo_name}. "
+                    f"Status code: {response.status_code}"
+                )
+
+            pulls = response.json()
+
+            if not pulls:
+                break
+
+            for pull in pulls:
+                if parse_github_date(pull['updated_at']) < since_date:
+                    stop_pagination = True
+                    break
+
+                pull_commits = get_paginated_results(
+                    f'https://api.github.com/repos/{owner}/{repo_name}/pulls/{pull["number"]}/commits',
+                    headers
+                )
+                for commit in pull_commits:
+                    commit_date = parse_github_date(commit['commit']['author']['date'])
+                    if since_date <= commit_date <= until_date:
+                        add_commit_author(commit, unique_contributors, unique_authors)
+
+            if stop_pagination:
+                break
+
+            pull_page += 1
         
     return unique_contributors, unique_authors
 
