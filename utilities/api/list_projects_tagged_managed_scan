@@ -1,0 +1,42 @@
+import os
+import requests
+
+# Configuration: Use environment variables or hardcoded values
+DEPLOYMENT_SLUG = os.getenv("SEMGREP_DEPLOYMENT_SLUG")
+AUTH_TOKEN = os.getenv("SEMGREP_AUTH_TOKEN")
+API_URL = f"https://semgrep.dev/api/v1/deployments/{DEPLOYMENT_SLUG}/projects"
+
+def fetch_projects(api_url, auth_token):
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    response = requests.get(api_url, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Error: Unable to fetch projects. Status code {response.status_code}")
+        response.raise_for_status()
+
+def get_managed_scan_projects(data):
+    return [
+        project["name"]
+        for project in data.get("projects", [])
+        if "managed-scan" in project.get("tags", [])
+    ]
+
+def main():
+    if not DEPLOYMENT_SLUG or not AUTH_TOKEN:
+        print("Error: Missing deployment slug or authentication token.")
+        return
+    try:
+        data = fetch_projects(API_URL, AUTH_TOKEN)
+        managed_scan_projects = get_managed_scan_projects(data)
+        if managed_scan_projects:
+            print("Projects with the 'managed-scan' tag:")
+            for project_name in managed_scan_projects:
+                print(f"- {project_name}")
+        else:
+            print("No projects with the 'managed-scan' tag found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+if __name__ == "__main__":
+    main()
