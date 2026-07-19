@@ -1,59 +1,281 @@
 # github_recent_contributors.py
-This script is meant to help estimate the number of contributors that are active within a Github organization over a period of time.
 
-The script does not use exactly the same logic as Semgrep in determining active contributors but should be helpful in determining a rough estimate.
+A comprehensive GitHub contributor analysis tool designed for licensing audits and usage reporting. This script provides detailed insights into contributor activity across GitHub organizations, helping you understand who has committed code, when, and where.
+
+## Features
+
+### Detailed Contributor Analysis
+- **Per-repository contributor breakdowns** - See who contributed to each repo
+- **Per-contributor activity metrics** - Track commits, date ranges, and repositories per contributor
+- **Org member vs external contributor distinction** - Identify who requires licenses
+- **Comprehensive JSON output** - Full data export for compliance and reporting
+- **Flexible repository filtering** - Analyze all repos or specific subsets
+
+### Output Includes
+- Which contributors worked on which repositories
+- Commit counts per contributor per repository
+- First and last commit dates for each contributor in each repository
+- Clear identification of org members requiring licenses
+- Summary statistics for quick overview
+- Top contributors ranked by commit count
+
+## Requirements
+
+- Python 3.x
+- `requests` library: `pip3 install requests`
+- GitHub Personal Access Token with appropriate permissions
+
+### GitHub Token Permissions
+
+Your Personal Access Token needs the following scopes:
+- `repo` (or `public_repo` for public repositories only)
+- `read:org`
+- `read:user`
+- `user:email` (optional, but recommended)
+
+## Installation
+
+1. Install the required Python library:
+   ```bash
+   pip3 install requests
+   ```
+
+2. Create a GitHub Personal Access Token at https://github.com/settings/tokens
+
+3. Export your token as an environment variable:
+   ```bash
+   export GITHUB_PERSONAL_ACCESS_TOKEN='your_token_here'
+   ```
 
 ## Usage
-You'll need to first export a [Github PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) into your environment for the script to use.
 
-Export your PAT as the variable `GITHUB_PERSONAL_ACCESS_TOKEN`.  
+### Analyze All Repositories
 
-Example: 
-```
-export GITHUB_PERSONAL_ACCESS_TOKEN=ghp_BunchOfSecretStuffGoesHere
+```bash
+python3 github_recent_contributors.py MyOrg 90 report.json
 ```
 
-The Token will need the following scopes:
-- repo
-- read:org
-- read:user
-- user:email
+This analyzes all repositories in the organization for the last 90 days.
 
-The script takes the following arguements:
-- The name of the github organization
-- The number of days to look over (we recommend 90 as a safe default)
-- An output filename to store the details from the execution
+### Analyze Specific Repositories
 
-After you have the PAT in your environment, run this script like this:
-```
-python3 github_recent_contributors.py r2c-cse 90 output.json
+```bash
+python3 github_recent_contributors.py MyOrg 90 report.json --repos repo1 repo2 repo3
 ```
 
-## Output
-Example console output:
+This analyzes only the specified repositories.
+
+### Command-Line Arguments
+
+- `org_name` - The name of the GitHub organization (required)
+- `number_of_days` - Number of days to look back for commits (required)
+- `output_filename` - Path to save the JSON report (required)
+- `--repos` - Space-separated list of repository names to analyze (optional)
+
+## Output Format
+
+### Console Output
+
+The script prints a detailed summary to the console:
+
 ```
-Total commit authors in the last 90 days: 33
-Total members in r2c-cse: 16
-Total unique contributors from r2c-cse in the last 90 days: 5
+============================================================
+LICENSING REPORT SUMMARY
+============================================================
+Organization: MyOrg
+Period: Last 90 days
+Repositories analyzed: 45
+
+============================================================
+CONTRIBUTOR COUNTS
+============================================================
+Total commit authors: 23
+  ├─ Org members who committed: 18
+  └─ External contributors: 5
+
+Total org members: 25
+  └─ Requiring licenses (committed): 18
+
+============================================================
+TOP 10 CONTRIBUTORS (by commit count)
+============================================================
+ 1. [✓ ORG] alice              - 245 commits across 12 repos
+ 2. [✓ ORG] bob                - 198 commits across 8 repos
+ 3. [  EXT] contractor1        - 156 commits across 3 repos
+ ...
 ```
 
-Example output file:
-```
+### JSON Output Structure
+
+The JSON file contains comprehensive data with the following structure:
+
+```json
 {
-    "organization": "r2c-cse",
-    "date": "2023-09-26",
-    "number_of_days_history": 90,
+  "report_metadata": {
+    "organization": "MyOrg",
+    "report_date": "2026-04-10",
+    "analysis_period_days": 90,
+    "date_range": {
+      "from": "2026-01-10",
+      "to": "2026-04-10"
+    }
+  },
+  "summary": {
+    "total_repositories_analyzed": 45,
+    "total_commit_authors": 23,
+    "total_org_members": 25,
+    "committing_org_members": 18,
+    "external_contributors": 5,
+    "total_commits": 1234
+  },
+  "licensing_counts": {
+    "org_members_requiring_licenses": ["alice", "bob", "charlie", ...],
+    "count": 18
+  },
+  "contributors_by_type": {
     "org_members": [
-        ...
+      {
+        "login": "alice",
+        "name": "Alice Smith",
+        "total_commits": 245,
+        "is_org_member": true,
+        "contributor_type": "org_member",
+        "repositories": [
+          {
+            "repository": "api-service",
+            "commit_count": 89,
+            "first_commit_date": "2026-01-15T10:23:45Z",
+            "last_commit_date": "2026-04-08T16:42:12Z"
+          }
+        ]
+      }
     ],
-    "commit_authors": [
-        ...
-    ],
-    "commiting_members": [
-        ...
-    ]
+    "external_contributors": [...]
+  },
+  "repository_details": [
+    {
+      "repository": "api-service",
+      "contributor_count": 8,
+      "total_commits": 342,
+      "contributors": [
+        {
+          "login": "alice",
+          "name": "Alice Smith",
+          "commit_count": 89,
+          "first_commit_date": "2026-01-15T10:23:45Z",
+          "last_commit_date": "2026-04-08T16:42:12Z"
+        }
+      ]
+    }
+  ],
+  "detailed_contributor_list": [
+    {
+      "login": "alice",
+      "name": "Alice Smith",
+      "total_commits": 245,
+      "is_org_member": true,
+      "contributor_type": "org_member",
+      "repositories": [...]
+    }
+  ]
 }
 ```
+
+#### Key Sections
+
+**report_metadata**: Report generation details
+- Organization name
+- Report generation date
+- Analysis period
+- Exact date range analyzed
+
+**summary**: Aggregate statistics
+- Total repositories analyzed
+- Total unique commit authors
+- Org member counts
+- External contributor counts
+- Total commits in period
+
+**licensing_counts**: License requirement data
+- List of org members who committed code
+- Count requiring licenses
+
+**contributors_by_type**: Detailed breakdowns
+- Org members with their activity
+- External contributors with their activity
+
+**repository_details**: Per-repository information
+- Repository name
+- Contributor count per repo
+- Total commits per repo
+- List of contributors with commit counts and date ranges
+
+**detailed_contributor_list**: Per-contributor summary
+- Login and name
+- Total commits across all repos
+- List of repositories they contributed to
+- Commit counts per repository
+- First and last commit dates per repository
+- Organization membership status
+
+## Use Cases
+
+### Licensing Audits
+Identify exactly which organization members have committed code and require licenses for tools like Semgrep.
+
+### Activity Tracking
+Understand contributor patterns, identify most active contributors, and track repository engagement.
+
+### External Contributor Management
+Identify and track external contributors (contractors, open-source contributors, etc.) separately from organization members.
+
+### Compliance Reporting
+Generate comprehensive reports for compliance, security, or management review with full commit history and date ranges.
+
+### Budget Planning
+Use contributor counts and activity levels to plan tool licensing budgets and resource allocation.
+
+## Security Notes
+
+- Keep your GitHub Personal Access Token secure
+- Never commit tokens to version control
+- Never expose tokens in client-side code or public repositories
+- Use environment variables for token storage
+- Rotate tokens regularly
+- Use the minimum required token permissions
+
+## Example Workflow
+
+```bash
+# Set up environment
+export GITHUB_PERSONAL_ACCESS_TOKEN='ghp_xxxxxxxxxxxx'
+
+# Run analysis for last quarter (90 days) on all repos
+python3 github_recent_contributors.py acme-corp 90 quarterly-report.json
+
+# Run analysis on specific security-critical repos
+python3 github_recent_contributors.py acme-corp 30 security-audit.json \
+  --repos auth-service payment-api user-management
+
+# View the JSON report
+cat quarterly-report.json | jq '.summary'
+```
+
+## Troubleshooting
+
+### "Error fetching repositories for organization"
+- Verify your token has `read:org` permission
+- Ensure the organization name is correct
+- Check that your token hasn't expired
+
+### "Please set your GITHUB_PERSONAL_ACCESS_TOKEN"
+- Make sure you've exported the environment variable
+- Verify the variable name is exactly `GITHUB_PERSONAL_ACCESS_TOKEN`
+
+### Empty or missing data
+- Check your token has `repo` or `public_repo` permission
+- Verify repositories have commits in the specified date range
+- Ensure the repository names are spelled correctly (when using --repos)
 
 # gitlab_contributor_count.py
 
