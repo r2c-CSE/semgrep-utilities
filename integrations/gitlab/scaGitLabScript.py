@@ -19,7 +19,7 @@ def conversion_semgrep_to_gitlab(report_semgrep, data, lowering_unreachable):
                 # if `cwe` does not exist, return empty list, if empty list, return list with default data
                 cwe_title = (vuln.get('extra').get('metadata').get('cwe', []) or [' CWE data missing'])[-1]
                 # snip the CWE string after the first space character so only the CWE title remains
-                cwe_title = cwe_title[cwe_title.index(' ')+1:]
+                cwe_title = cwe_title.split(' ', 1)[-1]
 
                 new_vuln = {
                             "id": vuln.get('extra')['fingerprint'][0:63],
