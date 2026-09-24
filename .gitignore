@@ -3,3 +3,7 @@
 .env
 tmp
 sg-utils
+*.code-workspace
+utilities/reporting/report-generator-python/config/my-config.json
+utilities/reporting/report-generator-python/output/
+__pycache__/
