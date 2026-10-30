@@ -76,10 +76,12 @@ class BulkTriageTestCase(unittest.TestCase):
         ]
         env = {"SEMGREP_APP_TOKEN": token} if token else {}
         stdout, stderr = io.StringIO(), io.StringIO()
+        self.create_session = mock.MagicMock(return_value=None)
         with mock.patch("sys.argv", argv), \
                 mock.patch.dict(os.environ, env, clear=True), \
+                mock.patch.object(bulk_triage, "SEMGREP_SETTINGS_PATH", self.path("settings.yml")), \
                 mock.patch.object(bulk_triage, "bulk_triage", api or FakeTriageApi()), \
-                mock.patch.object(bulk_triage, "create_session", return_value=None), \
+                mock.patch.object(bulk_triage, "create_session", self.create_session), \
                 contextlib.redirect_stdout(stdout), \
                 contextlib.redirect_stderr(stderr):
             rc = bulk_triage.main()
@@ -111,6 +113,46 @@ class ReadIssuesTest(BulkTriageTestCase):
         path = self.write_csv([(1, "dast")])
         with self.assertRaisesRegex(ValueError, "issue_type"):
             bulk_triage.read_issues(path, "sast")
+
+
+class GetTokenTest(BulkTriageTestCase):
+    def get_token(self, env, settings=None):
+        settings_path = self.path("settings.yml")
+        if settings is not None:
+            with open(settings_path, "w") as f:
+                f.write(settings)
+        with mock.patch.dict(os.environ, env, clear=True), \
+                mock.patch.object(bulk_triage, "SEMGREP_SETTINGS_PATH", settings_path):
+            return bulk_triage.get_token()
+
+    def test_env_var_takes_precedence(self):
+        self.assertEqual(
+            self.get_token({"SEMGREP_APP_TOKEN": "from-env"}, "api_token: from-file\n"),
+            "from-env",
+        )
+
+    def test_falls_back_to_settings_file(self):
+        settings = "has_shown_metrics_notification: true\napi_token: from-file\n"
+        self.assertEqual(self.get_token({}, settings), "from-file")
+
+    def test_quoted_settings_token(self):
+        self.assertEqual(self.get_token({}, "api_token: 'from-file'\n"), "from-file")
+
+    def test_settings_file_without_token(self):
+        self.assertIsNone(self.get_token({}, "has_shown_metrics_notification: true\n"))
+
+    def test_no_env_var_or_settings_file(self):
+        self.assertIsNone(self.get_token({}))
+
+    def test_main_uses_settings_file_token(self):
+        with open(self.path("settings.yml"), "w") as f:
+            f.write("api_token: from-file\n")
+        path = self.write_csv([(1, "")])
+        rc, _, _ = self.run_main(
+            ["--deployment-slug", "d", "--csv", path, "--state", "fixing"], token=None
+        )
+        self.assertEqual(rc, 0)
+        self.create_session.assert_called_once_with("from-file")
 
 
 class LimitArgTest(unittest.TestCase):

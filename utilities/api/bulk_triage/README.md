@@ -28,11 +28,18 @@ pip install requests
 
 ## Authentication
 
-The script reads the Semgrep API token from the `SEMGREP_APP_TOKEN` environment variable.
+The script reads the Semgrep API token from, in order:
+
+1. The `SEMGREP_APP_TOKEN` environment variable.
+2. The `api_token` saved in `~/.semgrep/settings.yml` by `semgrep login`.
 
 ```bash
 export SEMGREP_APP_TOKEN="your-semgrep-token"
 ```
+
+The environment variable takes precedence, so set it to use a different token than the one saved by `semgrep login`.
+
+Whichever source is used, the token must have the Web API scope. A token saved by `semgrep login` may not; if requests fail with HTTP 401 or 403, set `SEMGREP_APP_TOKEN` to a token with Web API scope.
 
 Do not hard-code the token in the script or commit it to source control.
 
@@ -158,7 +165,7 @@ python3 -m unittest test_bulk_triage
 
 ## Recommended workflow
 
-1. Export `SEMGREP_APP_TOKEN`.
+1. Export `SEMGREP_APP_TOKEN`, or run `semgrep login`.
 2. Run with `--dry-run` to check the CSV parses and the request count.
 3. Run against a small CSV with `--limit 1` and review the output and the findings in Semgrep.
 4. Run the full CSV.

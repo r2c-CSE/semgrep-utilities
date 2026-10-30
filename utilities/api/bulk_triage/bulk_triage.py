@@ -5,6 +5,7 @@ import csv
 import os
 import sys
 import time
+from pathlib import Path
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -17,6 +18,26 @@ ISSUE_TYPES = ["sast", "sca", "secrets"]
 TRIAGE_STATES = ["ignored", "reviewing", "fixing", "reopened", "provisionally_ignored"]
 TRIAGE_REASONS = ["acceptable_risk", "false_positive", "no_time", "no_triage_reason", "duplicate"]
 MAX_NOTE_LENGTH = 3000
+SEMGREP_SETTINGS_PATH = Path.home() / ".semgrep" / "settings.yml"
+
+
+def get_token():
+    """Return SEMGREP_APP_TOKEN, falling back to the api_token saved by `semgrep login`."""
+    token = os.getenv("SEMGREP_APP_TOKEN")
+    if token:
+        return token
+
+    # Look for the .semgrep/settings.yml where we keep login tokens if no ENV var
+    try:
+        with open(SEMGREP_SETTINGS_PATH) as semgrep_settings:
+            for line in semgrep_settings:
+                # the line we want starts with api_token
+                if line.startswith("api_token:"):
+                    return line.split(":", 1)[1].strip().strip("'\"") or None
+    except OSError:
+        pass
+
+    return None
 
 
 def create_session(token: str) -> requests.Session:
@@ -171,9 +192,13 @@ def main() -> int:
     if args.note and len(args.note) > MAX_NOTE_LENGTH:
         parser.error(f"--note must be at most {MAX_NOTE_LENGTH} characters")
 
-    token = os.getenv("SEMGREP_APP_TOKEN")
+    token = get_token()
     if not token and not args.dry_run:
-        print("Please set the environment variable SEMGREP_APP_TOKEN", file=sys.stderr)
+        print(
+            "No token found - set the environment variable SEMGREP_APP_TOKEN "
+            f"or use `semgrep login` to save one in {SEMGREP_SETTINGS_PATH}",
+            file=sys.stderr,
+        )
         return 1
 
     try:
