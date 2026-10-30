@@ -175,4 +175,3 @@ python3 -m unittest test_bulk_triage
 
 - Never commit `SEMGREP_APP_TOKEN`.
 - Do not commit issue ID CSVs (input or output) alongside the script.
-- Use the minimum token permissions required.
