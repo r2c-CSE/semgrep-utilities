@@ -92,7 +92,7 @@ def main():
             return 1
 
         matches = [name for name in projects if name.startswith(PREFIX)]
-        print(f"Collected {len(projects)} projects; {len(matches)} match {PREFIX!r}.")
+        logging.info(f"Collected {len(projects)} projects; {len(matches)} match {PREFIX!r}.")
         deleted = 0
         for name in matches:
             if args.dry_run:
