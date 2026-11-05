@@ -117,7 +117,7 @@ def main():
                 return 1
             deleted += 1
             print(f"Deleted: {name} (HTTP {response.status_code})")
-        print(f"Dry run complete: {len(matches)} matches." if args.dry_run else f"Deleted {deleted} projects.")
+        logging.info(f"Dry run complete: {len(matches)} matches." if args.dry_run else f"Deleted {deleted} projects.")
     return 0
 
 
